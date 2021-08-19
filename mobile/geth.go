@@ -1,45 +1,45 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2016 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // Contains all the wrappers from the node package to support client side node
 // management on mobile platforms.
 
-package geth
+package gAVN
 
 import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/ethstats"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/AVN/downloader"
+	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
+	"github.com/AVNereum/go-AVNereum/AVNclient"
+	"github.com/AVNereum/go-AVNereum/AVNstats"
+	"github.com/AVNereum/go-AVNereum/internal/debug"
+	"github.com/AVNereum/go-AVNereum/les"
+	"github.com/AVNereum/go-AVNereum/node"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/p2p/nat"
+	"github.com/AVNereum/go-AVNereum/params"
 )
 
-// NodeConfig represents the collection of configuration values to fine tune the Geth
+// NodeConfig represents the collection of configuration values to fine tune the GAVN
 // node embedded into a mobile process. The available values are a subset of the
-// entire API provided by go-ethereum to reduce the maintenance surface and dev
+// entire API provided by go-AVNereum to reduce the maintenance surface and dev
 // complexity.
 type NodeConfig struct {
 	// Bootstrap nodes used to establish connectivity with the rest of the network.
@@ -49,26 +49,26 @@ type NodeConfig struct {
 	// set to zero, then only the configured static and trusted peers can connect.
 	MaxPeers int
 
-	// EthereumEnabled specifies whether the node should run the Ethereum protocol.
-	EthereumEnabled bool
+	// AvalanriaEnabled specifies whAVNer the node should run the Avalanria protocol.
+	AvalanriaEnabled bool
 
-	// EthereumNetworkID is the network identifier used by the Ethereum protocol to
+	// AvalanriaNetworkID is the network identifier used by the Avalanria protocol to
 	// decide if remote peers should be accepted or not.
-	EthereumNetworkID int64 // uint64 in truth, but Java can't handle that...
+	AvalanriaNetworkID int64 // uint64 in truth, but Java can't handle that...
 
-	// EthereumGenesis is the genesis JSON to use to seed the blockchain with. An
+	// AvalanriaGenesis is the genesis JSON to use to seed the blockchain with. An
 	// empty genesis state is equivalent to using the mainnet's state.
-	EthereumGenesis string
+	AvalanriaGenesis string
 
-	// EthereumDatabaseCache is the system memory in MB to allocate for database caching.
+	// AvalanriaDatabaseCache is the system memory in MB to allocate for database caching.
 	// A minimum of 16MB is always reserved.
-	EthereumDatabaseCache int
+	AvalanriaDatabaseCache int
 
-	// EthereumNetStats is a netstats connection string to use to report various
+	// AvalanriaNetStats is a netstats connection string to use to report various
 	// chain, transaction and node stats to a monitoring server.
 	//
 	// It has the form "nodename:secret@host:port"
-	EthereumNetStats string
+	AvalanriaNetStats string
 
 	// Listening address of pprof server.
 	PprofAddress string
@@ -79,9 +79,9 @@ type NodeConfig struct {
 var defaultNodeConfig = &NodeConfig{
 	BootstrapNodes:        FoundationBootnodes(),
 	MaxPeers:              25,
-	EthereumEnabled:       true,
-	EthereumNetworkID:     1,
-	EthereumDatabaseCache: 16,
+	AvalanriaEnabled:       true,
+	AvalanriaNetworkID:     1,
+	AvalanriaDatabaseCache: 16,
 }
 
 // NewNodeConfig creates a new node option set, initialized to the default values.
@@ -106,12 +106,12 @@ func (conf *NodeConfig) String() string {
 	return encodeOrError(conf)
 }
 
-// Node represents a Geth Ethereum node instance.
+// Node represents a GAVN Avalanria node instance.
 type Node struct {
 	node *node.Node
 }
 
-// NewNode creates and configures a new Geth node.
+// NewNode creates and configures a new GAVN node.
 func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 	// If no or partial configurations were specified, use defaults
 	if config == nil {
@@ -152,48 +152,48 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 	debug.Memsize.Add("node", rawStack)
 
 	var genesis *core.Genesis
-	if config.EthereumGenesis != "" {
+	if config.AvalanriaGenesis != "" {
 		// Parse the user supplied genesis spec if not mainnet
 		genesis = new(core.Genesis)
-		if err := json.Unmarshal([]byte(config.EthereumGenesis), genesis); err != nil {
+		if err := json.Unmarshal([]byte(config.AvalanriaGenesis), genesis); err != nil {
 			return nil, fmt.Errorf("invalid genesis spec: %v", err)
 		}
 		// If we have the Ropsten testnet, hard code the chain configs too
-		if config.EthereumGenesis == RopstenGenesis() {
+		if config.AvalanriaGenesis == RopstenGenesis() {
 			genesis.Config = params.RopstenChainConfig
-			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 3
+			if config.AvalanriaNetworkID == 1 {
+				config.AvalanriaNetworkID = 3
 			}
 		}
 		// If we have the Rinkeby testnet, hard code the chain configs too
-		if config.EthereumGenesis == RinkebyGenesis() {
+		if config.AvalanriaGenesis == RinkebyGenesis() {
 			genesis.Config = params.RinkebyChainConfig
-			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 4
+			if config.AvalanriaNetworkID == 1 {
+				config.AvalanriaNetworkID = 4
 			}
 		}
 		// If we have the Goerli testnet, hard code the chain configs too
-		if config.EthereumGenesis == GoerliGenesis() {
+		if config.AvalanriaGenesis == GoerliGenesis() {
 			genesis.Config = params.GoerliChainConfig
-			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 5
+			if config.AvalanriaNetworkID == 1 {
+				config.AvalanriaNetworkID = 5
 			}
 		}
 	}
-	// Register the Ethereum protocol if requested
-	if config.EthereumEnabled {
-		ethConf := ethconfig.Defaults
-		ethConf.Genesis = genesis
-		ethConf.SyncMode = downloader.LightSync
-		ethConf.NetworkId = uint64(config.EthereumNetworkID)
-		ethConf.DatabaseCache = config.EthereumDatabaseCache
-		lesBackend, err := les.New(rawStack, &ethConf)
+	// Register the Avalanria protocol if requested
+	if config.AvalanriaEnabled {
+		AVNConf := AVNconfig.Defaults
+		AVNConf.Genesis = genesis
+		AVNConf.SyncMode = downloader.LightSync
+		AVNConf.NetworkId = uint64(config.AvalanriaNetworkID)
+		AVNConf.DatabaseCache = config.AvalanriaDatabaseCache
+		lesBackend, err := les.New(rawStack, &AVNConf)
 		if err != nil {
-			return nil, fmt.Errorf("ethereum init: %v", err)
+			return nil, fmt.Errorf("AVNereum init: %v", err)
 		}
 		// If netstats reporting is requested, do it
-		if config.EthereumNetStats != "" {
-			if err := ethstats.New(rawStack, lesBackend.ApiBackend, lesBackend.Engine(), config.EthereumNetStats); err != nil {
+		if config.AvalanriaNetStats != "" {
+			if err := AVNstats.New(rawStack, lesBackend.ApiBackend, lesBackend.Engine(), config.AvalanriaNetStats); err != nil {
 				return nil, fmt.Errorf("netstats init: %v", err)
 			}
 		}
@@ -221,13 +221,13 @@ func (n *Node) Stop() error {
 	return n.node.Close()
 }
 
-// GetEthereumClient retrieves a client to access the Ethereum subsystem.
-func (n *Node) GetEthereumClient() (client *EthereumClient, _ error) {
+// GetAvalanriaClient retrieves a client to access the Avalanria subsystem.
+func (n *Node) GetAvalanriaClient() (client *AvalanriaClient, _ error) {
 	rpc, err := n.node.Attach()
 	if err != nil {
 		return nil, err
 	}
-	return &EthereumClient{ethclient.NewClient(rpc)}, nil
+	return &AvalanriaClient{AVNclient.NewClient(rpc)}, nil
 }
 
 // GetNodeInfo gathers and returns a collection of metadata known about the host.

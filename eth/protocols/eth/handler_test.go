@@ -1,20 +1,20 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2015 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package AVN
 
 import (
 	"math"
@@ -22,34 +22,34 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/rawdb"
+	"github.com/AVNereum/go-AVNereum/core/state"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/core/vm"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/AVNdb"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/p2p/enode"
+	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/AVNereum/go-AVNereum/trie"
 )
 
 var (
 	// testKey is a private key to use for funding a tester account.
 	testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 
-	// testAddr is the Ethereum address of the tester account.
+	// testAddr is the Avalanria address of the tester account.
 	testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
 )
 
-// testBackend is a mock implementation of the live Ethereum message handler. Its
+// testBackend is a mock implementation of the live Avalanria message handler. Its
 // purpose is to allow testing the request/reply workflows and wire serialization
-// in the `eth` protocol without actually doing any data processing.
+// in the `AVN` protocol without actually doing any data processing.
 type testBackend struct {
-	db     ethdb.Database
+	db     AVNdb.Database
 	chain  *core.BlockChain
 	txpool *core.TxPool
 }
@@ -69,9 +69,9 @@ func newTestBackendWithGenerator(blocks int, generator func(int, *core.BlockGen)
 		Alloc:  core.GenesisAlloc{testAddr: {Balance: big.NewInt(100_000_000_000_000_000)}},
 	}).MustCommit(db)
 
-	chain, _ := core.NewBlockChain(db, nil, params.TestChainConfig, ethash.NewFaker(), vm.Config{}, nil, nil)
+	chain, _ := core.NewBlockChain(db, nil, params.TestChainConfig, AVNash.NewFaker(), vm.Config{}, nil, nil)
 
-	bs, _ := core.GenerateChain(params.TestChainConfig, chain.Genesis(), ethash.NewFaker(), db, blocks, generator)
+	bs, _ := core.GenerateChain(params.TestChainConfig, chain.Genesis(), AVNash.NewFaker(), db, blocks, generator)
 	if _, err := chain.InsertChain(bs); err != nil {
 		panic(err)
 	}
@@ -110,8 +110,8 @@ func (b *testBackend) Handle(*Peer, Packet) error {
 }
 
 // Tests that block headers can be retrieved from a remote chain based on user queries.
-func TestGetBlockHeaders65(t *testing.T) { testGetBlockHeaders(t, ETH65) }
-func TestGetBlockHeaders66(t *testing.T) { testGetBlockHeaders(t, ETH66) }
+func TestGetBlockHeaders65(t *testing.T) { testGetBlockHeaders(t, AVN65) }
+func TestGetBlockHeaders66(t *testing.T) { testGetBlockHeaders(t, AVN66) }
 
 func testGetBlockHeaders(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -254,7 +254,7 @@ func testGetBlockHeaders(t *testing.T, protocol uint) {
 			headers = append(headers, backend.chain.GetBlockByHash(hash).Header())
 		}
 		// Send the hash request and verify the response
-		if protocol <= ETH65 {
+		if protocol <= AVN65 {
 			p2p.Send(peer.app, GetBlockHeadersMsg, tt.query)
 			if err := p2p.ExpectMsg(peer.app, BlockHeadersMsg, headers); err != nil {
 				t.Errorf("test %d: headers mismatch: %v", i, err)
@@ -276,7 +276,7 @@ func testGetBlockHeaders(t *testing.T, protocol uint) {
 			if origin := backend.chain.GetBlockByNumber(tt.query.Origin.Number); origin != nil {
 				tt.query.Origin.Hash, tt.query.Origin.Number = origin.Hash(), 0
 
-				if protocol <= ETH65 {
+				if protocol <= AVN65 {
 					p2p.Send(peer.app, GetBlockHeadersMsg, tt.query)
 					if err := p2p.ExpectMsg(peer.app, BlockHeadersMsg, headers); err != nil {
 						t.Errorf("test %d: headers mismatch: %v", i, err)
@@ -299,8 +299,8 @@ func testGetBlockHeaders(t *testing.T, protocol uint) {
 }
 
 // Tests that block contents can be retrieved from a remote chain based on their hashes.
-func TestGetBlockBodies65(t *testing.T) { testGetBlockBodies(t, ETH65) }
-func TestGetBlockBodies66(t *testing.T) { testGetBlockBodies(t, ETH66) }
+func TestGetBlockBodies65(t *testing.T) { testGetBlockBodies(t, AVN65) }
+func TestGetBlockBodies66(t *testing.T) { testGetBlockBodies(t, AVN66) }
 
 func testGetBlockBodies(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -369,7 +369,7 @@ func testGetBlockBodies(t *testing.T, protocol uint) {
 			}
 		}
 		// Send the hash request and verify the response
-		if protocol <= ETH65 {
+		if protocol <= AVN65 {
 			p2p.Send(peer.app, GetBlockBodiesMsg, hashes)
 			if err := p2p.ExpectMsg(peer.app, BlockBodiesMsg, bodies); err != nil {
 				t.Errorf("test %d: bodies mismatch: %v", i, err)
@@ -390,8 +390,8 @@ func testGetBlockBodies(t *testing.T, protocol uint) {
 }
 
 // Tests that the state trie nodes can be retrieved based on hashes.
-func TestGetNodeData65(t *testing.T) { testGetNodeData(t, ETH65) }
-func TestGetNodeData66(t *testing.T) { testGetNodeData(t, ETH66) }
+func TestGetNodeData65(t *testing.T) { testGetNodeData(t, AVN65) }
+func TestGetNodeData66(t *testing.T) { testGetNodeData(t, AVN66) }
 
 func testGetNodeData(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -407,11 +407,11 @@ func testGetNodeData(t *testing.T, protocol uint) {
 	generator := func(i int, block *core.BlockGen) {
 		switch i {
 		case 0:
-			// In block 1, the test bank sends account #1 some ether.
+			// In block 1, the test bank sends account #1 some AVNer.
 			tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testAddr), acc1Addr, big.NewInt(10_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, testKey)
 			block.AddTx(tx)
 		case 1:
-			// In block 2, the test bank sends some more ether to account #1.
+			// In block 2, the test bank sends some more AVNer to account #1.
 			// acc1Addr passes it on to account #2.
 			tx1, _ := types.SignTx(types.NewTransaction(block.TxNonce(testAddr), acc1Addr, big.NewInt(1_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, testKey)
 			tx2, _ := types.SignTx(types.NewTransaction(block.TxNonce(acc1Addr), acc2Addr, big.NewInt(1_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, acc1Key)
@@ -449,7 +449,7 @@ func testGetNodeData(t *testing.T, protocol uint) {
 	}
 	it.Release()
 
-	if protocol <= ETH65 {
+	if protocol <= AVN65 {
 		p2p.Send(peer.app, GetNodeDataMsg, hashes)
 	} else {
 		p2p.Send(peer.app, GetNodeDataMsg, GetNodeDataPacket66{
@@ -465,7 +465,7 @@ func testGetNodeData(t *testing.T, protocol uint) {
 		t.Fatalf("response packet code mismatch: have %x, want %x", msg.Code, NodeDataMsg)
 	}
 	var data [][]byte
-	if protocol <= ETH65 {
+	if protocol <= AVN65 {
 		if err := msg.Decode(&data); err != nil {
 			t.Fatalf("failed to decode response node data: %v", err)
 		}
@@ -506,8 +506,8 @@ func testGetNodeData(t *testing.T, protocol uint) {
 }
 
 // Tests that the transaction receipts can be retrieved based on hashes.
-func TestGetBlockReceipts65(t *testing.T) { testGetBlockReceipts(t, ETH65) }
-func TestGetBlockReceipts66(t *testing.T) { testGetBlockReceipts(t, ETH66) }
+func TestGetBlockReceipts65(t *testing.T) { testGetBlockReceipts(t, AVN65) }
+func TestGetBlockReceipts66(t *testing.T) { testGetBlockReceipts(t, AVN66) }
 
 func testGetBlockReceipts(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -523,11 +523,11 @@ func testGetBlockReceipts(t *testing.T, protocol uint) {
 	generator := func(i int, block *core.BlockGen) {
 		switch i {
 		case 0:
-			// In block 1, the test bank sends account #1 some ether.
+			// In block 1, the test bank sends account #1 some AVNer.
 			tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testAddr), acc1Addr, big.NewInt(10_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, testKey)
 			block.AddTx(tx)
 		case 1:
-			// In block 2, the test bank sends some more ether to account #1.
+			// In block 2, the test bank sends some more AVNer to account #1.
 			// acc1Addr passes it on to account #2.
 			tx1, _ := types.SignTx(types.NewTransaction(block.TxNonce(testAddr), acc1Addr, big.NewInt(1_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, testKey)
 			tx2, _ := types.SignTx(types.NewTransaction(block.TxNonce(acc1Addr), acc2Addr, big.NewInt(1_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, acc1Key)
@@ -566,7 +566,7 @@ func testGetBlockReceipts(t *testing.T, protocol uint) {
 		receipts = append(receipts, backend.chain.GetReceiptsByHash(block.Hash()))
 	}
 	// Send the hash request and verify the response
-	if protocol <= ETH65 {
+	if protocol <= AVN65 {
 		p2p.Send(peer.app, GetReceiptsMsg, hashes)
 		if err := p2p.ExpectMsg(peer.app, ReceiptsMsg, receipts); err != nil {
 			t.Errorf("receipts mismatch: %v", err)

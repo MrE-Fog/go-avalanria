@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2016 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc_test
 
@@ -21,17 +21,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/AVNereum/go-AVNereum/rpc"
 )
 
 // In this example, our client wishes to track the latest 'block number'
-// known to the server. The server supports two methods:
+// known to the server. The server supports two mAVNods:
 //
-// eth_getBlockByNumber("latest", {})
+// AVN_getBlockByNumber("latest", {})
 //    returns the latest block object.
 //
-// eth_subscribe("newHeads")
+// AVN_subscribe("newHeads")
 //    creates a subscription which fires block objects when new blocks arrive.
 
 type Block struct {
@@ -75,7 +75,7 @@ func subscribeBlocks(client *rpc.Client, subch chan Block) {
 	// The connection is established now.
 	// Update the channel with the current block.
 	var lastBlock Block
-	err = client.CallContext(ctx, &lastBlock, "eth_getBlockByNumber", "latest", false)
+	err = client.CallContext(ctx, &lastBlock, "AVN_getBlockByNumber", "latest", false)
 	if err != nil {
 		fmt.Println("can't get latest block:", err)
 		return

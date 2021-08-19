@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2014 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rlp
 
@@ -27,7 +27,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/AVNereum/go-AVNereum/common/math"
 )
 
 type testEncoder struct {
@@ -45,9 +45,9 @@ func (e *testEncoder) EncodeRLP(w io.Writer) error {
 	return nil
 }
 
-type testEncoderValueMethod struct{}
+type testEncoderValueMAVNod struct{}
 
-func (e testEncoderValueMethod) EncodeRLP(w io.Writer) error {
+func (e testEncoderValueMAVNod) EncodeRLP(w io.Writer) error {
 	w.Write([]byte{0xFA, 0xFE, 0xF0})
 	return nil
 }
@@ -348,19 +348,19 @@ var encTests = []encTest{
 	{val: (*testEncoder)(nil), output: "C0"},
 	{val: &testEncoder{}, output: "00010001000100010001"},
 	{val: &testEncoder{errors.New("test error")}, error: "test error"},
-	{val: struct{ E testEncoderValueMethod }{}, output: "C3FAFEF0"},
-	{val: struct{ E *testEncoderValueMethod }{}, output: "C1C0"},
+	{val: struct{ E testEncoderValueMAVNod }{}, output: "C3FAFEF0"},
+	{val: struct{ E *testEncoderValueMAVNod }{}, output: "C1C0"},
 
 	// Verify that the Encoder interface works for unsupported types like func().
 	{val: undecodableEncoder(func() {}), output: "F5F5F5"},
 
-	// Verify that pointer method testEncoder.EncodeRLP is called for
+	// Verify that pointer mAVNod testEncoder.EncodeRLP is called for
 	// addressable non-pointer values.
 	{val: &struct{ TE testEncoder }{testEncoder{}}, output: "CA00010001000100010001"},
 	{val: &struct{ TE testEncoder }{testEncoder{errors.New("test error")}}, error: "test error"},
 
 	// Verify the error for non-addressable non-pointer Encoder.
-	{val: testEncoder{}, error: "rlp: unadressable value of type rlp.testEncoder, EncodeRLP is pointer method"},
+	{val: testEncoder{}, error: "rlp: unadressable value of type rlp.testEncoder, EncodeRLP is pointer mAVNod"},
 
 	// Verify Encoder takes precedence over []byte.
 	{val: []byteEncoder{0, 1, 2, 3, 4}, output: "C5C0C0C0C0C0"},

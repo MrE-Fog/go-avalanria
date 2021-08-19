@@ -130,7 +130,7 @@ To test the flow, if we have set up `debian-work` as the `target`, we can do
  
 ```bash
 $ cat newaccnt.json 
-{ "id": 0, "jsonrpc": "2.0","method": "account_new","params": []}
+{ "id": 0, "jsonrpc": "2.0","mAVNod": "account_new","params": []}
 
 $ cat newaccnt.json| qrexec-client-vm debian-work qubes.Clefsign
 ```

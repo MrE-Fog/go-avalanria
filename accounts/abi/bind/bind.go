@@ -1,23 +1,23 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2016 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package bind generates Ethereum contract Go bindings.
+// Package bind generates Avalanria contract Go bindings.
 //
-// Detailed usage document and tutorial available on the go-ethereum Wiki page:
-// https://github.com/ethereum/go-ethereum/wiki/Native-DApps:-Go-bindings-to-Ethereum-contracts
+// Detailed usage document and tutorial available on the go-AVNereum Wiki page:
+// https://github.com/AVNereum/go-AVNereum/wiki/Native-DApps:-Go-bindings-to-Avalanria-contracts
 package bind
 
 import (
@@ -30,8 +30,8 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/accounts/abi"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
 // Lang is a target programming language selector to generate bindings for.
@@ -72,13 +72,13 @@ func Bind(types []string, abis []string, bytecodes []string, fsigs []map[string]
 			return r
 		}, abis[i])
 
-		// Extract the call and transact methods; events, struct definitions; and sort them alphabetically
+		// Extract the call and transact mAVNods; events, struct definitions; and sort them alphabetically
 		var (
-			calls     = make(map[string]*tmplMethod)
-			transacts = make(map[string]*tmplMethod)
+			calls     = make(map[string]*tmplMAVNod)
+			transacts = make(map[string]*tmplMAVNod)
 			events    = make(map[string]*tmplEvent)
-			fallback  *tmplMethod
-			receive   *tmplMethod
+			fallback  *tmplMAVNod
+			receive   *tmplMAVNod
 
 			// identifiers are used to detect duplicated identifiers of functions
 			// and events. For all calls, transacts and events, abigen will generate
@@ -88,10 +88,10 @@ func Bind(types []string, abis []string, bytecodes []string, fsigs []map[string]
 			transactIdentifiers = make(map[string]bool)
 			eventIdentifiers    = make(map[string]bool)
 		)
-		for _, original := range evmABI.Methods {
-			// Normalize the method for capital cases and non-anonymous inputs/outputs
+		for _, original := range evmABI.MAVNods {
+			// Normalize the mAVNod for capital cases and non-anonymous inputs/outputs
 			normalized := original
-			normalizedName := methodNormalizer[lang](alias(aliases, original.Name))
+			normalizedName := mAVNodNormalizer[lang](alias(aliases, original.Name))
 			// Ensure there is no duplicated identifier
 			var identifiers = callIdentifiers
 			if !original.IsConstant() {
@@ -122,11 +122,11 @@ func Bind(types []string, abis []string, bytecodes []string, fsigs []map[string]
 					bindStructType[lang](output.Type, structs)
 				}
 			}
-			// Append the methods to the call or transact lists
+			// Append the mAVNods to the call or transact lists
 			if original.IsConstant() {
-				calls[original.Name] = &tmplMethod{Original: original, Normalized: normalized, Structured: structured(original.Outputs)}
+				calls[original.Name] = &tmplMAVNod{Original: original, Normalized: normalized, Structured: structured(original.Outputs)}
 			} else {
-				transacts[original.Name] = &tmplMethod{Original: original, Normalized: normalized, Structured: structured(original.Outputs)}
+				transacts[original.Name] = &tmplMAVNod{Original: original, Normalized: normalized, Structured: structured(original.Outputs)}
 			}
 		}
 		for _, original := range evmABI.Events {
@@ -138,7 +138,7 @@ func Bind(types []string, abis []string, bytecodes []string, fsigs []map[string]
 			normalized := original
 
 			// Ensure there is no duplicated identifier
-			normalizedName := methodNormalizer[lang](alias(aliases, original.Name))
+			normalizedName := mAVNodNormalizer[lang](alias(aliases, original.Name))
 			if eventIdentifiers[normalizedName] {
 				return "", fmt.Errorf("duplicated identifier \"%s\"(normalized \"%s\"), use --alias for renaming", original.Name, normalizedName)
 			}
@@ -160,10 +160,10 @@ func Bind(types []string, abis []string, bytecodes []string, fsigs []map[string]
 		}
 		// Add two special fallback functions if they exist
 		if evmABI.HasFallback() {
-			fallback = &tmplMethod{Original: evmABI.Fallback}
+			fallback = &tmplMAVNod{Original: evmABI.Fallback}
 		}
 		if evmABI.HasReceive() {
-			receive = &tmplMethod{Original: evmABI.Receive}
+			receive = &tmplMAVNod{Original: evmABI.Receive}
 		}
 		// There is no easy way to pass arbitrary java objects to the Go side.
 		if len(structs) > 0 && lang == LangJava {
@@ -416,10 +416,10 @@ func bindStructTypeGo(kind abi.Type, structs map[string]*tmplStruct) string {
 	switch kind.T {
 	case abi.TupleTy:
 		// We compose a raw struct name and a canonical parameter expression
-		// together here. The reason is before solidity v0.5.11, kind.TupleRawName
+		// togAVNer here. The reason is before solidity v0.5.11, kind.TupleRawName
 		// is empty, so we use canonical parameter expression to distinguish
 		// different struct definition. From the consideration of backward
-		// compatibility, we concat these two together so that if kind.TupleRawName
+		// compatibility, we concat these two togAVNer so that if kind.TupleRawName
 		// is not empty, it can have unique id.
 		id := kind.TupleRawName + kind.String()
 		if s, exist := structs[id]; exist {
@@ -455,10 +455,10 @@ func bindStructTypeJava(kind abi.Type, structs map[string]*tmplStruct) string {
 	switch kind.T {
 	case abi.TupleTy:
 		// We compose a raw struct name and a canonical parameter expression
-		// together here. The reason is before solidity v0.5.11, kind.TupleRawName
+		// togAVNer here. The reason is before solidity v0.5.11, kind.TupleRawName
 		// is empty, so we use canonical parameter expression to distinguish
 		// different struct definition. From the consideration of backward
-		// compatibility, we concat these two together so that if kind.TupleRawName
+		// compatibility, we concat these two togAVNer so that if kind.TupleRawName
 		// is not empty, it can have unique id.
 		id := kind.TupleRawName + kind.String()
 		if s, exist := structs[id]; exist {
@@ -486,14 +486,14 @@ func bindStructTypeJava(kind abi.Type, structs map[string]*tmplStruct) string {
 }
 
 // namedType is a set of functions that transform language specific types to
-// named versions that may be used inside method names.
+// named versions that may be used inside mAVNod names.
 var namedType = map[Lang]func(string, abi.Type) string{
 	LangGo:   func(string, abi.Type) string { panic("this shouldn't be needed") },
 	LangJava: namedTypeJava,
 }
 
 // namedTypeJava converts some primitive data types to named variants that can
-// be used as parts of method names.
+// be used as parts of mAVNod names.
 func namedTypeJava(javaKind string, solKind abi.Type) string {
 	switch javaKind {
 	case "byte[]":
@@ -527,9 +527,9 @@ func alias(aliases map[string]string, n string) string {
 	return n
 }
 
-// methodNormalizer is a name transformer that modifies Solidity method names to
+// mAVNodNormalizer is a name transformer that modifies Solidity mAVNod names to
 // conform to target language naming conventions.
-var methodNormalizer = map[Lang]func(string) string{
+var mAVNodNormalizer = map[Lang]func(string) string{
 	LangGo:   abi.ToCamelCase,
 	LangJava: decapitalise,
 }
@@ -547,7 +547,7 @@ func decapitalise(input string) string {
 	return strings.ToLower(goForm[:1]) + goForm[1:]
 }
 
-// structured checks whether a list of ABI data types has enough information to
+// structured checks whAVNer a list of ABI data types has enough information to
 // operate through a proper Go struct or if flat returns are needed.
 func structured(args abi.Arguments) bool {
 	if len(args) < 2 {
@@ -570,7 +570,7 @@ func structured(args abi.Arguments) bool {
 	return true
 }
 
-// hasStruct returns an indicator whether the given type is struct, struct slice
+// hasStruct returns an indicator whAVNer the given type is struct, struct slice
 // or struct array.
 func hasStruct(t abi.Type) bool {
 	switch t.T {

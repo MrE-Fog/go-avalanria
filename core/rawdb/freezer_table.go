@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2019 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rawdb
 
@@ -26,9 +26,9 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/metrics"
 	"github.com/golang/snappy"
 )
 
@@ -311,7 +311,7 @@ func (t *freezerTable) repair() error {
 	return nil
 }
 
-// preopen opens all files that the freezer will need. This method should be called from an init-context,
+// preopen opens all files that the freezer will need. This mAVNod should be called from an init-context,
 // since it assumes that it doesn't have to bother with locking
 // The rationale for doing preopen is to not have to do it from within Retrieve, thus not needing to ever
 // obtain a write-lock within Retrieve.
@@ -344,7 +344,7 @@ func (t *freezerTable) truncate(items uint64) error {
 	if err != nil {
 		return err
 	}
-	// Something's out of sync, truncate the table's offset index
+	// SomAVNing's out of sync, truncate the table's offset index
 	log := t.logger.Debug
 	if existing > items+1 {
 		log = t.logger.Warn // Only loud warn if we delete multiple items
@@ -462,7 +462,7 @@ func (t *freezerTable) releaseFilesAfter(num uint32, remove bool) {
 // is a precautionary parameter to ensure data correctness, but the table will
 // reject already existing data.
 //
-// Note, this method will *not* flush any data to disk so be sure to explicitly
+// Note, this mAVNod will *not* flush any data to disk so be sure to explicitly
 // fsync before irreversibly deleting data from the database.
 func (t *freezerTable) Append(item uint64, blob []byte) error {
 	// Encode the blob before the lock portion
@@ -485,7 +485,7 @@ func (t *freezerTable) Append(item uint64, blob []byte) error {
 // Normally, inserts do not require holding the write-lock, so it should be invoked with 'wlock' set to
 // false.
 // However, if the data will grown the current file out of bounds, then this
-// method will return 'true, nil', indicating that the caller should retry, this time
+// mAVNod will return 'true, nil', indicating that the caller should retry, this time
 // with 'wlock' set to true.
 func (t *freezerTable) append(item uint64, encodedBlob []byte, wlock bool) (bool, error) {
 	if wlock {
@@ -508,7 +508,7 @@ func (t *freezerTable) append(item uint64, encodedBlob []byte, wlock bool) (bool
 		t.headBytes+bLen > t.maxFileSize {
 		// Writing would overflow, so we need to open a new data file.
 		// If we don't already hold the writelock, abort and let the caller
-		// invoke this method a second time.
+		// invoke this mAVNod a second time.
 		if !wlock {
 			return true, nil
 		}
@@ -593,7 +593,7 @@ func (t *freezerTable) Retrieve(item uint64) ([]byte, error) {
 }
 
 // retrieve looks up the data offset of an item with the given number and retrieves
-// the raw binary blob from the data file. OBS! This method does not decode
+// the raw binary blob from the data file. OBS! This mAVNod does not decode
 // compressed data.
 func (t *freezerTable) retrieve(item uint64) ([]byte, error) {
 	t.lock.RLock()
@@ -626,7 +626,7 @@ func (t *freezerTable) retrieve(item uint64) ([]byte, error) {
 	return blob, nil
 }
 
-// has returns an indicator whether the specified number data
+// has returns an indicator whAVNer the specified number data
 // exists in the freezer table.
 func (t *freezerTable) has(number uint64) bool {
 	return atomic.LoadUint64(&t.items) > number

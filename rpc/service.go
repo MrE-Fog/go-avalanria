@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2019 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -26,7 +26,7 @@ import (
 	"sync"
 	"unicode"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
 var (
@@ -48,13 +48,13 @@ type service struct {
 	subscriptions map[string]*callback // available subscriptions/notifications
 }
 
-// callback is a method callback which was registered in the server
+// callback is a mAVNod callback which was registered in the server
 type callback struct {
 	fn          reflect.Value  // the function
-	rcvr        reflect.Value  // receiver object of method, set if fn is method
+	rcvr        reflect.Value  // receiver object of mAVNod, set if fn is mAVNod
 	argTypes    []reflect.Type // input argument types
-	hasCtx      bool           // method's first argument is a context (not included in argTypes)
-	errPos      int            // err return idx, of -1 when method cannot return error
+	hasCtx      bool           // mAVNod's first argument is a context (not included in argTypes)
+	errPos      int            // err return idx, of -1 when mAVNod cannot return error
 	isSubscribe bool           // true if this is a subscription callback
 }
 
@@ -65,7 +65,7 @@ func (r *serviceRegistry) registerName(name string, rcvr interface{}) error {
 	}
 	callbacks := suitableCallbacks(rcvrVal)
 	if len(callbacks) == 0 {
-		return fmt.Errorf("service %T doesn't have any suitable methods/subscriptions to expose", rcvr)
+		return fmt.Errorf("service %T doesn't have any suitable mAVNods/subscriptions to expose", rcvr)
 	}
 
 	r.mu.Lock()
@@ -92,9 +92,9 @@ func (r *serviceRegistry) registerName(name string, rcvr interface{}) error {
 	return nil
 }
 
-// callback returns the callback corresponding to the given RPC method name.
-func (r *serviceRegistry) callback(method string) *callback {
-	elem := strings.SplitN(method, serviceMethodSeparator, 2)
+// callback returns the callback corresponding to the given RPC mAVNod name.
+func (r *serviceRegistry) callback(mAVNod string) *callback {
+	elem := strings.SplitN(mAVNod, serviceMAVNodSeparator, 2)
 	if len(elem) != 2 {
 		return nil
 	}
@@ -110,22 +110,22 @@ func (r *serviceRegistry) subscription(service, name string) *callback {
 	return r.services[service].subscriptions[name]
 }
 
-// suitableCallbacks iterates over the methods of the given type. It determines if a method
+// suitableCallbacks iterates over the mAVNods of the given type. It determines if a mAVNod
 // satisfies the criteria for a RPC callback or a subscription callback and adds it to the
 // collection of callbacks. See server documentation for a summary of these criteria.
 func suitableCallbacks(receiver reflect.Value) map[string]*callback {
 	typ := receiver.Type()
 	callbacks := make(map[string]*callback)
-	for m := 0; m < typ.NumMethod(); m++ {
-		method := typ.Method(m)
-		if method.PkgPath != "" {
-			continue // method not exported
+	for m := 0; m < typ.NumMAVNod(); m++ {
+		mAVNod := typ.MAVNod(m)
+		if mAVNod.PkgPath != "" {
+			continue // mAVNod not exported
 		}
-		cb := newCallback(receiver, method.Func)
+		cb := newCallback(receiver, mAVNod.Func)
 		if cb == nil {
 			continue // function invalid
 		}
-		name := formatName(method.Name)
+		name := formatName(mAVNod.Name)
 		callbacks[name] = cb
 	}
 	return callbacks
@@ -181,7 +181,7 @@ func (c *callback) makeArgTypes() {
 }
 
 // call invokes the callback.
-func (c *callback) call(ctx context.Context, method string, args []reflect.Value) (res interface{}, errRes error) {
+func (c *callback) call(ctx context.Context, mAVNod string, args []reflect.Value) (res interface{}, errRes error) {
 	// Create the argument slice.
 	fullargs := make([]reflect.Value, 0, 2+len(args))
 	if c.rcvr.IsValid() {
@@ -198,8 +198,8 @@ func (c *callback) call(ctx context.Context, method string, args []reflect.Value
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			log.Error("RPC method " + method + " crashed: " + fmt.Sprintf("%v\n%s", err, buf))
-			errRes = errors.New("method handler crashed")
+			log.Error("RPC mAVNod " + mAVNod + " crashed: " + fmt.Sprintf("%v\n%s", err, buf))
+			errRes = errors.New("mAVNod handler crashed")
 		}
 	}()
 	// Run the callback.
@@ -208,7 +208,7 @@ func (c *callback) call(ctx context.Context, method string, args []reflect.Value
 		return nil, nil
 	}
 	if c.errPos >= 0 && !results[c.errPos].IsNil() {
-		// Method has returned non-nil error value.
+		// MAVNod has returned non-nil error value.
 		err := results[c.errPos].Interface().(error)
 		return reflect.Value{}, err
 	}
@@ -239,16 +239,16 @@ func isSubscriptionType(t reflect.Type) bool {
 	return t == subscriptionType
 }
 
-// isPubSub tests whether the given method has as as first argument a context.Context and
+// isPubSub tests whAVNer the given mAVNod has as as first argument a context.Context and
 // returns the pair (Subscription, error).
-func isPubSub(methodType reflect.Type) bool {
+func isPubSub(mAVNodType reflect.Type) bool {
 	// numIn(0) is the receiver type
-	if methodType.NumIn() < 2 || methodType.NumOut() != 2 {
+	if mAVNodType.NumIn() < 2 || mAVNodType.NumOut() != 2 {
 		return false
 	}
-	return isContextType(methodType.In(1)) &&
-		isSubscriptionType(methodType.Out(0)) &&
-		isErrorType(methodType.Out(1))
+	return isContextType(mAVNodType.In(1)) &&
+		isSubscriptionType(mAVNodType.Out(0)) &&
+		isErrorType(mAVNodType.Out(1))
 }
 
 // formatName converts to first character of name to lowercase.

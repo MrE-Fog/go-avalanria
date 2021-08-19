@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of go-ethereum.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of go-AVNereum.
 //
-// go-ethereum is free software: you can redistribute it and/or modify
+// go-AVNereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ethereum is distributed in the hope that it will be useful,
+// go-AVNereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/accounts/keystore"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
 // deployNode creates a new node configuration based on some user input.
@@ -33,8 +33,8 @@ func (w *wizard) deployNode(boot bool) {
 		log.Error("No genesis block configured")
 		return
 	}
-	if w.conf.ethstats == "" {
-		log.Error("No ethstats server configured")
+	if w.conf.AVNstats == "" {
+		log.Error("No AVNstats server configured")
 		return
 	}
 	// Select the server to interact with
@@ -69,12 +69,12 @@ func (w *wizard) deployNode(boot bool) {
 	}
 	if w.conf.Genesis.Config.Ethash != nil && !boot {
 		fmt.Println()
-		if infos.ethashdir == "" {
-			fmt.Printf("Where should the ethash mining DAGs be stored on the remote machine?\n")
-			infos.ethashdir = w.readString()
+		if infos.AVNashdir == "" {
+			fmt.Printf("Where should the AVNash mining DAGs be stored on the remote machine?\n")
+			infos.AVNashdir = w.readString()
 		} else {
-			fmt.Printf("Where should the ethash mining DAGs be stored on the remote machine? (default = %s)\n", infos.ethashdir)
-			infos.ethashdir = w.readDefaultString(infos.ethashdir)
+			fmt.Printf("Where should the AVNash mining DAGs be stored on the remote machine? (default = %s)\n", infos.AVNashdir)
+			infos.AVNashdir = w.readDefaultString(infos.AVNashdir)
 		}
 	}
 	// Figure out which port to listen on
@@ -94,29 +94,29 @@ func (w *wizard) deployNode(boot bool) {
 
 	// Set a proper name to report on the stats page
 	fmt.Println()
-	if infos.ethstats == "" {
+	if infos.AVNstats == "" {
 		fmt.Printf("What should the node be called on the stats page?\n")
-		infos.ethstats = w.readString() + ":" + w.conf.ethstats
+		infos.AVNstats = w.readString() + ":" + w.conf.AVNstats
 	} else {
-		fmt.Printf("What should the node be called on the stats page? (default = %s)\n", infos.ethstats)
-		infos.ethstats = w.readDefaultString(infos.ethstats) + ":" + w.conf.ethstats
+		fmt.Printf("What should the node be called on the stats page? (default = %s)\n", infos.AVNstats)
+		infos.AVNstats = w.readDefaultString(infos.AVNstats) + ":" + w.conf.AVNstats
 	}
 	// If the node is a miner/signer, load up needed credentials
 	if !boot {
 		if w.conf.Genesis.Config.Ethash != nil {
-			// Ethash based miners only need an etherbase to mine against
+			// Ethash based miners only need an AVNerbase to mine against
 			fmt.Println()
-			if infos.etherbase == "" {
+			if infos.AVNerbase == "" {
 				fmt.Printf("What address should the miner use?\n")
 				for {
 					if address := w.readAddress(); address != nil {
-						infos.etherbase = address.Hex()
+						infos.AVNerbase = address.Hex()
 						break
 					}
 				}
 			} else {
-				fmt.Printf("What address should the miner use? (default = %s)\n", infos.etherbase)
-				infos.etherbase = w.readDefaultAddress(common.HexToAddress(infos.etherbase)).Hex()
+				fmt.Printf("What address should the miner use? (default = %s)\n", infos.AVNerbase)
+				infos.AVNerbase = w.readDefaultAddress(common.HexToAddress(infos.AVNerbase)).Hex()
 			}
 		} else if w.conf.Genesis.Config.Clique != nil {
 			// If a previous signer was already set, offer to reuse it
@@ -168,7 +168,7 @@ func (w *wizard) deployNode(boot bool) {
 		nocache = w.readDefaultYesNo(false)
 	}
 	if out, err := deployNode(client, w.network, w.conf.bootnodes, infos, nocache); err != nil {
-		log.Error("Failed to deploy Ethereum node container", "err", err)
+		log.Error("Failed to deploy Avalanria node container", "err", err)
 		if len(out) > 0 {
 			fmt.Printf("%s\n", out)
 		}

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package abi
 
@@ -26,7 +26,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/AVNereum/go-AVNereum/common"
 	"github.com/stretchr/testify/require"
 )
 
@@ -35,7 +35,7 @@ func TestUnpack(t *testing.T) {
 	for i, test := range packUnpackTests {
 		t.Run(strconv.Itoa(i)+" "+test.def, func(t *testing.T) {
 			//Unpack
-			def := fmt.Sprintf(`[{ "name" : "method", "type": "function", "outputs": %s}]`, test.def)
+			def := fmt.Sprintf(`[{ "name" : "mAVNod", "type": "function", "outputs": %s}]`, test.def)
 			abi, err := JSON(strings.NewReader(def))
 			if err != nil {
 				t.Fatalf("invalid ABI definition %s: %v", def, err)
@@ -44,7 +44,7 @@ func TestUnpack(t *testing.T) {
 			if err != nil {
 				t.Fatalf("invalid hex %s: %v", test.packed, err)
 			}
-			out, err := abi.Unpack("method", encb)
+			out, err := abi.Unpack("mAVNod", encb)
 			if err != nil {
 				t.Errorf("test %d (%v) failed: %v", i, test.def, err)
 				return
@@ -209,7 +209,7 @@ func TestLocalUnpackTests(t *testing.T) {
 	for i, test := range unpackTests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			//Unpack
-			def := fmt.Sprintf(`[{ "name" : "method", "type": "function", "outputs": %s}]`, test.def)
+			def := fmt.Sprintf(`[{ "name" : "mAVNod", "type": "function", "outputs": %s}]`, test.def)
 			abi, err := JSON(strings.NewReader(def))
 			if err != nil {
 				t.Fatalf("invalid ABI definition %s: %v", def, err)
@@ -219,7 +219,7 @@ func TestLocalUnpackTests(t *testing.T) {
 				t.Fatalf("invalid hex %s: %v", test.enc, err)
 			}
 			outptr := reflect.New(reflect.TypeOf(test.want))
-			err = abi.UnpackIntoInterface(outptr.Interface(), "method", encb)
+			err = abi.UnpackIntoInterface(outptr.Interface(), "mAVNod", encb)
 			if err := test.checkError(err); err != nil {
 				t.Errorf("test %d (%v) failed: %v", i, test.def, err)
 				return
@@ -281,15 +281,15 @@ func TestUnpackIntoInterfaceSetDynamicArrayOutput(t *testing.T) {
 	}
 }
 
-type methodMultiOutput struct {
+type mAVNodMultiOutput struct {
 	Int    *big.Int
 	String string
 }
 
-func methodMultiReturn(require *require.Assertions) (ABI, []byte, methodMultiOutput) {
+func mAVNodMultiReturn(require *require.Assertions) (ABI, []byte, mAVNodMultiOutput) {
 	const definition = `[
 	{ "name" : "multi", "type": "function", "outputs": [ { "name": "Int", "type": "uint256" }, { "name": "String", "type": "string" } ] }]`
-	var expected = methodMultiOutput{big.NewInt(1), "hello"}
+	var expected = mAVNodMultiOutput{big.NewInt(1), "hello"}
 
 	abi, err := JSON(strings.NewReader(definition))
 	require.NoError(err)
@@ -302,7 +302,7 @@ func methodMultiReturn(require *require.Assertions) (ABI, []byte, methodMultiOut
 	return abi, buff.Bytes(), expected
 }
 
-func TestMethodMultiReturn(t *testing.T) {
+func TestMAVNodMultiReturn(t *testing.T) {
 	type reversed struct {
 		String string
 		Int    *big.Int
@@ -313,7 +313,7 @@ func TestMethodMultiReturn(t *testing.T) {
 		return &slice
 	}
 
-	abi, data, expected := methodMultiReturn(require.New(t))
+	abi, data, expected := mAVNodMultiReturn(require.New(t))
 	bigint := new(big.Int)
 	var testCases = []struct {
 		dest     interface{}
@@ -321,7 +321,7 @@ func TestMethodMultiReturn(t *testing.T) {
 		error    string
 		name     string
 	}{{
-		&methodMultiOutput{},
+		&mAVNodMultiOutput{},
 		&expected,
 		"",
 		"Can unpack into structure",
@@ -367,7 +367,7 @@ func TestMethodMultiReturn(t *testing.T) {
 			require := require.New(t)
 			err := abi.UnpackIntoInterface(tc.dest, "multi", data)
 			if tc.error == "" {
-				require.Nil(err, "Should be able to unpack method outputs.")
+				require.Nil(err, "Should be able to unpack mAVNod outputs.")
 				require.Equal(tc.expected, tc.dest)
 			} else {
 				require.EqualError(err, tc.error)
@@ -410,7 +410,7 @@ func TestMultiReturnWithStringArray(t *testing.T) {
 	temp, _ := big.NewInt(0).SetString("30000000000000000000", 10)
 	ret1, ret1Exp := new([3]*big.Int), [3]*big.Int{big.NewInt(1545304298), big.NewInt(6), temp}
 	ret2, ret2Exp := new(common.Address), common.HexToAddress("ab1257528b3782fb40d7ed5f72e624b744dffb2f")
-	ret3, ret3Exp := new([2]string), [2]string{"Ethereum", "Hello, Ethereum!"}
+	ret3, ret3Exp := new([2]string), [2]string{"Avalanria", "Hello, Avalanria!"}
 	ret4, ret4Exp := new(bool), false
 	if err := abi.UnpackIntoInterface(&[]interface{}{ret1, ret2, ret3, ret4}, "multi", buff.Bytes()); err != nil {
 		t.Fatal(err)
@@ -448,7 +448,7 @@ func TestMultiReturnWithStringSlice(t *testing.T) {
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // output[1] length
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000064")) // output[1][0] value
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000065")) // output[1][1] value
-	ret1, ret1Exp := new([]string), []string{"ethereum", "go-ethereum"}
+	ret1, ret1Exp := new([]string), []string{"AVNereum", "go-AVNereum"}
 	ret2, ret2Exp := new([]*big.Int), []*big.Int{big.NewInt(100), big.NewInt(101)}
 	if err := abi.UnpackIntoInterface(&[]interface{}{ret1, ret2}, "multi", buff.Bytes()); err != nil {
 		t.Fatal(err)
@@ -809,7 +809,7 @@ func TestUnpackTuple(t *testing.T) {
 
 	type T struct {
 		X *big.Int `abi:"x"`
-		Z *big.Int `abi:"y"` // Test whether the abi tag works.
+		Z *big.Int `abi:"y"` // Test whAVNer the abi tag works.
 	}
 
 	type S struct {
@@ -902,7 +902,7 @@ func TestOOMMaliciousInput(t *testing.T) {
 		},
 	}
 	for i, test := range oomTests {
-		def := fmt.Sprintf(`[{ "name" : "method", "type": "function", "outputs": %s}]`, test.def)
+		def := fmt.Sprintf(`[{ "name" : "mAVNod", "type": "function", "outputs": %s}]`, test.def)
 		abi, err := JSON(strings.NewReader(def))
 		if err != nil {
 			t.Fatalf("invalid ABI definition %s: %v", def, err)
@@ -911,7 +911,7 @@ func TestOOMMaliciousInput(t *testing.T) {
 		if err != nil {
 			t.Fatalf("invalid hex: %s" + test.enc)
 		}
-		_, err = abi.Methods["method"].Outputs.UnpackValues(encb)
+		_, err = abi.MAVNods["mAVNod"].Outputs.UnpackValues(encb)
 		if err == nil {
 			t.Fatalf("Expected error on malicious input, test %d", i)
 		}

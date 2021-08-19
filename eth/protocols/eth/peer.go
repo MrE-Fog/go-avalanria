@@ -1,20 +1,20 @@
-// Copyright 2020 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2020 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package AVN
 
 import (
 	"math/big"
@@ -22,10 +22,10 @@ import (
 	"sync"
 
 	mapset "github.com/deckarep/golang-set"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/rlp"
 )
 
 const (
@@ -64,7 +64,7 @@ func max(a, b int) int {
 	return b
 }
 
-// Peer is a collection of relevant information we have about a `eth` peer.
+// Peer is a collection of relevant information we have about a `AVN` peer.
 type Peer struct {
 	id string // Unique ID for the peer, cached
 
@@ -108,7 +108,7 @@ func NewPeer(version uint, p *p2p.Peer, rw p2p.MsgReadWriter, txpool TxPool) *Pe
 	// Start up all the broadcasters
 	go peer.broadcastBlocks()
 	go peer.broadcastTransactions()
-	if version >= ETH65 {
+	if version >= AVN65 {
 		go peer.announceTransactions()
 	}
 	return peer
@@ -126,7 +126,7 @@ func (p *Peer) ID() string {
 	return p.id
 }
 
-// Version retrieves the peer's negoatiated `eth` protocol version.
+// Version retrieves the peer's negoatiated `AVN` protocol version.
 func (p *Peer) Version() uint {
 	return p.version
 }
@@ -149,12 +149,12 @@ func (p *Peer) SetHead(hash common.Hash, td *big.Int) {
 	p.td.Set(td)
 }
 
-// KnownBlock returns whether peer is known to already have a block.
+// KnownBlock returns whAVNer peer is known to already have a block.
 func (p *Peer) KnownBlock(hash common.Hash) bool {
 	return p.knownBlocks.Contains(hash)
 }
 
-// KnownTransaction returns whether peer is known to already have a transaction.
+// KnownTransaction returns whAVNer peer is known to already have a transaction.
 func (p *Peer) KnownTransaction(hash common.Hash) bool {
 	return p.knownTxs.Contains(hash)
 }
@@ -182,7 +182,7 @@ func (p *Peer) markTransaction(hash common.Hash) {
 // SendTransactions sends transactions to the peer and includes the hashes
 // in its transaction hash set for future reference.
 //
-// This method is a helper used by the async transaction sender. Don't call it
+// This mAVNod is a helper used by the async transaction sender. Don't call it
 // directly as the queueing (memory) and transmission (bandwidth) costs should
 // not be managed directly.
 //
@@ -220,7 +220,7 @@ func (p *Peer) AsyncSendTransactions(hashes []common.Hash) {
 // sendPooledTransactionHashes sends transaction hashes to the peer and includes
 // them in its transaction hash set for future reference.
 //
-// This method is a helper used by the async transaction announcer. Don't call it
+// This mAVNod is a helper used by the async transaction announcer. Don't call it
 // directly as the queueing (memory) and transmission (bandwidth) costs should
 // not be managed directly.
 func (p *Peer) sendPooledTransactionHashes(hashes []common.Hash) error {
@@ -255,7 +255,7 @@ func (p *Peer) AsyncSendPooledTransactionHashes(hashes []common.Hash) {
 // SendPooledTransactionsRLP sends requested transactions to the peer and adds the
 // hashes in its transaction hash set for future reference.
 //
-// Note, the method assumes the hashes are correct and correspond to the list of
+// Note, the mAVNod assumes the hashes are correct and correspond to the list of
 // transactions being sent.
 func (p *Peer) SendPooledTransactionsRLP(hashes []common.Hash, txs []rlp.RawValue) error {
 	// Mark all the transactions as known, but ensure we don't overflow our limits
@@ -268,7 +268,7 @@ func (p *Peer) SendPooledTransactionsRLP(hashes []common.Hash, txs []rlp.RawValu
 	return p2p.Send(p.rw, PooledTransactionsMsg, txs) // Not packed into PooledTransactionsPacket to avoid RLP decoding
 }
 
-// ReplyPooledTransactionsRLP is the eth/66 version of SendPooledTransactionsRLP.
+// ReplyPooledTransactionsRLP is the AVN/66 version of SendPooledTransactionsRLP.
 func (p *Peer) ReplyPooledTransactionsRLP(id uint64, hashes []common.Hash, txs []rlp.RawValue) error {
 	// Mark all the transactions as known, but ensure we don't overflow our limits
 	for p.knownTxs.Cardinality() > max(0, maxKnownTxs-len(hashes)) {
@@ -351,7 +351,7 @@ func (p *Peer) SendBlockHeaders(headers []*types.Header) error {
 	return p2p.Send(p.rw, BlockHeadersMsg, BlockHeadersPacket(headers))
 }
 
-// ReplyBlockHeaders is the eth/66 version of SendBlockHeaders.
+// ReplyBlockHeaders is the AVN/66 version of SendBlockHeaders.
 func (p *Peer) ReplyBlockHeaders(id uint64, headers []*types.Header) error {
 	return p2p.Send(p.rw, BlockHeadersMsg, BlockHeadersPacket66{
 		RequestId:          id,
@@ -365,7 +365,7 @@ func (p *Peer) SendBlockBodiesRLP(bodies []rlp.RawValue) error {
 	return p2p.Send(p.rw, BlockBodiesMsg, bodies) // Not packed into BlockBodiesPacket to avoid RLP decoding
 }
 
-// ReplyBlockBodiesRLP is the eth/66 version of SendBlockBodiesRLP.
+// ReplyBlockBodiesRLP is the AVN/66 version of SendBlockBodiesRLP.
 func (p *Peer) ReplyBlockBodiesRLP(id uint64, bodies []rlp.RawValue) error {
 	// Not packed into BlockBodiesPacket to avoid RLP decoding
 	return p2p.Send(p.rw, BlockBodiesMsg, BlockBodiesRLPPacket66{
@@ -380,7 +380,7 @@ func (p *Peer) SendNodeData(data [][]byte) error {
 	return p2p.Send(p.rw, NodeDataMsg, NodeDataPacket(data))
 }
 
-// ReplyNodeData is the eth/66 response to GetNodeData.
+// ReplyNodeData is the AVN/66 response to GetNodeData.
 func (p *Peer) ReplyNodeData(id uint64, data [][]byte) error {
 	return p2p.Send(p.rw, NodeDataMsg, NodeDataPacket66{
 		RequestId:      id,
@@ -394,7 +394,7 @@ func (p *Peer) SendReceiptsRLP(receipts []rlp.RawValue) error {
 	return p2p.Send(p.rw, ReceiptsMsg, receipts) // Not packed into ReceiptsPacket to avoid RLP decoding
 }
 
-// ReplyReceiptsRLP is the eth/66 response to GetReceipts.
+// ReplyReceiptsRLP is the AVN/66 response to GetReceipts.
 func (p *Peer) ReplyReceiptsRLP(id uint64, receipts []rlp.RawValue) error {
 	return p2p.Send(p.rw, ReceiptsMsg, ReceiptsRLPPacket66{
 		RequestId:         id,
@@ -412,7 +412,7 @@ func (p *Peer) RequestOneHeader(hash common.Hash) error {
 		Skip:    uint64(0),
 		Reverse: false,
 	}
-	if p.Version() >= ETH66 {
+	if p.Version() >= AVN66 {
 		id := rand.Uint64()
 
 		requestTracker.Track(p.id, p.version, GetBlockHeadersMsg, BlockHeadersMsg, id)
@@ -434,7 +434,7 @@ func (p *Peer) RequestHeadersByHash(origin common.Hash, amount int, skip int, re
 		Skip:    uint64(skip),
 		Reverse: reverse,
 	}
-	if p.Version() >= ETH66 {
+	if p.Version() >= AVN66 {
 		id := rand.Uint64()
 
 		requestTracker.Track(p.id, p.version, GetBlockHeadersMsg, BlockHeadersMsg, id)
@@ -456,7 +456,7 @@ func (p *Peer) RequestHeadersByNumber(origin uint64, amount int, skip int, rever
 		Skip:    uint64(skip),
 		Reverse: reverse,
 	}
-	if p.Version() >= ETH66 {
+	if p.Version() >= AVN66 {
 		id := rand.Uint64()
 
 		requestTracker.Track(p.id, p.version, GetBlockHeadersMsg, BlockHeadersMsg, id)
@@ -468,7 +468,7 @@ func (p *Peer) RequestHeadersByNumber(origin uint64, amount int, skip int, rever
 	return p2p.Send(p.rw, GetBlockHeadersMsg, &query)
 }
 
-// ExpectRequestHeadersByNumber is a testing method to mirror the recipient side
+// ExpectRequestHeadersByNumber is a testing mAVNod to mirror the recipient side
 // of the RequestHeadersByNumber operation.
 func (p *Peer) ExpectRequestHeadersByNumber(origin uint64, amount int, skip int, reverse bool) error {
 	req := &GetBlockHeadersPacket{
@@ -484,7 +484,7 @@ func (p *Peer) ExpectRequestHeadersByNumber(origin uint64, amount int, skip int,
 // specified.
 func (p *Peer) RequestBodies(hashes []common.Hash) error {
 	p.Log().Debug("Fetching batch of block bodies", "count", len(hashes))
-	if p.Version() >= ETH66 {
+	if p.Version() >= AVN66 {
 		id := rand.Uint64()
 
 		requestTracker.Track(p.id, p.version, GetBlockBodiesMsg, BlockBodiesMsg, id)
@@ -500,7 +500,7 @@ func (p *Peer) RequestBodies(hashes []common.Hash) error {
 // data, corresponding to the specified hashes.
 func (p *Peer) RequestNodeData(hashes []common.Hash) error {
 	p.Log().Debug("Fetching batch of state data", "count", len(hashes))
-	if p.Version() >= ETH66 {
+	if p.Version() >= AVN66 {
 		id := rand.Uint64()
 
 		requestTracker.Track(p.id, p.version, GetNodeDataMsg, NodeDataMsg, id)
@@ -515,7 +515,7 @@ func (p *Peer) RequestNodeData(hashes []common.Hash) error {
 // RequestReceipts fetches a batch of transaction receipts from a remote node.
 func (p *Peer) RequestReceipts(hashes []common.Hash) error {
 	p.Log().Debug("Fetching batch of receipts", "count", len(hashes))
-	if p.Version() >= ETH66 {
+	if p.Version() >= AVN66 {
 		id := rand.Uint64()
 
 		requestTracker.Track(p.id, p.version, GetReceiptsMsg, ReceiptsMsg, id)
@@ -530,7 +530,7 @@ func (p *Peer) RequestReceipts(hashes []common.Hash) error {
 // RequestTxs fetches a batch of transactions from a remote node.
 func (p *Peer) RequestTxs(hashes []common.Hash) error {
 	p.Log().Debug("Fetching batch of transactions", "count", len(hashes))
-	if p.Version() >= ETH66 {
+	if p.Version() >= AVN66 {
 		id := rand.Uint64()
 
 		requestTracker.Track(p.id, p.version, GetPooledTransactionsMsg, PooledTransactionsMsg, id)

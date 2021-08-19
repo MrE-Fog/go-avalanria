@@ -1,11 +1,11 @@
-package prometheus
+package promAVNeus
 
 import (
 	"os"
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/AVNereum/go-AVNereum/metrics"
 )
 
 func TestMain(m *testing.M) {

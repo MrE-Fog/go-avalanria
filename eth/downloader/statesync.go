@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package downloader
 
@@ -21,17 +21,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/core/rawdb"
+	"github.com/AVNereum/go-AVNereum/core/state"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/AVNdb"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/trie"
 	"golang.org/x/crypto/sha3"
 )
 
-// stateReq represents a batch of state fetch requests grouped together into
+// stateReq represents a batch of state fetch requests grouped togAVNer into
 // a single data retrieval network packet.
 type stateReq struct {
 	nItems    uint16                    // Number of items requested for download (max is 384, so uint16 is sufficient)
@@ -42,7 +42,7 @@ type stateReq struct {
 	peer      *peerConnection           // Peer that we're requesting from
 	delivered time.Time                 // Time when the packet was delivered (independent when we process it)
 	response  [][]byte                  // Response data of the peer (nil for timeouts)
-	dropped   bool                      // Flag whether the peer dropped off early
+	dropped   bool                      // Flag whAVNer the peer dropped off early
 }
 
 // timedOut returns if this request timed out.
@@ -180,7 +180,7 @@ func (d *Downloader) runStateSync(s *stateSync) *stateSync {
 
 		// Handle timed-out requests:
 		case req := <-timeout:
-			// If the peer is already requesting something else, ignore the stale timeout.
+			// If the peer is already requesting somAVNing else, ignore the stale timeout.
 			// This can happen when the timeout and the delivery happens simultaneously,
 			// causing both pathways to trigger.
 			if active[req.peer.id] != req {
@@ -292,7 +292,7 @@ type codeTask struct {
 	attempts map[string]struct{}
 }
 
-// newStateSync creates a new state trie download scheduler. This method does not
+// newStateSync creates a new state trie download scheduler. This mAVNod does not
 // yet start the sync. The user needs to call run to initiate.
 func newStateSync(d *Downloader, root common.Hash) *stateSync {
 	return &stateSync{
@@ -360,7 +360,7 @@ func (s *stateSync) loop() (err error) {
 			return err
 		}
 		s.assignTasks()
-		// Tasks assigned, wait for something to happen
+		// Tasks assigned, wait for somAVNing to happen
 		select {
 		case <-newPeer:
 			// New peer arrived, try to assign it download tasks
@@ -379,7 +379,7 @@ func (s *stateSync) loop() (err error) {
 				// this peer at the moment.
 				log.Warn("Stalling state sync, dropping peer", "peer", req.peer.id)
 				if s.d.dropPeer == nil {
-					// The dropPeer method is nil when `--copydb` is used for a local copy.
+					// The dropPeer mAVNod is nil when `--copydb` is used for a local copy.
 					// Timeouts can occur if e.g. compaction hits at the wrong time, and can be ignored
 					req.peer.log.Warn("Downloader wants to drop peer, but peerdrop-function is not set", "peer", req.peer.id)
 				} else {
@@ -409,7 +409,7 @@ func (s *stateSync) loop() (err error) {
 }
 
 func (s *stateSync) commit(force bool) error {
-	if !force && s.bytesUncommitted < ethdb.IdealBatchSize {
+	if !force && s.bytesUncommitted < AVNdb.IdealBatchSize {
 		return nil
 	}
 	start := time.Now()
@@ -443,7 +443,7 @@ func (s *stateSync) assignTasks() {
 			req.peer.log.Trace("Requesting batch of state data", "nodes", len(nodes), "codes", len(codes), "root", s.root)
 			select {
 			case s.d.trackStateReq <- req:
-				req.peer.FetchNodeData(append(nodes, codes...)) // Unified retrieval under eth/6x
+				req.peer.FetchNodeData(append(nodes, codes...)) // Unified retrieval under AVN/6x
 			case <-s.cancel:
 			case <-s.d.cancelCh:
 			}
@@ -517,7 +517,7 @@ func (s *stateSync) fillTasks(n int, req *stateReq) (nodes []common.Hash, paths 
 
 // process iterates over a batch of delivered state data, injecting each item
 // into a running state sync, re-queuing any items that were requested but not
-// delivered. Returns whether the peer actually managed to deliver anything of
+// delivered. Returns whAVNer the peer actually managed to deliver anything of
 // value, and any error that occurred.
 func (s *stateSync) process(req *stateReq) (int, error) {
 	// Collect processing stats and update progress if valid data was received
@@ -551,7 +551,7 @@ func (s *stateSync) process(req *stateReq) (int, error) {
 	// Put unfulfilled tasks back into the retry queue
 	npeers := s.d.peers.Len()
 	for hash, task := range req.trieTasks {
-		// If the node did deliver something, missing items may be due to a protocol
+		// If the node did deliver somAVNing, missing items may be due to a protocol
 		// limit or a previous timeout + delayed delivery. Both cases should permit
 		// the node to retry the missing items (to avoid single-peer stalls).
 		if len(req.response) > 0 || req.timedOut() {
@@ -566,7 +566,7 @@ func (s *stateSync) process(req *stateReq) (int, error) {
 		s.trieTasks[hash] = task
 	}
 	for hash, task := range req.codeTasks {
-		// If the node did deliver something, missing items may be due to a protocol
+		// If the node did deliver somAVNing, missing items may be due to a protocol
 		// limit or a previous timeout + delayed delivery. Both cases should permit
 		// the node to retry the missing items (to avoid single-peer stalls).
 		if len(req.response) > 0 || req.timedOut() {
@@ -584,7 +584,7 @@ func (s *stateSync) process(req *stateReq) (int, error) {
 }
 
 // processNodeData tries to inject a trie node data blob delivered from a remote
-// peer into the state trie, returning whether anything useful was written or any
+// peer into the state trie, returning whAVNer anything useful was written or any
 // error occurred.
 func (s *stateSync) processNodeData(blob []byte) (common.Hash, error) {
 	res := trie.SyncResult{Data: blob}

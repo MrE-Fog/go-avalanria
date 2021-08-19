@@ -1,32 +1,32 @@
-// Copyright 2020 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2020 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package ethtest
+package AVNtest
 
 import (
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/eth/protocols/eth"
-	"github.com/ethereum/go-ethereum/internal/utesting"
-	"github.com/ethereum/go-ethereum/p2p/enode"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
+	"github.com/AVNereum/go-AVNereum/internal/utesting"
+	"github.com/AVNereum/go-AVNereum/p2p/enode"
 )
 
 // Suite represents a structure used to test a node's conformance
-// to the eth protocol.
+// to the AVN protocol.
 type Suite struct {
 	Dest *enode.Node
 
@@ -34,7 +34,7 @@ type Suite struct {
 	fullChain *Chain
 }
 
-// NewSuite creates and returns a new eth-test suite that can
+// NewSuite creates and returns a new AVN-test suite that can
 // be used to test the given node against the given blockchain
 // data.
 func NewSuite(dest *enode.Node, chainfile string, genesisfile string) (*Suite, error) {
@@ -105,7 +105,7 @@ func (s *Suite) EthTests() []utesting.Test {
 
 func (s *Suite) Eth66Tests() []utesting.Test {
 	return []utesting.Test{
-		// only proceed with eth66 test suite if node supports eth 66 protocol
+		// only proceed with AVN66 test suite if node supports AVN 66 protocol
 		{Name: "TestStatus66", Fn: s.TestStatus66},
 		{Name: "TestGetBlockHeaders66", Fn: s.TestGetBlockHeaders66},
 		{Name: "TestSimultaneousRequests66", Fn: s.TestSimultaneousRequests66},
@@ -126,8 +126,8 @@ func (s *Suite) Eth66Tests() []utesting.Test {
 }
 
 var (
-	eth66 = true  // indicates whether suite should negotiate eth66 connection
-	eth65 = false // indicates whether suite should negotiate eth65 connection or below.
+	AVN66 = true  // indicates whAVNer suite should negotiate AVN66 connection
+	AVN65 = false // indicates whAVNer suite should negotiate AVN65 connection or below.
 )
 
 // TestStatus attempts to connect to the given node and exchange
@@ -144,7 +144,7 @@ func (s *Suite) TestStatus(t *utesting.T) {
 }
 
 // TestStatus66 attempts to connect to the given node and exchange
-// a status message with it on the eth66 protocol.
+// a status message with it on the AVN66 protocol.
 func (s *Suite) TestStatus66(t *utesting.T) {
 	conn, err := s.dial66()
 	if err != nil {
@@ -156,7 +156,7 @@ func (s *Suite) TestStatus66(t *utesting.T) {
 	}
 }
 
-// TestGetBlockHeaders tests whether the given node can respond to
+// TestGetBlockHeaders tests whAVNer the given node can respond to
 // a `GetBlockHeaders` request accurately.
 func (s *Suite) TestGetBlockHeaders(t *utesting.T) {
 	conn, err := s.dial()
@@ -169,14 +169,14 @@ func (s *Suite) TestGetBlockHeaders(t *utesting.T) {
 	}
 	// write request
 	req := &GetBlockHeaders{
-		Origin: eth.HashOrNumber{
+		Origin: AVN.HashOrNumber{
 			Hash: s.chain.blocks[1].Hash(),
 		},
 		Amount:  2,
 		Skip:    1,
 		Reverse: false,
 	}
-	headers, err := conn.headersRequest(req, s.chain, eth65, 0)
+	headers, err := conn.headersRequest(req, s.chain, AVN65, 0)
 	if err != nil {
 		t.Fatalf("GetBlockHeaders request failed: %v", err)
 	}
@@ -190,8 +190,8 @@ func (s *Suite) TestGetBlockHeaders(t *utesting.T) {
 	}
 }
 
-// TestGetBlockHeaders66 tests whether the given node can respond to
-// an eth66 `GetBlockHeaders` request and that the response is accurate.
+// TestGetBlockHeaders66 tests whAVNer the given node can respond to
+// an AVN66 `GetBlockHeaders` request and that the response is accurate.
 func (s *Suite) TestGetBlockHeaders66(t *utesting.T) {
 	conn, err := s.dial66()
 	if err != nil {
@@ -203,14 +203,14 @@ func (s *Suite) TestGetBlockHeaders66(t *utesting.T) {
 	}
 	// write request
 	req := &GetBlockHeaders{
-		Origin: eth.HashOrNumber{
+		Origin: AVN.HashOrNumber{
 			Hash: s.chain.blocks[1].Hash(),
 		},
 		Amount:  2,
 		Skip:    1,
 		Reverse: false,
 	}
-	headers, err := conn.headersRequest(req, s.chain, eth66, 33)
+	headers, err := conn.headersRequest(req, s.chain, AVN66, 33)
 	if err != nil {
 		t.Fatalf("could not get block headers: %v", err)
 	}
@@ -238,10 +238,10 @@ func (s *Suite) TestSimultaneousRequests66(t *utesting.T) {
 		t.Fatalf("peering failed: %v", err)
 	}
 	// create two requests
-	req1 := &eth.GetBlockHeadersPacket66{
+	req1 := &AVN.GetBlockHeadersPacket66{
 		RequestId: uint64(111),
-		GetBlockHeadersPacket: &eth.GetBlockHeadersPacket{
-			Origin: eth.HashOrNumber{
+		GetBlockHeadersPacket: &AVN.GetBlockHeadersPacket{
+			Origin: AVN.HashOrNumber{
 				Hash: s.chain.blocks[1].Hash(),
 			},
 			Amount:  2,
@@ -249,10 +249,10 @@ func (s *Suite) TestSimultaneousRequests66(t *utesting.T) {
 			Reverse: false,
 		},
 	}
-	req2 := &eth.GetBlockHeadersPacket66{
+	req2 := &AVN.GetBlockHeadersPacket66{
 		RequestId: uint64(222),
-		GetBlockHeadersPacket: &eth.GetBlockHeadersPacket{
-			Origin: eth.HashOrNumber{
+		GetBlockHeadersPacket: &AVN.GetBlockHeadersPacket{
+			Origin: AVN.HashOrNumber{
 				Hash: s.chain.blocks[1].Hash(),
 			},
 			Amount:  4,
@@ -309,19 +309,19 @@ func (s *Suite) TestSameRequestID66(t *utesting.T) {
 	}
 	// create requests
 	reqID := uint64(1234)
-	request1 := &eth.GetBlockHeadersPacket66{
+	request1 := &AVN.GetBlockHeadersPacket66{
 		RequestId: reqID,
-		GetBlockHeadersPacket: &eth.GetBlockHeadersPacket{
-			Origin: eth.HashOrNumber{
+		GetBlockHeadersPacket: &AVN.GetBlockHeadersPacket{
+			Origin: AVN.HashOrNumber{
 				Number: 1,
 			},
 			Amount: 2,
 		},
 	}
-	request2 := &eth.GetBlockHeadersPacket66{
+	request2 := &AVN.GetBlockHeadersPacket66{
 		RequestId: reqID,
-		GetBlockHeadersPacket: &eth.GetBlockHeadersPacket{
-			Origin: eth.HashOrNumber{
+		GetBlockHeadersPacket: &AVN.GetBlockHeadersPacket{
+			Origin: AVN.HashOrNumber{
 				Number: 33,
 			},
 			Amount: 2,
@@ -374,12 +374,12 @@ func (s *Suite) TestZeroRequestID66(t *utesting.T) {
 		t.Fatalf("peering failed: %v", err)
 	}
 	req := &GetBlockHeaders{
-		Origin: eth.HashOrNumber{
+		Origin: AVN.HashOrNumber{
 			Number: 0,
 		},
 		Amount: 2,
 	}
-	headers, err := conn.headersRequest(req, s.chain, eth66, 0)
+	headers, err := conn.headersRequest(req, s.chain, AVN66, 0)
 	if err != nil {
 		t.Fatalf("failed to get block headers: %v", err)
 	}
@@ -392,7 +392,7 @@ func (s *Suite) TestZeroRequestID66(t *utesting.T) {
 	}
 }
 
-// TestGetBlockBodies tests whether the given node can respond to
+// TestGetBlockBodies tests whAVNer the given node can respond to
 // a `GetBlockBodies` request and that the response is accurate.
 func (s *Suite) TestGetBlockBodies(t *utesting.T) {
 	conn, err := s.dial()
@@ -424,9 +424,9 @@ func (s *Suite) TestGetBlockBodies(t *utesting.T) {
 	}
 }
 
-// TestGetBlockBodies66 tests whether the given node can respond to
+// TestGetBlockBodies66 tests whAVNer the given node can respond to
 // a `GetBlockBodies` request and that the response is accurate over
-// the eth66 protocol.
+// the AVN66 protocol.
 func (s *Suite) TestGetBlockBodies66(t *utesting.T) {
 	conn, err := s.dial66()
 	if err != nil {
@@ -437,9 +437,9 @@ func (s *Suite) TestGetBlockBodies66(t *utesting.T) {
 		t.Fatalf("peering failed: %v", err)
 	}
 	// create block bodies request
-	req := &eth.GetBlockBodiesPacket66{
+	req := &AVN.GetBlockBodiesPacket66{
 		RequestId: uint64(55),
-		GetBlockBodiesPacket: eth.GetBlockBodiesPacket{
+		GetBlockBodiesPacket: AVN.GetBlockBodiesPacket{
 			s.chain.blocks[54].Hash(),
 			s.chain.blocks[75].Hash(),
 		},
@@ -460,18 +460,18 @@ func (s *Suite) TestGetBlockBodies66(t *utesting.T) {
 	}
 }
 
-// TestBroadcast tests whether a block announcement is correctly
+// TestBroadcast tests whAVNer a block announcement is correctly
 // propagated to the given node's peer(s).
 func (s *Suite) TestBroadcast(t *utesting.T) {
-	if err := s.sendNextBlock(eth65); err != nil {
+	if err := s.sendNextBlock(AVN65); err != nil {
 		t.Fatalf("block broadcast failed: %v", err)
 	}
 }
 
-// TestBroadcast66 tests whether a block announcement is correctly
-// propagated to the given node's peer(s) on the eth66 protocol.
+// TestBroadcast66 tests whAVNer a block announcement is correctly
+// propagated to the given node's peer(s) on the AVN66 protocol.
 func (s *Suite) TestBroadcast66(t *utesting.T) {
-	if err := s.sendNextBlock(eth66); err != nil {
+	if err := s.sendNextBlock(AVN66); err != nil {
 		t.Fatalf("block broadcast failed: %v", err)
 	}
 }
@@ -517,13 +517,13 @@ func (s *Suite) TestLargeAnnounce(t *utesting.T) {
 		conn.Close()
 	}
 	// Test the last block as a valid block
-	if err := s.sendNextBlock(eth65); err != nil {
+	if err := s.sendNextBlock(AVN65); err != nil {
 		t.Fatalf("failed to broadcast next block: %v", err)
 	}
 }
 
 // TestLargeAnnounce66 tests the announcement mechanism with a large
-// block over the eth66 protocol.
+// block over the AVN66 protocol.
 func (s *Suite) TestLargeAnnounce66(t *utesting.T) {
 	nextBlock := len(s.chain.blocks)
 	blocks := []*NewBlock{
@@ -564,22 +564,22 @@ func (s *Suite) TestLargeAnnounce66(t *utesting.T) {
 		conn.Close()
 	}
 	// Test the last block as a valid block
-	if err := s.sendNextBlock(eth66); err != nil {
+	if err := s.sendNextBlock(AVN66); err != nil {
 		t.Fatalf("failed to broadcast next block: %v", err)
 	}
 }
 
 // TestOldAnnounce tests the announcement mechanism with an old block.
 func (s *Suite) TestOldAnnounce(t *utesting.T) {
-	if err := s.oldAnnounce(eth65); err != nil {
+	if err := s.oldAnnounce(AVN65); err != nil {
 		t.Fatal(err)
 	}
 }
 
 // TestOldAnnounce66 tests the announcement mechanism with an old block,
-// over the eth66 protocol.
+// over the AVN66 protocol.
 func (s *Suite) TestOldAnnounce66(t *utesting.T) {
-	if err := s.oldAnnounce(eth66); err != nil {
+	if err := s.oldAnnounce(AVN66); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -587,7 +587,7 @@ func (s *Suite) TestOldAnnounce66(t *utesting.T) {
 // TestBlockHashAnnounce sends a new block hash announcement and expects
 // the node to perform a `GetBlockHeaders` request.
 func (s *Suite) TestBlockHashAnnounce(t *utesting.T) {
-	if err := s.hashAnnounce(eth65); err != nil {
+	if err := s.hashAnnounce(AVN65); err != nil {
 		t.Fatalf("block hash announcement failed: %v", err)
 	}
 }
@@ -595,21 +595,21 @@ func (s *Suite) TestBlockHashAnnounce(t *utesting.T) {
 // TestBlockHashAnnounce66 sends a new block hash announcement and expects
 // the node to perform a `GetBlockHeaders` request.
 func (s *Suite) TestBlockHashAnnounce66(t *utesting.T) {
-	if err := s.hashAnnounce(eth66); err != nil {
+	if err := s.hashAnnounce(AVN66); err != nil {
 		t.Fatalf("block hash announcement failed: %v", err)
 	}
 }
 
 // TestMaliciousHandshake tries to send malicious data during the handshake.
 func (s *Suite) TestMaliciousHandshake(t *utesting.T) {
-	if err := s.maliciousHandshakes(t, eth65); err != nil {
+	if err := s.maliciousHandshakes(t, AVN65); err != nil {
 		t.Fatal(err)
 	}
 }
 
 // TestMaliciousHandshake66 tries to send malicious data during the handshake.
 func (s *Suite) TestMaliciousHandshake66(t *utesting.T) {
-	if err := s.maliciousHandshakes(t, eth66); err != nil {
+	if err := s.maliciousHandshakes(t, AVN66); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -628,7 +628,7 @@ func (s *Suite) TestMaliciousStatus(t *utesting.T) {
 }
 
 // TestMaliciousStatus66 sends a status package with a large total
-// difficulty over the eth66 protocol.
+// difficulty over the AVN66 protocol.
 func (s *Suite) TestMaliciousStatus66(t *utesting.T) {
 	conn, err := s.dial66()
 	if err != nil {
@@ -644,7 +644,7 @@ func (s *Suite) TestMaliciousStatus66(t *utesting.T) {
 // TestTransaction sends a valid transaction to the node and
 // checks if the transaction gets propagated.
 func (s *Suite) TestTransaction(t *utesting.T) {
-	if err := s.sendSuccessfulTxs(t, eth65); err != nil {
+	if err := s.sendSuccessfulTxs(t, AVN65); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -652,33 +652,33 @@ func (s *Suite) TestTransaction(t *utesting.T) {
 // TestTransaction66 sends a valid transaction to the node and
 // checks if the transaction gets propagated.
 func (s *Suite) TestTransaction66(t *utesting.T) {
-	if err := s.sendSuccessfulTxs(t, eth66); err != nil {
+	if err := s.sendSuccessfulTxs(t, AVN66); err != nil {
 		t.Fatal(err)
 	}
 }
 
-// TestMaliciousTx sends several invalid transactions and tests whether
+// TestMaliciousTx sends several invalid transactions and tests whAVNer
 // the node will propagate them.
 func (s *Suite) TestMaliciousTx(t *utesting.T) {
-	if err := s.sendMaliciousTxs(t, eth65); err != nil {
+	if err := s.sendMaliciousTxs(t, AVN65); err != nil {
 		t.Fatal(err)
 	}
 }
 
-// TestMaliciousTx66 sends several invalid transactions and tests whether
+// TestMaliciousTx66 sends several invalid transactions and tests whAVNer
 // the node will propagate them.
 func (s *Suite) TestMaliciousTx66(t *utesting.T) {
-	if err := s.sendMaliciousTxs(t, eth66); err != nil {
+	if err := s.sendMaliciousTxs(t, AVN66); err != nil {
 		t.Fatal(err)
 	}
 }
 
-// TestLargeTxRequest66 tests whether a node can fulfill a large GetPooledTransactions
+// TestLargeTxRequest66 tests whAVNer a node can fulfill a large GetPooledTransactions
 // request.
 func (s *Suite) TestLargeTxRequest66(t *utesting.T) {
 	// send the next block to ensure the node is no longer syncing and
 	// is able to accept txs
-	if err := s.sendNextBlock(eth66); err != nil {
+	if err := s.sendNextBlock(AVN66); err != nil {
 		t.Fatalf("failed to send next block: %v", err)
 	}
 	// send 2000 transactions to the node
@@ -704,7 +704,7 @@ func (s *Suite) TestLargeTxRequest66(t *utesting.T) {
 	for _, hash := range hashMap {
 		hashes = append(hashes, hash)
 	}
-	getTxReq := &eth.GetPooledTransactionsPacket66{
+	getTxReq := &AVN.GetPooledTransactionsPacket66{
 		RequestId:                   1234,
 		GetPooledTransactionsPacket: hashes,
 	}
@@ -724,12 +724,12 @@ func (s *Suite) TestLargeTxRequest66(t *utesting.T) {
 	}
 }
 
-// TestNewPooledTxs_66 tests whether a node will do a GetPooledTransactions
+// TestNewPooledTxs_66 tests whAVNer a node will do a GetPooledTransactions
 // request upon receiving a NewPooledTransactionHashes announcement.
 func (s *Suite) TestNewPooledTxs66(t *utesting.T) {
 	// send the next block to ensure the node is no longer syncing and
 	// is able to accept txs
-	if err := s.sendNextBlock(eth66); err != nil {
+	if err := s.sendNextBlock(AVN66); err != nil {
 		t.Fatalf("failed to send next block: %v", err)
 	}
 

@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2019 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package backends
 
@@ -27,14 +27,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/AVNereum/go-AVNereum"
+	"github.com/AVNereum/go-AVNereum/accounts/abi"
+	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/params"
 )
 
 func TestSimulatedBackend(t *testing.T) {
@@ -54,8 +54,8 @@ func TestSimulatedBackend(t *testing.T) {
 	if isPending {
 		t.Fatal("transaction should not be pending")
 	}
-	if err != ethereum.NotFound {
-		t.Fatalf("err should be `ethereum.NotFound` but received %v", err)
+	if err != AVNereum.NotFound {
+		t.Fatalf("err should be `AVNereum.NotFound` but received %v", err)
 	}
 
 	// generate a transaction and confirm you can retrieve it
@@ -439,12 +439,12 @@ func TestEstimateGas(t *testing.T) {
 
 	var cases = []struct {
 		name        string
-		message     ethereum.CallMsg
+		message     AVNereum.CallMsg
 		expect      uint64
 		expectError error
 		expectData  interface{}
 	}{
-		{"plain transfer(valid)", ethereum.CallMsg{
+		{"plain transfer(valid)", AVNereum.CallMsg{
 			From:     addr,
 			To:       &addr,
 			Gas:      0,
@@ -453,7 +453,7 @@ func TestEstimateGas(t *testing.T) {
 			Data:     nil,
 		}, params.TxGas, nil, nil},
 
-		{"plain transfer(invalid)", ethereum.CallMsg{
+		{"plain transfer(invalid)", AVNereum.CallMsg{
 			From:     addr,
 			To:       &contractAddr,
 			Gas:      0,
@@ -462,7 +462,7 @@ func TestEstimateGas(t *testing.T) {
 			Data:     nil,
 		}, 0, errors.New("execution reverted"), nil},
 
-		{"Revert", ethereum.CallMsg{
+		{"Revert", AVNereum.CallMsg{
 			From:     addr,
 			To:       &contractAddr,
 			Gas:      0,
@@ -471,7 +471,7 @@ func TestEstimateGas(t *testing.T) {
 			Data:     common.Hex2Bytes("d8b98391"),
 		}, 0, errors.New("execution reverted: revert reason"), "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d72657665727420726561736f6e00000000000000000000000000000000000000"},
 
-		{"PureRevert", ethereum.CallMsg{
+		{"PureRevert", AVNereum.CallMsg{
 			From:     addr,
 			To:       &contractAddr,
 			Gas:      0,
@@ -480,7 +480,7 @@ func TestEstimateGas(t *testing.T) {
 			Data:     common.Hex2Bytes("aa8b1d30"),
 		}, 0, errors.New("execution reverted"), nil},
 
-		{"OOG", ethereum.CallMsg{
+		{"OOG", AVNereum.CallMsg{
 			From:     addr,
 			To:       &contractAddr,
 			Gas:      100000,
@@ -489,7 +489,7 @@ func TestEstimateGas(t *testing.T) {
 			Data:     common.Hex2Bytes("50f6fe34"),
 		}, 0, errors.New("gas required exceeds allowance (100000)"), nil},
 
-		{"Assert", ethereum.CallMsg{
+		{"Assert", AVNereum.CallMsg{
 			From:     addr,
 			To:       &contractAddr,
 			Gas:      100000,
@@ -498,7 +498,7 @@ func TestEstimateGas(t *testing.T) {
 			Data:     common.Hex2Bytes("b9b046f9"),
 		}, 0, errors.New("invalid opcode: opcode 0xfe not defined"), nil},
 
-		{"Valid", ethereum.CallMsg{
+		{"Valid", AVNereum.CallMsg{
 			From:     addr,
 			To:       &contractAddr,
 			Gas:      100000,
@@ -541,11 +541,11 @@ func TestEstimateGasWithPrice(t *testing.T) {
 	recipient := common.HexToAddress("deadbeef")
 	var cases = []struct {
 		name        string
-		message     ethereum.CallMsg
+		message     AVNereum.CallMsg
 		expect      uint64
 		expectError error
 	}{
-		{"EstimateWithoutPrice", ethereum.CallMsg{
+		{"EstimateWithoutPrice", AVNereum.CallMsg{
 			From:     addr,
 			To:       &recipient,
 			Gas:      0,
@@ -554,7 +554,7 @@ func TestEstimateGasWithPrice(t *testing.T) {
 			Data:     nil,
 		}, 21000, nil},
 
-		{"EstimateWithPrice", ethereum.CallMsg{
+		{"EstimateWithPrice", AVNereum.CallMsg{
 			From:     addr,
 			To:       &recipient,
 			Gas:      0,
@@ -563,43 +563,43 @@ func TestEstimateGasWithPrice(t *testing.T) {
 			Data:     nil,
 		}, 21000, nil},
 
-		{"EstimateWithVeryHighPrice", ethereum.CallMsg{
+		{"EstimateWithVeryHighPrice", AVNereum.CallMsg{
 			From:     addr,
 			To:       &recipient,
 			Gas:      0,
-			GasPrice: big.NewInt(1e14), // gascost = 2.1ether
-			Value:    big.NewInt(1e17), // the remaining balance for fee is 2.1ether
+			GasPrice: big.NewInt(1e14), // gascost = 2.1AVNer
+			Value:    big.NewInt(1e17), // the remaining balance for fee is 2.1AVNer
 			Data:     nil,
 		}, 21000, nil},
 
-		{"EstimateWithSuperhighPrice", ethereum.CallMsg{
+		{"EstimateWithSuperhighPrice", AVNereum.CallMsg{
 			From:     addr,
 			To:       &recipient,
 			Gas:      0,
-			GasPrice: big.NewInt(2e14), // gascost = 4.2ether
+			GasPrice: big.NewInt(2e14), // gascost = 4.2AVNer
 			Value:    big.NewInt(100000000000),
 			Data:     nil,
-		}, 21000, errors.New("gas required exceeds allowance (10999)")}, // 10999=(2.2ether-1000wei)/(2e14)
+		}, 21000, errors.New("gas required exceeds allowance (10999)")}, // 10999=(2.2AVNer-1000wei)/(2e14)
 
-		{"EstimateEIP1559WithHighFees", ethereum.CallMsg{
+		{"EstimateEIP1559WithHighFees", AVNereum.CallMsg{
 			From:      addr,
 			To:        &addr,
 			Gas:       0,
-			GasFeeCap: big.NewInt(1e14), // maxgascost = 2.1ether
+			GasFeeCap: big.NewInt(1e14), // maxgascost = 2.1AVNer
 			GasTipCap: big.NewInt(1),
-			Value:     big.NewInt(1e17), // the remaining balance for fee is 2.1ether
+			Value:     big.NewInt(1e17), // the remaining balance for fee is 2.1AVNer
 			Data:      nil,
 		}, params.TxGas, nil},
 
-		{"EstimateEIP1559WithSuperHighFees", ethereum.CallMsg{
+		{"EstimateEIP1559WithSuperHighFees", AVNereum.CallMsg{
 			From:      addr,
 			To:        &addr,
 			Gas:       0,
-			GasFeeCap: big.NewInt(1e14), // maxgascost = 2.1ether
+			GasFeeCap: big.NewInt(1e14), // maxgascost = 2.1AVNer
 			GasTipCap: big.NewInt(1),
-			Value:     big.NewInt(1e17 + 1), // the remaining balance for fee is 2.1ether
+			Value:     big.NewInt(1e17 + 1), // the remaining balance for fee is 2.1AVNer
 			Data:      nil,
-		}, params.TxGas, errors.New("gas required exceeds allowance (20999)")}, // 20999=(2.2ether-0.1ether-1wei)/(1e14)
+		}, params.TxGas, errors.New("gas required exceeds allowance (20999)")}, // 20999=(2.2AVNer-0.1AVNer-1wei)/(1e14)
 	}
 	for i, c := range cases {
 		got, err := sim.EstimateGas(context.Background(), c.message)
@@ -1018,13 +1018,13 @@ func TestPendingAndCallContract(t *testing.T) {
 	}
 
 	// make sure you can call the contract in pending state
-	res, err := sim.PendingCallContract(bgCtx, ethereum.CallMsg{
+	res, err := sim.PendingCallContract(bgCtx, AVNereum.CallMsg{
 		From: testAddr,
 		To:   &addr,
 		Data: input,
 	})
 	if err != nil {
-		t.Errorf("could not call receive method on contract: %v", err)
+		t.Errorf("could not call receive mAVNod on contract: %v", err)
 	}
 	if len(res) == 0 {
 		t.Errorf("result of contract call was empty: %v", res)
@@ -1038,13 +1038,13 @@ func TestPendingAndCallContract(t *testing.T) {
 	sim.Commit()
 
 	// make sure you can call the contract
-	res, err = sim.CallContract(bgCtx, ethereum.CallMsg{
+	res, err = sim.CallContract(bgCtx, AVNereum.CallMsg{
 		From: testAddr,
 		To:   &addr,
 		Data: input,
 	}, nil)
 	if err != nil {
-		t.Errorf("could not call receive method on contract: %v", err)
+		t.Errorf("could not call receive mAVNod on contract: %v", err)
 	}
 	if len(res) == 0 {
 		t.Errorf("result of contract call was empty: %v", res)
@@ -1071,7 +1071,7 @@ contract Reverter {
     }
     function noRevert() public pure {
         assembly {
-            // Assembles something that looks like require(false, "some error") but is not reverted
+            // Assembles somAVNing that looks like require(false, "some error") but is not reverted
             mstore(0x0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
             mstore(0x4, 0x0000000000000000000000000000000000000000000000000000000000000020)
             mstore(0x24, 0x000000000000000000000000000000000000000000000000000000000000000a)
@@ -1106,14 +1106,14 @@ func TestCallContractRevert(t *testing.T) {
 
 	call := make([]func([]byte) ([]byte, error), 2)
 	call[0] = func(input []byte) ([]byte, error) {
-		return sim.PendingCallContract(bgCtx, ethereum.CallMsg{
+		return sim.PendingCallContract(bgCtx, AVNereum.CallMsg{
 			From: testAddr,
 			To:   &addr,
 			Data: input,
 		})
 	}
 	call[1] = func(input []byte) ([]byte, error) {
-		return sim.CallContract(bgCtx, ethereum.CallMsg{
+		return sim.CallContract(bgCtx, AVNereum.CallMsg{
 			From: testAddr,
 			To:   &addr,
 			Data: input,

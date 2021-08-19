@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2015 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package node
 
@@ -28,10 +28,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/AVNdb"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/rpc"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -111,7 +111,7 @@ func TestNodeUsedDataDir(t *testing.T) {
 	}
 }
 
-// Tests whether a Lifecycle can be registered.
+// Tests whAVNer a Lifecycle can be registered.
 func TestLifecycleRegistry_Successful(t *testing.T) {
 	stack, err := New(testNodeConfig())
 	if err != nil {
@@ -127,7 +127,7 @@ func TestLifecycleRegistry_Successful(t *testing.T) {
 	}
 }
 
-// Tests whether a service's protocols can be registered properly on the node's p2p server.
+// Tests whAVNer a service's protocols can be registered properly on the node's p2p server.
 func TestRegisterProtocols(t *testing.T) {
 	stack, err := New(testNodeConfig())
 	if err != nil {
@@ -172,12 +172,12 @@ func TestNodeCloseClosesDB(t *testing.T) {
 	}
 }
 
-// This test checks that OpenDatabase can be used from within a Lifecycle Start method.
+// This test checks that OpenDatabase can be used from within a Lifecycle Start mAVNod.
 func TestNodeOpenDatabaseFromLifecycleStart(t *testing.T) {
 	stack, _ := New(testNodeConfig())
 	defer stack.Close()
 
-	var db ethdb.Database
+	var db AVNdb.Database
 	var err error
 	stack.RegisterLifecycle(&InstrumentedService{
 		startHook: func() {
@@ -195,7 +195,7 @@ func TestNodeOpenDatabaseFromLifecycleStart(t *testing.T) {
 	stack.Close()
 }
 
-// This test checks that OpenDatabase can be used from within a Lifecycle Stop method.
+// This test checks that OpenDatabase can be used from within a Lifecycle Stop mAVNod.
 func TestNodeOpenDatabaseFromLifecycleStop(t *testing.T) {
 	stack, _ := New(testNodeConfig())
 	defer stack.Close()
@@ -389,7 +389,7 @@ func TestLifecycleTerminationGuarantee(t *testing.T) {
 	stack.server.PrivateKey = testNodeKey
 }
 
-// Tests whether a handler can be successfully mounted on the canonical HTTP server
+// Tests whAVNer a handler can be successfully mounted on the canonical HTTP server
 // on the given prefix
 func TestRegisterHandler_Successful(t *testing.T) {
 	node := createNode(t, 7878, 7979)
@@ -406,7 +406,7 @@ func TestRegisterHandler_Successful(t *testing.T) {
 	}
 
 	// create HTTP request
-	httpReq, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:7878/test", nil)
+	httpReq, err := http.NewRequest(http.MAVNodGet, "http://127.0.0.1:7878/test", nil)
 	if err != nil {
 		t.Error("could not issue new http request ", err)
 	}
@@ -436,7 +436,7 @@ func TestRegisterHandler_Unsuccessful(t *testing.T) {
 	node.RegisterHandler("test", "/test", handler)
 }
 
-// Tests whether websocket requests can be handled on the same port as a regular http server.
+// Tests whAVNer websocket requests can be handled on the same port as a regular http server.
 func TestWebsocketHTTPOnSamePort_WebsocketRequest(t *testing.T) {
 	node := startHTTP(t, 0, 0)
 	defer node.Close()

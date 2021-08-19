@@ -1,20 +1,20 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package ethash
+package AVNash
 
 import (
 	"encoding/json"
@@ -26,13 +26,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/internal/testlog"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/internal/testlog"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
-// Tests whether remote HTTP servers are correctly notified of new work.
+// Tests whAVNer remote HTTP servers are correctly notified of new work.
 func TestRemoteNotify(t *testing.T) {
 	// Start a simple web server to capture notifications.
 	sink := make(chan [3]string)
@@ -49,18 +49,18 @@ func TestRemoteNotify(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Create the custom ethash engine.
-	ethash := NewTester([]string{server.URL}, false)
-	defer ethash.Close()
+	// Create the custom AVNash engine.
+	AVNash := NewTester([]string{server.URL}, false)
+	defer AVNash.Close()
 
 	// Stream a work task and ensure the notification bubbles out.
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 	block := types.NewBlockWithHeader(header)
 
-	ethash.Seal(nil, block, nil, nil)
+	AVNash.Seal(nil, block, nil, nil)
 	select {
 	case work := <-sink:
-		if want := ethash.SealHash(header).Hex(); work[0] != want {
+		if want := AVNash.SealHash(header).Hex(); work[0] != want {
 			t.Errorf("work packet hash mismatch: have %s, want %s", work[0], want)
 		}
 		if want := common.BytesToHash(SeedHash(header.Number.Uint64())).Hex(); work[1] != want {
@@ -75,7 +75,7 @@ func TestRemoteNotify(t *testing.T) {
 	}
 }
 
-// Tests whether remote HTTP servers are correctly notified of new work. (Full pending block body / --miner.notify.full)
+// Tests whAVNer remote HTTP servers are correctly notified of new work. (Full pending block body / --miner.notify.full)
 func TestRemoteNotifyFull(t *testing.T) {
 	// Start a simple web server to capture notifications.
 	sink := make(chan map[string]interface{})
@@ -92,20 +92,20 @@ func TestRemoteNotifyFull(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Create the custom ethash engine.
+	// Create the custom AVNash engine.
 	config := Config{
 		PowMode:    ModeTest,
 		NotifyFull: true,
 		Log:        testlog.Logger(t, log.LvlWarn),
 	}
-	ethash := New(config, []string{server.URL}, false)
-	defer ethash.Close()
+	AVNash := New(config, []string{server.URL}, false)
+	defer AVNash.Close()
 
 	// Stream a work task and ensure the notification bubbles out.
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 	block := types.NewBlockWithHeader(header)
 
-	ethash.Seal(nil, block, nil, nil)
+	AVNash.Seal(nil, block, nil, nil)
 	select {
 	case work := <-sink:
 		if want := "0x" + strconv.FormatUint(header.Number.Uint64(), 16); work["number"] != want {
@@ -137,10 +137,10 @@ func TestRemoteMultiNotify(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Create the custom ethash engine.
-	ethash := NewTester([]string{server.URL}, false)
-	ethash.config.Log = testlog.Logger(t, log.LvlWarn)
-	defer ethash.Close()
+	// Create the custom AVNash engine.
+	AVNash := NewTester([]string{server.URL}, false)
+	AVNash.config.Log = testlog.Logger(t, log.LvlWarn)
+	defer AVNash.Close()
 
 	// Provide a results reader.
 	// Otherwise the unread results will be logged asynchronously
@@ -151,7 +151,7 @@ func TestRemoteMultiNotify(t *testing.T) {
 	for i := 0; i < cap(sink); i++ {
 		header := &types.Header{Number: big.NewInt(int64(i)), Difficulty: big.NewInt(100)}
 		block := types.NewBlockWithHeader(header)
-		ethash.Seal(nil, block, results, nil)
+		AVNash.Seal(nil, block, results, nil)
 	}
 
 	for i := 0; i < cap(sink); i++ {
@@ -182,14 +182,14 @@ func TestRemoteMultiNotifyFull(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Create the custom ethash engine.
+	// Create the custom AVNash engine.
 	config := Config{
 		PowMode:    ModeTest,
 		NotifyFull: true,
 		Log:        testlog.Logger(t, log.LvlWarn),
 	}
-	ethash := New(config, []string{server.URL}, false)
-	defer ethash.Close()
+	AVNash := New(config, []string{server.URL}, false)
+	defer AVNash.Close()
 
 	// Provide a results reader.
 	// Otherwise the unread results will be logged asynchronously
@@ -200,7 +200,7 @@ func TestRemoteMultiNotifyFull(t *testing.T) {
 	for i := 0; i < cap(sink); i++ {
 		header := &types.Header{Number: big.NewInt(int64(i)), Difficulty: big.NewInt(100)}
 		block := types.NewBlockWithHeader(header)
-		ethash.Seal(nil, block, results, nil)
+		AVNash.Seal(nil, block, results, nil)
 	}
 
 	for i := 0; i < cap(sink); i++ {
@@ -213,11 +213,11 @@ func TestRemoteMultiNotifyFull(t *testing.T) {
 	}
 }
 
-// Tests whether stale solutions are correctly processed.
+// Tests whAVNer stale solutions are correctly processed.
 func TestStaleSubmission(t *testing.T) {
-	ethash := NewTester(nil, true)
-	defer ethash.Close()
-	api := &API{ethash}
+	AVNash := NewTester(nil, true)
+	defer AVNash.Close()
+	api := &API{AVNash}
 
 	fakeNonce, fakeDigest := types.BlockNonce{0x01, 0x02, 0x03}, common.HexToHash("deadbeef")
 
@@ -266,9 +266,9 @@ func TestStaleSubmission(t *testing.T) {
 
 	for id, c := range testcases {
 		for _, h := range c.headers {
-			ethash.Seal(nil, types.NewBlockWithHeader(h), results, nil)
+			AVNash.Seal(nil, types.NewBlockWithHeader(h), results, nil)
 		}
-		if res := api.SubmitWork(fakeNonce, ethash.SealHash(c.headers[c.submitIndex]), fakeDigest); res != c.submitRes {
+		if res := api.SubmitWork(fakeNonce, AVNash.SealHash(c.headers[c.submitIndex]), fakeDigest); res != c.submitRes {
 			t.Errorf("case %d submit result mismatch, want %t, get %t", id+1, c.submitRes, res)
 		}
 		if !c.submitRes {
@@ -292,7 +292,7 @@ func TestStaleSubmission(t *testing.T) {
 				t.Errorf("case %d block parent hash mismatch, want %s, get %s", id+1, c.headers[c.submitIndex].ParentHash.Hex(), res.Header().ParentHash.Hex())
 			}
 		case <-time.NewTimer(time.Second).C:
-			t.Errorf("case %d fetch ethash result timeout", id+1)
+			t.Errorf("case %d fetch AVNash result timeout", id+1)
 		}
 	}
 }

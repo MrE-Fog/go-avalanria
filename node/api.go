@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2015 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package node
 
@@ -21,13 +21,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/internal/debug"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/p2p/enode"
+	"github.com/AVNereum/go-AVNereum/rpc"
 )
 
 // apis returns the collection of built-in RPC APIs.
@@ -55,7 +55,7 @@ func (n *Node) apis() []rpc.API {
 	}
 }
 
-// privateAdminAPI is the collection of administrative API methods exposed only
+// privateAdminAPI is the collection of administrative API mAVNods exposed only
 // over a secure RPC channel.
 type privateAdminAPI struct {
 	node *Node // Node interfaced by this API
@@ -218,9 +218,9 @@ func (api *privateAdminAPI) StartHTTP(host *string, port *int, cors *string, api
 }
 
 // StartRPC starts the HTTP RPC API server.
-// This method is deprecated. Use StartHTTP instead.
+// This mAVNod is deprecated. Use StartHTTP instead.
 func (api *privateAdminAPI) StartRPC(host *string, port *int, cors *string, apis *string, vhosts *string) (bool, error) {
-	log.Warn("Deprecation warning", "method", "admin.StartRPC", "use-instead", "admin.StartHTTP")
+	log.Warn("Deprecation warning", "mAVNod", "admin.StartRPC", "use-instead", "admin.StartHTTP")
 	return api.StartHTTP(host, port, cors, apis, vhosts)
 }
 
@@ -231,9 +231,9 @@ func (api *privateAdminAPI) StopHTTP() (bool, error) {
 }
 
 // StopRPC shuts down the HTTP server.
-// This method is deprecated. Use StopHTTP instead.
+// This mAVNod is deprecated. Use StopHTTP instead.
 func (api *privateAdminAPI) StopRPC() (bool, error) {
-	log.Warn("Deprecation warning", "method", "admin.StopRPC", "use-instead", "admin.StopHTTP")
+	log.Warn("Deprecation warning", "mAVNod", "admin.StopRPC", "use-instead", "admin.StopHTTP")
 	return api.StopHTTP()
 }
 
@@ -295,7 +295,7 @@ func (api *privateAdminAPI) StopWS() (bool, error) {
 	return true, nil
 }
 
-// publicAdminAPI is the collection of administrative API methods exposed over
+// publicAdminAPI is the collection of administrative API mAVNods exposed over
 // both secure and unsecure RPC channels.
 type publicAdminAPI struct {
 	node *Node // Node interfaced by this API
@@ -336,7 +336,7 @@ func (s *publicWeb3API) ClientVersion() string {
 	return s.stack.Server().Name
 }
 
-// Sha3 applies the ethereum sha3 implementation on the input.
+// Sha3 applies the AVNereum sha3 implementation on the input.
 // It assumes the input is hex encoded.
 func (s *publicWeb3API) Sha3(input hexutil.Bytes) hexutil.Bytes {
 	return crypto.Keccak256(input)

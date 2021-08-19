@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2015 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -48,7 +48,7 @@ type DataError interface {
 // Error types defined below are the built-in JSON-RPC errors.
 
 var (
-	_ Error = new(methodNotFoundError)
+	_ Error = new(mAVNodNotFoundError)
 	_ Error = new(subscriptionNotFoundError)
 	_ Error = new(parseError)
 	_ Error = new(invalidRequestError)
@@ -58,12 +58,12 @@ var (
 
 const defaultErrorCode = -32000
 
-type methodNotFoundError struct{ method string }
+type mAVNodNotFoundError struct{ mAVNod string }
 
-func (e *methodNotFoundError) ErrorCode() int { return -32601 }
+func (e *mAVNodNotFoundError) ErrorCode() int { return -32601 }
 
-func (e *methodNotFoundError) Error() string {
-	return fmt.Sprintf("the method %s does not exist/is not available", e.method)
+func (e *mAVNodNotFoundError) Error() string {
+	return fmt.Sprintf("the mAVNod %s does not exist/is not available", e.mAVNod)
 }
 
 type subscriptionNotFoundError struct{ namespace, subscription string }

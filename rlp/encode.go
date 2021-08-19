@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2014 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rlp
 
@@ -35,7 +35,7 @@ var (
 // encoding rules or want to encode private fields.
 type Encoder interface {
 	// EncodeRLP should write the RLP encoding of its receiver to w.
-	// If the implementation is a pointer method, it may also be
+	// If the implementation is a pointer mAVNod, it may also be
 	// called for nil pointers.
 	//
 	// Implementations should generate valid RLP. The data written is
@@ -600,7 +600,7 @@ func makeEncoderWriter(typ reflect.Type) writer {
 			// package json simply doesn't call MarshalJSON for this case, but encodes the
 			// value as if it didn't implement the interface. We don't want to handle it that
 			// way.
-			return fmt.Errorf("rlp: unadressable value of type %v, EncodeRLP is pointer method", val.Type())
+			return fmt.Errorf("rlp: unadressable value of type %v, EncodeRLP is pointer mAVNod", val.Type())
 		}
 		return val.Addr().Interface().(Encoder).EncodeRLP(w)
 	}

@@ -1,18 +1,18 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package memorydb implements the key-value database layer based on memory maps.
 package memorydb
@@ -23,8 +23,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/AVNdb"
 )
 
 var (
@@ -45,7 +45,7 @@ type Database struct {
 	lock sync.RWMutex
 }
 
-// New returns a wrapped map with all the required database interface methods
+// New returns a wrapped map with all the required database interface mAVNods
 // implemented.
 func New() *Database {
 	return &Database{
@@ -54,7 +54,7 @@ func New() *Database {
 }
 
 // NewWithCap returns a wrapped map pre-allocated to the provided capcity with
-// all the required database interface methods implemented.
+// all the required database interface mAVNods implemented.
 func NewWithCap(size int) *Database {
 	return &Database{
 		db: make(map[string][]byte, size),
@@ -123,7 +123,7 @@ func (db *Database) Delete(key []byte) error {
 
 // NewBatch creates a write-only key-value store that buffers changes to its host
 // database until a final write is called.
-func (db *Database) NewBatch() ethdb.Batch {
+func (db *Database) NewBatch() AVNdb.Batch {
 	return &batch{
 		db: db,
 	}
@@ -132,7 +132,7 @@ func (db *Database) NewBatch() ethdb.Batch {
 // NewIterator creates a binary-alphabetical iterator over a subset
 // of database content with a particular key prefix, starting at a particular
 // initial key (or after, if it does not exist).
-func (db *Database) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
+func (db *Database) NewIterator(prefix []byte, start []byte) AVNdb.Iterator {
 	db.lock.RLock()
 	defer db.lock.RUnlock()
 
@@ -176,7 +176,7 @@ func (db *Database) Compact(start []byte, limit []byte) error {
 
 // Len returns the number of entries currently present in the memory database.
 //
-// Note, this method is only used for testing (i.e. not public in general) and
+// Note, this mAVNod is only used for testing (i.e. not public in general) and
 // does not have explicit checks for closed-ness to allow simpler testing code.
 func (db *Database) Len() int {
 	db.lock.RLock()
@@ -242,7 +242,7 @@ func (b *batch) Reset() {
 }
 
 // Replay replays the batch contents.
-func (b *batch) Replay(w ethdb.KeyValueWriter) error {
+func (b *batch) Replay(w AVNdb.KeyValueWriter) error {
 	for _, keyvalue := range b.writes {
 		if keyvalue.delete {
 			if err := w.Delete(keyvalue.key); err != nil {
@@ -266,7 +266,7 @@ type iterator struct {
 	values [][]byte
 }
 
-// Next moves the iterator to the next key/value pair. It returns whether the
+// Next moves the iterator to the next key/value pair. It returns whAVNer the
 // iterator is exhausted.
 func (it *iterator) Next() bool {
 	// If the iterator was not yet initialized, do it now

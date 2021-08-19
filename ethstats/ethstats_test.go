@@ -1,4 +1,4 @@
-package ethstats
+package AVNstats
 
 import (
 	"strconv"

@@ -1,18 +1,18 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of go-ethereum.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of go-AVNereum.
 //
-// go-ethereum is free software: you can redistribute it and/or modify
+// go-AVNereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ethereum is distributed in the hope that it will be useful,
+// go-AVNereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -35,25 +35,25 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/internal/flags"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/ethereum/go-ethereum/signer/core"
-	"github.com/ethereum/go-ethereum/signer/core/apitypes"
-	"github.com/ethereum/go-ethereum/signer/fourbyte"
-	"github.com/ethereum/go-ethereum/signer/rules"
-	"github.com/ethereum/go-ethereum/signer/storage"
+	"github.com/AVNereum/go-AVNereum/accounts"
+	"github.com/AVNereum/go-AVNereum/accounts/keystore"
+	"github.com/AVNereum/go-AVNereum/cmd/utils"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
+	"github.com/AVNereum/go-AVNereum/internal/flags"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/node"
+	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/AVNereum/go-AVNereum/signer/core"
+	"github.com/AVNereum/go-AVNereum/signer/core/apitypes"
+	"github.com/AVNereum/go-AVNereum/signer/fourbyte"
+	"github.com/AVNereum/go-AVNereum/signer/rules"
+	"github.com/AVNereum/go-AVNereum/signer/storage"
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 	"gopkg.in/urfave/cli.v1"
@@ -204,7 +204,7 @@ The delpw command removes a password for a given address (keyfile).
 			acceptFlag,
 		},
 		Description: `
-The newaccount command creates a new keystore-backed account. It is a convenience-method
+The newaccount command creates a new keystore-backed account. It is a convenience-mAVNod
 which can be used in lieu of an external UI.`,
 	}
 
@@ -249,7 +249,7 @@ var AppHelpFlagGroups = []flags.FlagGroup{
 
 func init() {
 	app.Name = "Clef"
-	app.Usage = "Manage Ethereum account operations"
+	app.Usage = "Manage Avalanria account operations"
 	app.Flags = []cli.Flag{
 		logLevelFlag,
 		keystoreFlag,
@@ -795,7 +795,7 @@ func checkFile(filename string) error {
 	}
 	// Check the unix permission bits
 	// However, on windows, we cannot use the unix perm-bits, see
-	// https://github.com/ethereum/go-ethereum/issues/20123
+	// https://github.com/AVNereum/go-AVNereum/issues/20123
 	if runtime.GOOS != "windows" && info.Mode().Perm()&0377 != 0 {
 		return fmt.Errorf("file (%v) has insecure file permissions (%v)", filename, info.Mode().String())
 	}
@@ -1056,7 +1056,7 @@ func GenDoc(ctx *cli.Context) {
 		add("SignTxRequest", desc, &core.SignTxRequest{
 			Meta: meta,
 			Callinfo: []apitypes.ValidationInfo{
-				{Typ: "Warning", Message: "Something looks odd, show this message as a warning"},
+				{Typ: "Warning", Message: "SomAVNing looks odd, show this message as a warning"},
 				{Typ: "Info", Message: "User should see this as well"},
 			},
 			Transaction: apitypes.SendTxArgs{
@@ -1093,21 +1093,21 @@ func GenDoc(ctx *cli.Context) {
 		desc := "SignTransactionResult is used in the call `clef` -> `OnApprovedTx(result)`" +
 			"\n\n" +
 			"This occurs _after_ successful completion of the entire signing procedure, but right before the signed " +
-			"transaction is passed to the external caller. This method (and data) can be used by the UI to signal " +
+			"transaction is passed to the external caller. This mAVNod (and data) can be used by the UI to signal " +
 			"to the user that the transaction was signed, but it is primarily useful for ruleset implementations." +
 			"\n\n" +
 			"A ruleset that implements a rate limitation needs to know what transactions are sent out to the external " +
-			"interface. By hooking into this methods, the ruleset can maintain track of that count." +
+			"interface. By hooking into this mAVNods, the ruleset can maintain track of that count." +
 			"\n\n" +
 			"**OBS:** Note that if an attacker can restore your `clef` data to a previous point in time" +
 			" (e.g through a backup), the attacker can reset such windows, even if he/she is unable to decrypt the content. " +
 			"\n\n" +
-			"The `OnApproved` method cannot be responded to, it's purely informative"
+			"The `OnApproved` mAVNod cannot be responded to, it's purely informative"
 
 		rlpdata := common.FromHex("0xf85d640101948a8eafb1cf62bfbeb1741769dae1a9dd47996192018026a0716bd90515acb1e68e5ac5867aa11a1e65399c3349d479f5fb698554ebc6f293a04e8a4ebfff434e971e0ef12c5bf3a881b06fd04fc3f8b8a7291fb67a26a1d4ed")
 		var tx types.Transaction
 		tx.UnmarshalBinary(rlpdata)
-		add("OnApproved - SignTransactionResult", desc, &ethapi.SignTransactionResult{Raw: rlpdata, Tx: &tx})
+		add("OnApproved - SignTransactionResult", desc, &AVNapi.SignTransactionResult{Raw: rlpdata, Tx: &tx})
 
 	}
 	{ // User input
@@ -1128,7 +1128,7 @@ func GenDoc(ctx *cli.Context) {
 			})
 
 		add("ListResponse", "Response to list request. The response contains a list of all addresses to show to the caller. "+
-			"Note: the UI is free to respond with any address the caller, regardless of whether it exists or not",
+			"Note: the UI is free to respond with any address the caller, regardless of whAVNer it exists or not",
 			&core.ListResponse{
 				Accounts: []accounts.Account{
 					{

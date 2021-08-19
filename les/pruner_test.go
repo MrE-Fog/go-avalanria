@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2019 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -23,8 +23,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/light"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/light"
 )
 
 func TestLightPruner(t *testing.T) {
@@ -138,8 +138,8 @@ func TestLightPruner(t *testing.T) {
 	// Ensure all APIs still work after pruning.
 	var cases = []struct {
 		from, to   uint64
-		methodName string
-		method     func(uint64) bool
+		mAVNodName string
+		mAVNod     func(uint64) bool
 	}{
 		{
 			1, 10, "GetHeaderByNumber",
@@ -186,8 +186,8 @@ func TestLightPruner(t *testing.T) {
 	}
 	for _, c := range cases {
 		for i := c.from; i <= c.to; i++ {
-			if !c.method(i) {
-				t.Fatalf("rpc method %s failed, number %d", c.methodName, i)
+			if !c.mAVNod(i) {
+				t.Fatalf("rpc mAVNod %s failed, number %d", c.mAVNodName, i)
 			}
 		}
 	}

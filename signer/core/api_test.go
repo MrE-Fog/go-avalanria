@@ -1,18 +1,18 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package core_test
 
@@ -27,17 +27,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/signer/core"
-	"github.com/ethereum/go-ethereum/signer/core/apitypes"
-	"github.com/ethereum/go-ethereum/signer/fourbyte"
-	"github.com/ethereum/go-ethereum/signer/storage"
+	"github.com/AVNereum/go-AVNereum/accounts"
+	"github.com/AVNereum/go-AVNereum/accounts/keystore"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
+	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/AVNereum/go-AVNereum/signer/core"
+	"github.com/AVNereum/go-AVNereum/signer/core/apitypes"
+	"github.com/AVNereum/go-AVNereum/signer/fourbyte"
+	"github.com/AVNereum/go-AVNereum/signer/storage"
 )
 
 //Used for testing
@@ -53,7 +53,7 @@ func (ui *headlessUi) OnInputRequired(info core.UserInputRequest) (core.UserInpu
 
 func (ui *headlessUi) OnSignerStartup(info core.StartupInfo)        {}
 func (ui *headlessUi) RegisterUIServer(api *core.UIServerAPI)       {}
-func (ui *headlessUi) OnApprovedTx(tx ethapi.SignTransactionResult) {}
+func (ui *headlessUi) OnApprovedTx(tx AVNapi.SignTransactionResult) {}
 
 func (ui *headlessUi) ApproveTx(request *core.SignTxRequest) (core.SignTxResponse, error) {
 
@@ -109,7 +109,7 @@ func (ui *headlessUi) ShowInfo(message string) {
 }
 
 func tmpDirName(t *testing.T) string {
-	d, err := ioutil.TempDir("", "eth-keystore-test")
+	d, err := ioutil.TempDir("", "AVN-keystore-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -245,7 +245,7 @@ func mkTestTx(from common.MixedcaseAddress) apitypes.SendTxArgs {
 func TestSignTx(t *testing.T) {
 	var (
 		list      []common.Address
-		res, res2 *ethapi.SignTransactionResult
+		res, res2 *AVNapi.SignTransactionResult
 		err       error
 	)
 
@@ -258,12 +258,12 @@ func TestSignTx(t *testing.T) {
 	}
 	a := common.NewMixedcaseAddress(list[0])
 
-	methodSig := "test(uint)"
+	mAVNodSig := "test(uint)"
 	tx := mkTestTx(a)
 
 	control.approveCh <- "Y"
 	control.inputCh <- "wrongpassword"
-	res, err = api.SignTransaction(context.Background(), tx, &methodSig)
+	res, err = api.SignTransaction(context.Background(), tx, &mAVNodSig)
 	if res != nil {
 		t.Errorf("Expected nil-response, got %v", res)
 	}
@@ -271,7 +271,7 @@ func TestSignTx(t *testing.T) {
 		t.Errorf("Expected ErrLocked! %v", err)
 	}
 	control.approveCh <- "No way"
-	res, err = api.SignTransaction(context.Background(), tx, &methodSig)
+	res, err = api.SignTransaction(context.Background(), tx, &mAVNodSig)
 	if res != nil {
 		t.Errorf("Expected nil-response, got %v", res)
 	}
@@ -281,7 +281,7 @@ func TestSignTx(t *testing.T) {
 	// Sign with correct password
 	control.approveCh <- "Y"
 	control.inputCh <- "a_long_password"
-	res, err = api.SignTransaction(context.Background(), tx, &methodSig)
+	res, err = api.SignTransaction(context.Background(), tx, &mAVNodSig)
 
 	if err != nil {
 		t.Fatal(err)
@@ -296,7 +296,7 @@ func TestSignTx(t *testing.T) {
 	control.approveCh <- "Y"
 	control.inputCh <- "a_long_password"
 
-	res2, err = api.SignTransaction(context.Background(), tx, &methodSig)
+	res2, err = api.SignTransaction(context.Background(), tx, &mAVNodSig)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -308,7 +308,7 @@ func TestSignTx(t *testing.T) {
 	control.approveCh <- "M"
 	control.inputCh <- "a_long_password"
 
-	res2, err = api.SignTransaction(context.Background(), tx, &methodSig)
+	res2, err = api.SignTransaction(context.Background(), tx, &mAVNodSig)
 	if err != nil {
 		t.Fatal(err)
 	}

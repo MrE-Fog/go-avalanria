@@ -1,18 +1,18 @@
-// Copyright 2020 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2020 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package fetcher
 
@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/mclock"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/mclock"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/types"
 )
 
 var (
@@ -84,7 +84,7 @@ func TestTransactionFetcherWaiting(t *testing.T) {
 			)
 		},
 		steps: []interface{}{
-			// Initial announcement to get something into the waitlist
+			// Initial announcement to get somAVNing into the waitlist
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}, {0x02}}},
 			isWaiting(map[string][]common.Hash{
 				"A": {{0x01}, {0x02}},
@@ -972,7 +972,7 @@ func TestTransactionFetcherOutOfBoundDeliveries(t *testing.T) {
 			)
 		},
 		steps: []interface{}{
-			// Deliver something out of the blue
+			// Deliver somAVNing out of the blue
 			isWaiting(nil),
 			isScheduled{nil, nil, nil},
 			doTxEnqueue{peer: "A", txs: []*types.Transaction{testTxs[0]}, direct: false},
@@ -1286,7 +1286,7 @@ func testTransactionFetcher(t *testing.T, tt txFetcherTest) {
 		case doWait:
 			clock.Run(step.time)
 			if step.step {
-				<-wait // Fetcher supposed to do something, wait until it's done
+				<-wait // Fetcher supposed to do somAVNing, wait until it's done
 			}
 
 		case doDrop:
@@ -1517,7 +1517,7 @@ func testTransactionFetcher(t *testing.T, tt txFetcherTest) {
 	}
 }
 
-// containsHash returns whether a hash is contained within a hash slice.
+// containsHash returns whAVNer a hash is contained within a hash slice.
 func containsHash(slice []common.Hash, hash common.Hash) bool {
 	for _, have := range slice {
 		if have == hash {

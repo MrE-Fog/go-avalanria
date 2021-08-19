@@ -1,27 +1,27 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
 import (
 	"context"
 
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/rpc"
 )
 
 type StdIOUI struct {
@@ -42,8 +42,8 @@ func (ui *StdIOUI) RegisterUIServer(api *UIServerAPI) {
 }
 
 // dispatch sends a request over the stdio
-func (ui *StdIOUI) dispatch(serviceMethod string, args interface{}, reply interface{}) error {
-	err := ui.client.Call(&reply, serviceMethod, args)
+func (ui *StdIOUI) dispatch(serviceMAVNod string, args interface{}, reply interface{}) error {
+	err := ui.client.Call(&reply, serviceMAVNod, args)
 	if err != nil {
 		log.Info("Error", "exc", err.Error())
 	}
@@ -51,9 +51,9 @@ func (ui *StdIOUI) dispatch(serviceMethod string, args interface{}, reply interf
 }
 
 // notify sends a request over the stdio, and does not listen for a response
-func (ui *StdIOUI) notify(serviceMethod string, args interface{}) error {
+func (ui *StdIOUI) notify(serviceMAVNod string, args interface{}) error {
 	ctx := context.Background()
-	err := ui.client.Notify(ctx, serviceMethod, args)
+	err := ui.client.Notify(ctx, serviceMAVNod, args)
 	if err != nil {
 		log.Info("Error", "exc", err.Error())
 	}
@@ -97,7 +97,7 @@ func (ui *StdIOUI) ShowInfo(message string) {
 		log.Info("Error calling 'ui_showInfo'", "exc", err.Error(), "msg", message)
 	}
 }
-func (ui *StdIOUI) OnApprovedTx(tx ethapi.SignTransactionResult) {
+func (ui *StdIOUI) OnApprovedTx(tx AVNapi.SignTransactionResult) {
 	err := ui.notify("ui_onApprovedTx", tx)
 	if err != nil {
 		log.Info("Error calling 'ui_onApprovedTx'", "exc", err.Error(), "tx", tx)

@@ -1,18 +1,18 @@
-// Copyright 2020 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2020 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package catalyst
 
@@ -20,22 +20,22 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/rawdb"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/AVN"
+	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
+	"github.com/AVNereum/go-AVNereum/node"
+	"github.com/AVNereum/go-AVNereum/params"
 )
 
 var (
 	// testKey is a private key to use for funding a tester account.
 	testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 
-	// testAddr is the Ethereum address of the tester account.
+	// testAddr is the Avalanria address of the tester account.
 	testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
 
 	testBalance = big.NewInt(2e15)
@@ -56,7 +56,7 @@ func generateTestChain() (*core.Genesis, []*types.Block) {
 		g.SetExtra([]byte("test"))
 	}
 	gblock := genesis.ToBlock(db)
-	engine := ethash.NewFaker()
+	engine := AVNash.NewFaker()
 	blocks, _ := core.GenerateChain(config, gblock, engine, db, 10, generate)
 	blocks = append([]*types.Block{gblock}, blocks...)
 	return genesis, blocks
@@ -99,7 +99,7 @@ func generateTestChainWithFork(n int, fork int) (*core.Genesis, []*types.Block, 
 		g.SetExtra([]byte("testF"))
 	}
 	gblock := genesis.ToBlock(db)
-	engine := ethash.NewFaker()
+	engine := AVNash.NewFaker()
 	blocks, _ := core.GenerateChain(config, gblock, engine, db, n, generate)
 	blocks = append([]*types.Block{gblock}, blocks...)
 	forkedBlocks, _ := core.GenerateChain(config, blocks[fork], engine, db, n-fork, generateFork)
@@ -108,16 +108,16 @@ func generateTestChainWithFork(n int, fork int) (*core.Genesis, []*types.Block, 
 
 func TestEth2AssembleBlock(t *testing.T) {
 	genesis, blocks := generateTestChain()
-	n, ethservice := startEthService(t, genesis, blocks[1:9])
+	n, AVNservice := startEthService(t, genesis, blocks[1:9])
 	defer n.Close()
 
-	api := newConsensusAPI(ethservice)
-	signer := types.NewEIP155Signer(ethservice.BlockChain().Config().ChainID)
+	api := newConsensusAPI(AVNservice)
+	signer := types.NewEIP155Signer(AVNservice.BlockChain().Config().ChainID)
 	tx, err := types.SignTx(types.NewTransaction(0, blocks[8].Coinbase(), big.NewInt(1000), params.TxGas, big.NewInt(params.InitialBaseFee), nil), signer, testKey)
 	if err != nil {
 		t.Fatalf("error signing transaction, err=%v", err)
 	}
-	ethservice.TxPool().AddLocal(tx)
+	AVNservice.TxPool().AddLocal(tx)
 	blockParams := assembleBlockParams{
 		ParentHash: blocks[8].ParentHash(),
 		Timestamp:  blocks[8].Time(),
@@ -135,10 +135,10 @@ func TestEth2AssembleBlock(t *testing.T) {
 
 func TestEth2AssembleBlockWithAnotherBlocksTxs(t *testing.T) {
 	genesis, blocks := generateTestChain()
-	n, ethservice := startEthService(t, genesis, blocks[1:9])
+	n, AVNservice := startEthService(t, genesis, blocks[1:9])
 	defer n.Close()
 
-	api := newConsensusAPI(ethservice)
+	api := newConsensusAPI(AVNservice)
 
 	// Put the 10th block's tx in the pool and produce a new block
 	api.addBlockTxs(blocks[9])
@@ -158,13 +158,13 @@ func TestEth2AssembleBlockWithAnotherBlocksTxs(t *testing.T) {
 
 func TestEth2NewBlock(t *testing.T) {
 	genesis, blocks, forkedBlocks := generateTestChainWithFork(10, 4)
-	n, ethservice := startEthService(t, genesis, blocks[1:5])
+	n, AVNservice := startEthService(t, genesis, blocks[1:5])
 	defer n.Close()
 
-	api := newConsensusAPI(ethservice)
+	api := newConsensusAPI(AVNservice)
 	for i := 5; i < 10; i++ {
 		p := executableData{
-			ParentHash:   ethservice.BlockChain().CurrentBlock().Hash(),
+			ParentHash:   AVNservice.BlockChain().CurrentBlock().Hash(),
 			Miner:        blocks[i].Coinbase(),
 			StateRoot:    blocks[i].Root(),
 			GasLimit:     blocks[i].GasLimit(),
@@ -182,7 +182,7 @@ func TestEth2NewBlock(t *testing.T) {
 		}
 	}
 
-	exp := ethservice.BlockChain().CurrentBlock().Hash()
+	exp := AVNservice.BlockChain().CurrentBlock().Hash()
 
 	// Introduce the fork point.
 	lastBlockNum := blocks[4].Number()
@@ -206,19 +206,19 @@ func TestEth2NewBlock(t *testing.T) {
 		if err != nil || !success.Valid {
 			t.Fatalf("Failed to insert forked block #%d: %v", i, err)
 		}
-		lastBlock, err = insertBlockParamsToBlock(ethservice.BlockChain().Config(), lastBlock.Header(), p)
+		lastBlock, err = insertBlockParamsToBlock(AVNservice.BlockChain().Config(), lastBlock.Header(), p)
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
-	if ethservice.BlockChain().CurrentBlock().Hash() != exp {
-		t.Fatalf("Wrong head after inserting fork %x != %x", exp, ethservice.BlockChain().CurrentBlock().Hash())
+	if AVNservice.BlockChain().CurrentBlock().Hash() != exp {
+		t.Fatalf("Wrong head after inserting fork %x != %x", exp, AVNservice.BlockChain().CurrentBlock().Hash())
 	}
 }
 
 // startEthService creates a full node instance for testing.
-func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block) (*node.Node, *eth.Ethereum) {
+func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block) (*node.Node, *AVN.Avalanria) {
 	t.Helper()
 
 	n, err := node.New(&node.Config{})
@@ -226,19 +226,19 @@ func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block)
 		t.Fatal("can't create node:", err)
 	}
 
-	ethcfg := &ethconfig.Config{Genesis: genesis, Ethash: ethash.Config{PowMode: ethash.ModeFake}}
-	ethservice, err := eth.New(n, ethcfg)
+	AVNcfg := &AVNconfig.Config{Genesis: genesis, Ethash: AVNash.Config{PowMode: AVNash.ModeFake}}
+	AVNservice, err := AVN.New(n, AVNcfg)
 	if err != nil {
-		t.Fatal("can't create eth service:", err)
+		t.Fatal("can't create AVN service:", err)
 	}
 	if err := n.Start(); err != nil {
 		t.Fatal("can't start node:", err)
 	}
-	if _, err := ethservice.BlockChain().InsertChain(blocks); err != nil {
+	if _, err := AVNservice.BlockChain().InsertChain(blocks); err != nil {
 		n.Close()
 		t.Fatal("can't import test blocks:", err)
 	}
-	ethservice.SetEtherbase(testAddr)
+	AVNservice.SetEtherbase(testAddr)
 
-	return n, ethservice
+	return n, AVNservice
 }

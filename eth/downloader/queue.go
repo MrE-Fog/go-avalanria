@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2015 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // Contains the block download scheduler to collect download tasks and schedule
 // them in an ordered, and throttled way.
@@ -26,12 +26,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/prque"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/prque"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/metrics"
+	"github.com/AVNereum/go-AVNereum/trie"
 )
 
 const (
@@ -54,8 +54,8 @@ var (
 // fetchRequest is a currently running data retrieval operation.
 type fetchRequest struct {
 	Peer    *peerConnection // Peer to which the request was sent
-	From    uint64          // [eth/62] Requested chain element index (used for skeleton fills only)
-	Headers []*types.Header // [eth/62] Requested headers, sorted by request order
+	From    uint64          // [AVN/62] Requested chain element index (used for skeleton fills only)
+	Headers []*types.Header // [AVN/62] Requested headers, sorted by request order
 	Time    time.Time       // Time when the request was made
 }
 
@@ -212,7 +212,7 @@ func (q *queue) PendingReceipts() int {
 	return q.receiptTaskQueue.Size()
 }
 
-// InFlightHeaders retrieves whether there are header fetch requests currently
+// InFlightHeaders retrieves whAVNer there are header fetch requests currently
 // in flight.
 func (q *queue) InFlightHeaders() bool {
 	q.lock.Lock()
@@ -221,7 +221,7 @@ func (q *queue) InFlightHeaders() bool {
 	return len(q.headerPendPool) > 0
 }
 
-// InFlightBlocks retrieves whether there are block fetch requests currently in
+// InFlightBlocks retrieves whAVNer there are block fetch requests currently in
 // flight.
 func (q *queue) InFlightBlocks() bool {
 	q.lock.Lock()
@@ -230,7 +230,7 @@ func (q *queue) InFlightBlocks() bool {
 	return len(q.blockPendPool) > 0
 }
 
-// InFlightReceipts retrieves whether there are receipt fetch requests currently
+// InFlightReceipts retrieves whAVNer there are receipt fetch requests currently
 // in flight.
 func (q *queue) InFlightReceipts() bool {
 	q.lock.Lock()
@@ -414,7 +414,7 @@ func (q *queue) ReserveHeaders(p *peerConnection, count int) *fetchRequest {
 	q.lock.Lock()
 	defer q.lock.Unlock()
 
-	// Short circuit if the peer's already downloading something (sanity check to
+	// Short circuit if the peer's already downloading somAVNing (sanity check to
 	// not corrupt state)
 	if _, ok := q.headerPendPool[p.id]; ok {
 		return nil
@@ -450,7 +450,7 @@ func (q *queue) ReserveHeaders(p *peerConnection, count int) *fetchRequest {
 
 // ReserveBodies reserves a set of body fetches for the given peer, skipping any
 // previously failed downloads. Beside the next batch of needed fetches, it also
-// returns a flag whether empty blocks were queued requiring processing.
+// returns a flag whAVNer empty blocks were queued requiring processing.
 func (q *queue) ReserveBodies(p *peerConnection, count int) (*fetchRequest, bool, bool) {
 	q.lock.Lock()
 	defer q.lock.Unlock()
@@ -460,7 +460,7 @@ func (q *queue) ReserveBodies(p *peerConnection, count int) (*fetchRequest, bool
 
 // ReserveReceipts reserves a set of receipt fetches for the given peer, skipping
 // any previously failed downloads. Beside the next batch of needed fetches, it
-// also returns a flag whether empty receipts were queued requiring importing.
+// also returns a flag whAVNer empty receipts were queued requiring importing.
 func (q *queue) ReserveReceipts(p *peerConnection, count int) (*fetchRequest, bool, bool) {
 	q.lock.Lock()
 	defer q.lock.Unlock()
@@ -469,21 +469,21 @@ func (q *queue) ReserveReceipts(p *peerConnection, count int) (*fetchRequest, bo
 }
 
 // reserveHeaders reserves a set of data download operations for a given peer,
-// skipping any previously failed ones. This method is a generic version used
+// skipping any previously failed ones. This mAVNod is a generic version used
 // by the individual special reservation functions.
 //
-// Note, this method expects the queue lock to be already held for writing. The
+// Note, this mAVNod expects the queue lock to be already held for writing. The
 // reason the lock is not obtained in here is because the parameters already need
 // to access the queue, so they already need a lock anyway.
 //
 // Returns:
 //   item     - the fetchRequest
-//   progress - whether any progress was made
+//   progress - whAVNer any progress was made
 //   throttle - if the caller should throttle for a while
 func (q *queue) reserveHeaders(p *peerConnection, count int, taskPool map[common.Hash]*types.Header, taskQueue *prque.Prque,
 	pendPool map[string]*fetchRequest, kind uint) (*fetchRequest, bool, bool) {
 	// Short circuit if the pool has been depleted, or if the peer's already
-	// downloading something (sanity check not to corrupt state)
+	// downloading somAVNing (sanity check not to corrupt state)
 	if taskQueue.Empty() {
 		return nil, false, true
 	}
@@ -600,7 +600,7 @@ func (q *queue) cancel(request *fetchRequest, taskQueue *prque.Prque, pendPool m
 	delete(pendPool, request.Peer.id)
 }
 
-// Revoke cancels all pending requests belonging to a given peer. This method is
+// Revoke cancels all pending requests belonging to a given peer. This mAVNod is
 // meant to be called during a peer drop to quickly reassign owned data fetches
 // to remaining nodes.
 func (q *queue) Revoke(peerID string) {
@@ -651,7 +651,7 @@ func (q *queue) ExpireReceipts(timeout time.Duration) map[string]int {
 // expire is the generic check that move expired tasks from a pending pool back
 // into a task pool, returning all entities caught with expired tasks.
 //
-// Note, this method expects the queue lock to be already held. The
+// Note, this mAVNod expects the queue lock to be already held. The
 // reason the lock is not obtained in here is because the parameters already need
 // to access the queue, so they already need a lock anyway.
 func (q *queue) expire(timeout time.Duration, pendPool map[string]*fetchRequest, taskQueue *prque.Prque, timeoutMeter metrics.Meter) map[string]int {
@@ -680,10 +680,10 @@ func (q *queue) expire(timeout time.Duration, pendPool map[string]*fetchRequest,
 }
 
 // DeliverHeaders injects a header retrieval response into the header results
-// cache. This method either accepts all headers it received, or none of them
+// cache. This mAVNod either accepts all headers it received, or none of them
 // if they do not map correctly to the skeleton.
 //
-// If the headers are accepted, the method makes an attempt to deliver the set
+// If the headers are accepted, the mAVNod makes an attempt to deliver the set
 // of ready headers to the processor to keep the pipeline full. However it will
 // not block to prevent stalling other pending deliveries.
 func (q *queue) DeliverHeaders(id string, headers []*types.Header, headerProcCh chan []*types.Header) (int, error) {
@@ -778,7 +778,7 @@ func (q *queue) DeliverHeaders(id string, headers []*types.Header, headerProcCh 
 }
 
 // DeliverBodies injects a block body retrieval response into the results queue.
-// The method returns the number of blocks bodies accepted from the delivery and
+// The mAVNod returns the number of blocks bodies accepted from the delivery and
 // also wakes any threads waiting for data delivery.
 func (q *queue) DeliverBodies(id string, txLists [][]*types.Transaction, uncleLists [][]*types.Header) (int, error) {
 	q.lock.Lock()
@@ -804,7 +804,7 @@ func (q *queue) DeliverBodies(id string, txLists [][]*types.Transaction, uncleLi
 }
 
 // DeliverReceipts injects a receipt retrieval response into the results queue.
-// The method returns the number of transaction receipts accepted from the delivery
+// The mAVNod returns the number of transaction receipts accepted from the delivery
 // and also wakes any threads waiting for data delivery.
 func (q *queue) DeliverReceipts(id string, receiptList [][]*types.Receipt) (int, error) {
 	q.lock.Lock()
@@ -826,7 +826,7 @@ func (q *queue) DeliverReceipts(id string, receiptList [][]*types.Receipt) (int,
 
 // deliver injects a data retrieval response into the results queue.
 //
-// Note, this method expects the queue lock to be already held for writing. The
+// Note, this mAVNod expects the queue lock to be already held for writing. The
 // reason this lock is not obtained in here is because the parameters already need
 // to access the queue, so they already need a lock anyway.
 func (q *queue) deliver(id string, taskPool map[common.Hash]*types.Header,
@@ -875,7 +875,7 @@ func (q *queue) deliver(id string, taskPool map[common.Hash]*types.Header,
 		} else {
 			// else: betweeen here and above, some other peer filled this result,
 			// or it was indeed a no-op. This should not happen, but if it does it's
-			// not something to panic about
+			// not somAVNing to panic about
 			log.Error("Delivery stale", "stale", stale, "number", header.Number.Uint64(), "err", err)
 			failure = errStaleDelivery
 		}

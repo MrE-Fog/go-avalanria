@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of go-ethereum.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of go-AVNereum.
 //
-// go-ethereum is free software: you can redistribute it and/or modify
+// go-AVNereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ethereum is distributed in the hope that it will be useful,
+// go-AVNereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -22,18 +22,18 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	math2 "github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	math2 "github.com/AVNereum/go-AVNereum/common/math"
+	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/params"
 )
 
-// alethGenesisSpec represents the genesis specification format used by the
-// C++ Ethereum implementation.
-type alethGenesisSpec struct {
+// alAVNGenesisSpec represents the genesis specification format used by the
+// C++ Avalanria implementation.
+type alAVNGenesisSpec struct {
 	SealEngine string `json:"sealEngine"`
 	Params     struct {
 		AccountStartNonce          math2.HexOrDecimal64   `json:"accountStartNonce"`
@@ -70,38 +70,38 @@ type alethGenesisSpec struct {
 		GasLimit   hexutil.Uint64   `json:"gasLimit"`
 	} `json:"genesis"`
 
-	Accounts map[common.UnprefixedAddress]*alethGenesisSpecAccount `json:"accounts"`
+	Accounts map[common.UnprefixedAddress]*alAVNGenesisSpecAccount `json:"accounts"`
 }
 
-// alethGenesisSpecAccount is the prefunded genesis account and/or precompiled
+// alAVNGenesisSpecAccount is the prefunded genesis account and/or precompiled
 // contract definition.
-type alethGenesisSpecAccount struct {
+type alAVNGenesisSpecAccount struct {
 	Balance     *math2.HexOrDecimal256   `json:"balance,omitempty"`
 	Nonce       uint64                   `json:"nonce,omitempty"`
-	Precompiled *alethGenesisSpecBuiltin `json:"precompiled,omitempty"`
+	Precompiled *alAVNGenesisSpecBuiltin `json:"precompiled,omitempty"`
 }
 
-// alethGenesisSpecBuiltin is the precompiled contract definition.
-type alethGenesisSpecBuiltin struct {
+// alAVNGenesisSpecBuiltin is the precompiled contract definition.
+type alAVNGenesisSpecBuiltin struct {
 	Name          string                         `json:"name,omitempty"`
 	StartingBlock *hexutil.Big                   `json:"startingBlock,omitempty"`
-	Linear        *alethGenesisSpecLinearPricing `json:"linear,omitempty"`
+	Linear        *alAVNGenesisSpecLinearPricing `json:"linear,omitempty"`
 }
 
-type alethGenesisSpecLinearPricing struct {
+type alAVNGenesisSpecLinearPricing struct {
 	Base uint64 `json:"base"`
 	Word uint64 `json:"word"`
 }
 
-// newAlethGenesisSpec converts a go-ethereum genesis block into a Aleth-specific
+// newAlAVNGenesisSpec converts a go-AVNereum genesis block into a AlAVN-specific
 // chain specification format.
-func newAlethGenesisSpec(network string, genesis *core.Genesis) (*alethGenesisSpec, error) {
-	// Only ethash is currently supported between go-ethereum and aleth
+func newAlAVNGenesisSpec(network string, genesis *core.Genesis) (*alAVNGenesisSpec, error) {
+	// Only AVNash is currently supported between go-AVNereum and alAVN
 	if genesis.Config.Ethash == nil {
 		return nil, errors.New("unsupported consensus engine")
 	}
-	// Reconstruct the chain spec in Aleth format
-	spec := &alethGenesisSpec{
+	// Reconstruct the chain spec in AlAVN format
+	spec := &alAVNGenesisSpec{
 		SealEngine: "Ethash",
 	}
 	// Some defaults
@@ -110,7 +110,7 @@ func newAlethGenesisSpec(network string, genesis *core.Genesis) (*alethGenesisSp
 	spec.Params.AllowFutureBlocks = false
 
 	// Dao hardfork block is a special one. The fork block is listed as 0 in the
-	// config but aleth will sync with ETC clients up until the actual dao hard
+	// config but alAVN will sync with ETC clients up until the actual dao hard
 	// fork block.
 	spec.Params.DaoHardforkBlock = 0
 
@@ -144,7 +144,7 @@ func newAlethGenesisSpec(network string, genesis *core.Genesis) (*alethGenesisSp
 	spec.Params.DifficultyBoundDivisor = (*math2.HexOrDecimal256)(params.DifficultyBoundDivisor)
 	spec.Params.GasLimitBoundDivisor = (math2.HexOrDecimal64)(params.GasLimitBoundDivisor)
 	spec.Params.DurationLimit = (*math2.HexOrDecimal256)(params.DurationLimit)
-	spec.Params.BlockReward = (*hexutil.Big)(ethash.FrontierBlockReward)
+	spec.Params.BlockReward = (*hexutil.Big)(AVNash.FrontierBlockReward)
 
 	spec.Genesis.Nonce = types.EncodeNonce(genesis.Nonce)
 	spec.Genesis.MixHash = genesis.Mixhash
@@ -159,39 +159,39 @@ func newAlethGenesisSpec(network string, genesis *core.Genesis) (*alethGenesisSp
 		spec.setAccount(address, account)
 	}
 
-	spec.setPrecompile(1, &alethGenesisSpecBuiltin{Name: "ecrecover",
-		Linear: &alethGenesisSpecLinearPricing{Base: 3000}})
-	spec.setPrecompile(2, &alethGenesisSpecBuiltin{Name: "sha256",
-		Linear: &alethGenesisSpecLinearPricing{Base: 60, Word: 12}})
-	spec.setPrecompile(3, &alethGenesisSpecBuiltin{Name: "ripemd160",
-		Linear: &alethGenesisSpecLinearPricing{Base: 600, Word: 120}})
-	spec.setPrecompile(4, &alethGenesisSpecBuiltin{Name: "identity",
-		Linear: &alethGenesisSpecLinearPricing{Base: 15, Word: 3}})
+	spec.setPrecompile(1, &alAVNGenesisSpecBuiltin{Name: "ecrecover",
+		Linear: &alAVNGenesisSpecLinearPricing{Base: 3000}})
+	spec.setPrecompile(2, &alAVNGenesisSpecBuiltin{Name: "sha256",
+		Linear: &alAVNGenesisSpecLinearPricing{Base: 60, Word: 12}})
+	spec.setPrecompile(3, &alAVNGenesisSpecBuiltin{Name: "ripemd160",
+		Linear: &alAVNGenesisSpecLinearPricing{Base: 600, Word: 120}})
+	spec.setPrecompile(4, &alAVNGenesisSpecBuiltin{Name: "identity",
+		Linear: &alAVNGenesisSpecLinearPricing{Base: 15, Word: 3}})
 	if genesis.Config.ByzantiumBlock != nil {
-		spec.setPrecompile(5, &alethGenesisSpecBuiltin{Name: "modexp",
+		spec.setPrecompile(5, &alAVNGenesisSpecBuiltin{Name: "modexp",
 			StartingBlock: (*hexutil.Big)(genesis.Config.ByzantiumBlock)})
-		spec.setPrecompile(6, &alethGenesisSpecBuiltin{Name: "alt_bn128_G1_add",
+		spec.setPrecompile(6, &alAVNGenesisSpecBuiltin{Name: "alt_bn128_G1_add",
 			StartingBlock: (*hexutil.Big)(genesis.Config.ByzantiumBlock),
-			Linear:        &alethGenesisSpecLinearPricing{Base: 500}})
-		spec.setPrecompile(7, &alethGenesisSpecBuiltin{Name: "alt_bn128_G1_mul",
+			Linear:        &alAVNGenesisSpecLinearPricing{Base: 500}})
+		spec.setPrecompile(7, &alAVNGenesisSpecBuiltin{Name: "alt_bn128_G1_mul",
 			StartingBlock: (*hexutil.Big)(genesis.Config.ByzantiumBlock),
-			Linear:        &alethGenesisSpecLinearPricing{Base: 40000}})
-		spec.setPrecompile(8, &alethGenesisSpecBuiltin{Name: "alt_bn128_pairing_product",
+			Linear:        &alAVNGenesisSpecLinearPricing{Base: 40000}})
+		spec.setPrecompile(8, &alAVNGenesisSpecBuiltin{Name: "alt_bn128_pairing_product",
 			StartingBlock: (*hexutil.Big)(genesis.Config.ByzantiumBlock)})
 	}
 	if genesis.Config.IstanbulBlock != nil {
 		if genesis.Config.ByzantiumBlock == nil {
 			return nil, errors.New("invalid genesis, istanbul fork is enabled while byzantium is not")
 		}
-		spec.setPrecompile(6, &alethGenesisSpecBuiltin{
+		spec.setPrecompile(6, &alAVNGenesisSpecBuiltin{
 			Name:          "alt_bn128_G1_add",
 			StartingBlock: (*hexutil.Big)(genesis.Config.ByzantiumBlock),
-		}) // Aleth hardcoded the gas policy
-		spec.setPrecompile(7, &alethGenesisSpecBuiltin{
+		}) // AlAVN hardcoded the gas policy
+		spec.setPrecompile(7, &alAVNGenesisSpecBuiltin{
 			Name:          "alt_bn128_G1_mul",
 			StartingBlock: (*hexutil.Big)(genesis.Config.ByzantiumBlock),
-		}) // Aleth hardcoded the gas policy
-		spec.setPrecompile(9, &alethGenesisSpecBuiltin{
+		}) // AlAVN hardcoded the gas policy
+		spec.setPrecompile(9, &alAVNGenesisSpecBuiltin{
 			Name:          "blake2_compression",
 			StartingBlock: (*hexutil.Big)(genesis.Config.IstanbulBlock),
 		})
@@ -199,25 +199,25 @@ func newAlethGenesisSpec(network string, genesis *core.Genesis) (*alethGenesisSp
 	return spec, nil
 }
 
-func (spec *alethGenesisSpec) setPrecompile(address byte, data *alethGenesisSpecBuiltin) {
+func (spec *alAVNGenesisSpec) setPrecompile(address byte, data *alAVNGenesisSpecBuiltin) {
 	if spec.Accounts == nil {
-		spec.Accounts = make(map[common.UnprefixedAddress]*alethGenesisSpecAccount)
+		spec.Accounts = make(map[common.UnprefixedAddress]*alAVNGenesisSpecAccount)
 	}
 	addr := common.UnprefixedAddress(common.BytesToAddress([]byte{address}))
 	if _, exist := spec.Accounts[addr]; !exist {
-		spec.Accounts[addr] = &alethGenesisSpecAccount{}
+		spec.Accounts[addr] = &alAVNGenesisSpecAccount{}
 	}
 	spec.Accounts[addr].Precompiled = data
 }
 
-func (spec *alethGenesisSpec) setAccount(address common.Address, account core.GenesisAccount) {
+func (spec *alAVNGenesisSpec) setAccount(address common.Address, account core.GenesisAccount) {
 	if spec.Accounts == nil {
-		spec.Accounts = make(map[common.UnprefixedAddress]*alethGenesisSpecAccount)
+		spec.Accounts = make(map[common.UnprefixedAddress]*alAVNGenesisSpecAccount)
 	}
 
 	a, exist := spec.Accounts[common.UnprefixedAddress(address)]
 	if !exist {
-		a = &alethGenesisSpecAccount{}
+		a = &alAVNGenesisSpecAccount{}
 		spec.Accounts[common.UnprefixedAddress(address)] = a
 	}
 	a.Balance = (*math2.HexOrDecimal256)(account.Balance)
@@ -275,10 +275,10 @@ type parityChainSpec struct {
 
 	Genesis struct {
 		Seal struct {
-			Ethereum struct {
+			Avalanria struct {
 				Nonce   types.BlockNonce `json:"nonce"`
 				MixHash hexutil.Bytes    `json:"mixHash"`
-			} `json:"ethereum"`
+			} `json:"AVNereum"`
 		} `json:"seal"`
 
 		Difficulty *hexutil.Big   `json:"difficulty"`
@@ -314,7 +314,7 @@ type parityChainSpecPricing struct {
 	Linear *parityChainSpecLinearPricing `json:"linear,omitempty"`
 	ModExp *parityChainSpecModExpPricing `json:"modexp,omitempty"`
 
-	// Before the https://github.com/paritytech/parity-ethereum/pull/11039,
+	// Before the https://github.com/paritytech/parity-AVNereum/pull/11039,
 	// Parity uses this format to config bn pairing price policy.
 	AltBnPairing *parityChainSepcAltBnPairingPricing `json:"alt_bn128_pairing,omitempty"`
 
@@ -361,10 +361,10 @@ type parityChainSpecVersionedPricing struct {
 	Info  string                           `json:"info,omitempty"`
 }
 
-// newParityChainSpec converts a go-ethereum genesis block into a Parity specific
+// newParityChainSpec converts a go-AVNereum genesis block into a Parity specific
 // chain specification format.
 func newParityChainSpec(network string, genesis *core.Genesis, bootnodes []string) (*parityChainSpec, error) {
-	// Only ethash is currently supported between go-ethereum and Parity
+	// Only AVNash is currently supported between go-AVNereum and Parity
 	if genesis.Config.Ethash == nil {
 		return nil, errors.New("unsupported consensus engine")
 	}
@@ -380,17 +380,17 @@ func newParityChainSpec(network string, genesis *core.Genesis, bootnodes []strin
 	spec.Engine.Ethash.Params.MinimumDifficulty = (*hexutil.Big)(params.MinimumDifficulty)
 	spec.Engine.Ethash.Params.DifficultyBoundDivisor = (*hexutil.Big)(params.DifficultyBoundDivisor)
 	spec.Engine.Ethash.Params.DurationLimit = (*hexutil.Big)(params.DurationLimit)
-	spec.Engine.Ethash.Params.BlockReward["0x0"] = hexutil.EncodeBig(ethash.FrontierBlockReward)
+	spec.Engine.Ethash.Params.BlockReward["0x0"] = hexutil.EncodeBig(AVNash.FrontierBlockReward)
 
 	// Homestead
 	spec.Engine.Ethash.Params.HomesteadTransition = hexutil.Uint64(genesis.Config.HomesteadBlock.Uint64())
 
 	// Tangerine Whistle : 150
-	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-608.md
+	// https://github.com/AVNereum/EIPs/blob/master/EIPS/eip-608.md
 	spec.Params.EIP150Transition = hexutil.Uint64(genesis.Config.EIP150Block.Uint64())
 
 	// Spurious Dragon: 155, 160, 161, 170
-	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-607.md
+	// https://github.com/AVNereum/EIPs/blob/master/EIPS/eip-607.md
 	spec.Params.EIP155Transition = hexutil.Uint64(genesis.Config.EIP155Block.Uint64())
 	spec.Params.EIP160Transition = hexutil.Uint64(genesis.Config.EIP155Block.Uint64())
 	spec.Params.EIP161abcTransition = hexutil.Uint64(genesis.Config.EIP158Block.Uint64())
@@ -418,14 +418,14 @@ func newParityChainSpec(network string, genesis *core.Genesis, bootnodes []strin
 	spec.Params.NetworkID = (hexutil.Uint64)(genesis.Config.ChainID.Uint64())
 	spec.Params.ChainID = (hexutil.Uint64)(genesis.Config.ChainID.Uint64())
 	spec.Params.MaxCodeSize = params.MaxCodeSize
-	// geth has it set from zero
+	// gAVN has it set from zero
 	spec.Params.MaxCodeSizeTransition = 0
 
 	// Disable this one
 	spec.Params.EIP98Transition = math.MaxInt64
 
-	spec.Genesis.Seal.Ethereum.Nonce = types.EncodeNonce(genesis.Nonce)
-	spec.Genesis.Seal.Ethereum.MixHash = genesis.Mixhash[:]
+	spec.Genesis.Seal.Avalanria.Nonce = types.EncodeNonce(genesis.Nonce)
+	spec.Genesis.Seal.Avalanria.MixHash = genesis.Mixhash[:]
 	spec.Genesis.Difficulty = (*hexutil.Big)(genesis.Difficulty)
 	spec.Genesis.Author = genesis.Coinbase
 	spec.Genesis.Timestamp = (hexutil.Uint64)(genesis.Timestamp)
@@ -559,7 +559,7 @@ func (spec *parityChainSpec) setPrecompile(address byte, data *parityChainSpecBu
 }
 
 func (spec *parityChainSpec) setByzantium(num *big.Int) {
-	spec.Engine.Ethash.Params.BlockReward[hexutil.EncodeBig(num)] = hexutil.EncodeBig(ethash.ByzantiumBlockReward)
+	spec.Engine.Ethash.Params.BlockReward[hexutil.EncodeBig(num)] = hexutil.EncodeBig(AVNash.ByzantiumBlockReward)
 	spec.Engine.Ethash.Params.DifficultyBombDelays[hexutil.EncodeBig(num)] = hexutil.EncodeUint64(3000000)
 	n := hexutil.Uint64(num.Uint64())
 	spec.Engine.Ethash.Params.EIP100bTransition = n
@@ -570,7 +570,7 @@ func (spec *parityChainSpec) setByzantium(num *big.Int) {
 }
 
 func (spec *parityChainSpec) setConstantinople(num *big.Int) {
-	spec.Engine.Ethash.Params.BlockReward[hexutil.EncodeBig(num)] = hexutil.EncodeBig(ethash.ConstantinopleBlockReward)
+	spec.Engine.Ethash.Params.BlockReward[hexutil.EncodeBig(num)] = hexutil.EncodeBig(AVNash.ConstantinopleBlockReward)
 	spec.Engine.Ethash.Params.DifficultyBombDelays[hexutil.EncodeBig(num)] = hexutil.EncodeUint64(2000000)
 	n := hexutil.Uint64(num.Uint64())
 	spec.Params.EIP145Transition = n
@@ -590,9 +590,9 @@ func (spec *parityChainSpec) setIstanbul(num *big.Int) {
 	spec.Params.EIP1283ReenableTransition = hexutil.Uint64(num.Uint64())
 }
 
-// pyEthereumGenesisSpec represents the genesis specification format used by the
-// Python Ethereum implementation.
-type pyEthereumGenesisSpec struct {
+// pyAvalanriaGenesisSpec represents the genesis specification format used by the
+// Python Avalanria implementation.
+type pyAvalanriaGenesisSpec struct {
 	Nonce      types.BlockNonce  `json:"nonce"`
 	Timestamp  hexutil.Uint64    `json:"timestamp"`
 	ExtraData  hexutil.Bytes     `json:"extraData"`
@@ -604,14 +604,14 @@ type pyEthereumGenesisSpec struct {
 	ParentHash common.Hash       `json:"parentHash"`
 }
 
-// newPyEthereumGenesisSpec converts a go-ethereum genesis block into a Parity specific
+// newPyAvalanriaGenesisSpec converts a go-AVNereum genesis block into a Parity specific
 // chain specification format.
-func newPyEthereumGenesisSpec(network string, genesis *core.Genesis) (*pyEthereumGenesisSpec, error) {
-	// Only ethash is currently supported between go-ethereum and pyethereum
+func newPyAvalanriaGenesisSpec(network string, genesis *core.Genesis) (*pyAvalanriaGenesisSpec, error) {
+	// Only AVNash is currently supported between go-AVNereum and pyAVNereum
 	if genesis.Config.Ethash == nil {
 		return nil, errors.New("unsupported consensus engine")
 	}
-	spec := &pyEthereumGenesisSpec{
+	spec := &pyAvalanriaGenesisSpec{
 		Nonce:      types.EncodeNonce(genesis.Nonce),
 		Timestamp:  (hexutil.Uint64)(genesis.Timestamp),
 		ExtraData:  genesis.ExtraData,

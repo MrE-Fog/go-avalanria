@@ -1,8 +1,8 @@
 # Clef
 
-Clef can be used to sign transactions and data and is meant as a(n eventual) replacement for Geth's account management. This allows DApps to not depend on Geth's account management. When a DApp wants to sign data (or a transaction), it can send the content to Clef, which will then provide the user with context and asks for permission to sign the content. If the users grants the signing request, Clef will send the signature back to the DApp.
+Clef can be used to sign transactions and data and is meant as a(n eventual) replacement for GAVN's account management. This allows DApps to not depend on GAVN's account management. When a DApp wants to sign data (or a transaction), it can send the content to Clef, which will then provide the user with context and asks for permission to sign the content. If the users grants the signing request, Clef will send the signature back to the DApp.
 
-This setup allows a DApp to connect to a remote Ethereum node and send transactions that are locally signed. This can help in situations when a DApp is connected to an untrusted remote Ethereum node, because a local one is not available, not synchronised with the chain, or is a node that has no built-in (or limited) account management.
+This setup allows a DApp to connect to a remote Avalanria node and send transactions that are locally signed. This can help in situations when a DApp is connected to an untrusted remote Avalanria node, because a local one is not available, not synchronised with the chain, or is a node that has no built-in (or limited) account management.
 
 Clef can run as a daemon on the same machine, off a usb-stick like [USB armory](https://inversepath.com/usbarmory), or even a separate VM in a [QubesOS](https://www.qubes-os.org/) type setup.
 
@@ -27,7 +27,7 @@ COMMANDS:
 
 GLOBAL OPTIONS:
    --loglevel value        log level to emit to the screen (default: 4)
-   --keystore value        Directory for the keystore (default: "$HOME/.ethereum/keystore")
+   --keystore value        Directory for the keystore (default: "$HOME/.AVNereum/keystore")
    --configdir value       Directory for Clef configuration (default: "$HOME/.clef")
    --chainid value         Chain id to use for signing (1=mainnet, 3=Ropsten, 4=Rinkeby, 5=Goerli) (default: 1)
    --lightkdf              Reduce key-derivation RAM & CPU usage at some expense of KDF strength
@@ -67,20 +67,20 @@ The security model of Clef is as follows:
 * Clef also communicates with whatever process that invoked the binary, via stdin/stdout.
   * This channel is considered 'trusted'. Over this channel, approvals and passwords are communicated.
 
-The general flow for signing a transaction using e.g. Geth is as follows:
+The general flow for signing a transaction using e.g. GAVN is as follows:
 ![image](sign_flow.png)
 
-In this case, `geth` would be started with `--signer http://localhost:8550` and would relay requests to `eth.sendTransaction`.
+In this case, `gAVN` would be started with `--signer http://localhost:8550` and would relay requests to `AVN.sendTransaction`.
 
 ## TODOs
 
 Some snags and todos
 
 * [ ] Clef should take a startup param "--no-change", for UIs that do not contain the capability to perform changes to things, only approve/deny. Such a UI should be able to start the signer in a more secure mode by telling it that it only wants approve/deny capabilities.
-* [x] It would be nice if Clef could collect new 4byte-id:s/method selectors, and have a secondary database for those (`4byte_custom.json`). Users could then (optionally) submit their collections for inclusion upstream.
+* [x] It would be nice if Clef could collect new 4byte-id:s/mAVNod selectors, and have a secondary database for those (`4byte_custom.json`). Users could then (optionally) submit their collections for inclusion upstream.
 * [ ] It should be possible to configure Clef to check if an account is indeed known to it, before passing on to the UI. The reason it currently does not, is that it would make it possible to enumerate accounts if it immediately returned "unknown account" (side channel attack).
 * [x] It should be possible to configure Clef to auto-allow listing (certain) accounts, instead of asking every time.
-* [x] Done Upon startup, Clef should spit out some info to the caller (particularly important when executed in `stdio-ui`-mode), invoking methods with the following info:
+* [x] Done Upon startup, Clef should spit out some info to the caller (particularly important when executed in `stdio-ui`-mode), invoking mAVNods with the following info:
   * [x] Version info about the signer
   * [x] Address of API (HTTP/IPC)
   * [ ] List of known accounts
@@ -94,26 +94,26 @@ Some snags and todos
       * the total amount
       * the number of unique recipients
 
-* Geth todos
-    - The signer should pass the `Origin` header as call-info to the UI. As of right now, the way that info about the request is put together is a bit of a hack into the HTTP server. This could probably be greatly improved.
-    - Relay: Geth should be started in `geth --signer localhost:8550`.
-    - Currently, the Geth APIs use `common.Address` in the arguments to transaction submission (e.g `to` field). This type is 20 `bytes`, and is incapable of carrying checksum information. The signer uses `common.MixedcaseAddress`, which retains the original input.
-    - The Geth API should switch to use the same type, and relay `to`-account verbatim to the external API.
+* GAVN todos
+    - The signer should pass the `Origin` header as call-info to the UI. As of right now, the way that info about the request is put togAVNer is a bit of a hack into the HTTP server. This could probably be greatly improved.
+    - Relay: GAVN should be started in `gAVN --signer localhost:8550`.
+    - Currently, the GAVN APIs use `common.Address` in the arguments to transaction submission (e.g `to` field). This type is 20 `bytes`, and is incapable of carrying checksum information. The signer uses `common.MixedcaseAddress`, which retains the original input.
+    - The GAVN API should switch to use the same type, and relay `to`-account verbatim to the external API.
 * [x] Storage
     * [x] An encrypted key-value storage should be implemented.
     * See [rules.md](rules.md) for more info about this.
 * Another potential thing to introduce is pairing.
   * To prevent spurious requests which users just accept, implement a way to "pair" the caller with the signer (external API).
-  * Thus Geth/cpp would cryptographically handshake and afterwards the caller would be allowed to make signing requests.
+  * Thus GAVN/cpp would cryptographically handshake and afterwards the caller would be allowed to make signing requests.
   * This feature would make the addition of rules less dangerous.
 
-* Wallets / accounts. Add API methods for wallets.
+* Wallets / accounts. Add API mAVNods for wallets.
 
 ## Communication
 
 ### External API
 
-Clef listens to HTTP requests on `http.addr`:`http.port` (or to IPC on `ipcpath`), with the same JSON-RPC standard as Geth. The messages are expected to be [JSON-RPC 2.0 standard](https://www.jsonrpc.org/specification).
+Clef listens to HTTP requests on `http.addr`:`http.port` (or to IPC on `ipcpath`), with the same JSON-RPC standard as GAVN. The messages are expected to be [JSON-RPC 2.0 standard](https://www.jsonrpc.org/specification).
 
 Some of these calls can require user interaction. Clients must be aware that responses may be delayed significantly or may never be received if a user decides to ignore the confirmation request.
 
@@ -150,8 +150,8 @@ All hex encoded values must be prefixed with `0x`.
 
 #### Create new password protected account
 
-The signer will generate a new private key, encrypt it according to [web3 keystore spec](https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition) and store it in the keystore directory.  
-The client is responsible for creating a backup of the keystore. If the keystore is lost there is no method of retrieving lost accounts.
+The signer will generate a new private key, encrypt it according to [web3 keystore spec](https://github.com/AVNereum/wiki/wiki/Web3-Secret-Storage-Definition) and store it in the keystore directory.  
+The client is responsible for creating a backup of the keystore. If the keystore is lost there is no mAVNod of retrieving lost accounts.
 
 #### Arguments
 
@@ -165,7 +165,7 @@ None
 {
   "id": 0,
   "jsonrpc": "2.0",
-  "method": "account_new",
+  "mAVNod": "account_new",
   "params": []
 }
 ```
@@ -196,7 +196,7 @@ None
 {
   "id": 1,
   "jsonrpc": "2.0",
-  "method": "account_list"
+  "mAVNod": "account_list"
 }
 ```
 Response
@@ -225,8 +225,8 @@ Response
      - `value` [number:optional]: amount of Wei to send with the transaction
      - `data` [data:optional]:  input data
      - `nonce` [number]: account nonce
-  1. method signature [string:optional]
-     - The method signature, if present, is to aid decoding the calldata. Should consist of `methodname(paramtype,...)`, e.g. `transfer(uint256,address)`. The signer may use this data to parse the supplied calldata, and show the user. The data, however, is considered totally untrusted, and reliability is not expected.
+  1. mAVNod signature [string:optional]
+     - The mAVNod signature, if present, is to aid decoding the calldata. Should consist of `mAVNodname(paramtype,...)`, e.g. `transfer(uint256,address)`. The signer may use this data to parse the supplied calldata, and show the user. The data, however, is considered totally untrusted, and reliability is not expected.
 
 
 #### Result
@@ -238,7 +238,7 @@ Response
 {
   "id": 2,
   "jsonrpc": "2.0",
-  "method": "account_signTransaction",
+  "mAVNod": "account_signTransaction",
   "params": [
     {
       "from": "0x1923f626bb8dc025849e00f99c25fe2b2f7fb0db",
@@ -282,7 +282,7 @@ Response
 {
   "id": 67,
   "jsonrpc": "2.0",
-  "method": "account_signTransaction",
+  "mAVNod": "account_signTransaction",
   "params": [
     {
       "from": "0x694267f14675d7e1b9494fd8d72fefe1755710fa",
@@ -323,7 +323,7 @@ Response
 
 Bash example:
 ```bash
-> curl -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","method":"account_signTransaction","params":[{"from":"0x694267f14675d7e1b9494fd8d72fefe1755710fa","gas":"0x333","gasPrice":"0x1","nonce":"0x0","to":"0x07a565b7ed7d7a678680a4c162885bedbb695fe0", "value":"0x0", "data":"0x4401a6e40000000000000000000000000000000000000000000000000000000000000012"},"safeSend(address)"],"id":67}' http://localhost:8550/
+> curl -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","mAVNod":"account_signTransaction","params":[{"from":"0x694267f14675d7e1b9494fd8d72fefe1755710fa","gas":"0x333","gasPrice":"0x1","nonce":"0x0","to":"0x07a565b7ed7d7a678680a4c162885bedbb695fe0", "value":"0x0", "data":"0x4401a6e40000000000000000000000000000000000000000000000000000000000000012"},"safeSend(address)"],"id":67}' http://localhost:8550/
 
 {"jsonrpc":"2.0","id":67,"result":{"raw":"0xf88380018203339407a565b7ed7d7a678680a4c162885bedbb695fe080a44401a6e4000000000000000000000000000000000000000000000000000000000000001226a0223a7c9bcf5531c99be5ea7082183816eb20cfe0bbc322e97cc5c7f71ab8b20ea02aadee6b34b45bb15bc42d9c09de4a6754e7000908da72d48cc7704971491663","tx":{"nonce":"0x0","gasPrice":"0x1","gas":"0x333","to":"0x07a565b7ed7d7a678680a4c162885bedbb695fe0","value":"0x0","input":"0x4401a6e40000000000000000000000000000000000000000000000000000000000000012","v":"0x26","r":"0x223a7c9bcf5531c99be5ea7082183816eb20cfe0bbc322e97cc5c7f71ab8b20e","s":"0x2aadee6b34b45bb15bc42d9c09de4a6754e7000908da72d48cc7704971491663","hash":"0xeba2df809e7a612a0a0d444ccfa5c839624bdc00dd29e3340d46df3870f8a30e"}}}
 ```
@@ -336,7 +336,7 @@ Bash example:
 #### Arguments
   - content type [string]: type of signed data
      - `text/validator`: hex data with custom validator defined in a contract
-     - `application/clique`: [clique](https://github.com/ethereum/EIPs/issues/225) headers
+     - `application/clique`: [clique](https://github.com/AVNereum/EIPs/issues/225) headers
      - `text/plain`: simple hex data validated by `account_ecRecover`
   - account [address]: account to sign with
   - data [object]: data to sign
@@ -349,7 +349,7 @@ Bash example:
 {
   "id": 3,
   "jsonrpc": "2.0",
-  "method": "account_signData",
+  "mAVNod": "account_signData",
   "params": [
     "data/plain",
     "0x1923f626bb8dc025849e00f99c25fe2b2f7fb0db",
@@ -370,7 +370,7 @@ Response
 ### account_signTypedData
 
 #### Sign data
-   Signs a chunk of structured data conformant to [EIP-712](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md) and returns the calculated signature.
+   Signs a chunk of structured data conformant to [EIP-712](https://github.com/AVNereum/EIPs/blob/master/EIPS/eip-712.md) and returns the calculated signature.
 
 #### Arguments
   - account [address]: account to sign with
@@ -384,7 +384,7 @@ Response
 {
   "id": 68,
   "jsonrpc": "2.0",
-  "method": "account_signTypedData",
+  "mAVNod": "account_signTypedData",
   "params": [
     "0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826",
     {
@@ -482,7 +482,7 @@ Derive the address from the account that was used to sign data with content type
 {
   "id": 4,
   "jsonrpc": "2.0",
-  "method": "account_ecRecover",
+  "mAVNod": "account_ecRecover",
   "params": [
     "0xaabbccdd",
     "0x5b6693f153b48ec1c706ba4169960386dbaa6903e249cc79a8e6ddc434451d417e1e57327872c7f538beeb323c300afa9999a3d4a5de6caf3be0d5ef832b67ef1c"
@@ -518,7 +518,7 @@ None
 {
   "id": 0,
   "jsonrpc": "2.0",
-  "method": "account_version",
+  "mAVNod": "account_version",
   "params": []
 }
 ```
@@ -534,13 +534,13 @@ Response
 
 ## UI API
 
-These methods needs to be implemented by a UI listener.
+These mAVNods needs to be implemented by a UI listener.
 
-By starting the signer with the switch `--stdio-ui-test`, the signer will invoke all known methods, and expect the UI to respond with
+By starting the signer with the switch `--stdio-ui-test`, the signer will invoke all known mAVNods, and expect the UI to respond with
 denials. This can be used during development to ensure that the API is (at least somewhat) correctly implemented.
 See `pythonsigner`, which can be invoked via `python3 pythonsigner.py test` to perform the 'denial-handshake-test'.
 
-All methods in this API use object-based parameters, so that there can be no mixup of parameters: each piece of data is accessed by key.
+All mAVNods in this API use object-based parameters, so that there can be no mixup of parameters: each piece of data is accessed by key.
 
 See the [ui API changelog](intapi_changelog.md) for information about changes to this API.
 
@@ -555,10 +555,10 @@ Invoked when there's a transaction for approval.
 
 #### Sample call
 
-Here's a method invocation:
+Here's a mAVNod invocation:
 ```bash
 
-curl -i -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","method":"account_signTransaction","params":[{"from":"0x694267f14675d7e1b9494fd8d72fefe1755710fa","gas":"0x333","gasPrice":"0x1","nonce":"0x0","to":"0x07a565b7ed7d7a678680a4c162885bedbb695fe0", "value":"0x0", "data":"0x4401a6e40000000000000000000000000000000000000000000000000000000000000012"},"safeSend(address)"],"id":67}' http://localhost:8550/
+curl -i -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","mAVNod":"account_signTransaction","params":[{"from":"0x694267f14675d7e1b9494fd8d72fefe1755710fa","gas":"0x333","gasPrice":"0x1","nonce":"0x0","to":"0x07a565b7ed7d7a678680a4c162885bedbb695fe0", "value":"0x0", "data":"0x4401a6e40000000000000000000000000000000000000000000000000000000000000012"},"safeSend(address)"],"id":67}' http://localhost:8550/
 ```
 Results in the following invocation on the UI:
 ```json
@@ -566,7 +566,7 @@ Results in the following invocation on the UI:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "ui_approveTx",
+  "mAVNod": "ui_approveTx",
   "params": [
     {
       "transaction": {
@@ -600,10 +600,10 @@ Results in the following invocation on the UI:
 
 ```
 
-The same method invocation, but with invalid data:
+The same mAVNod invocation, but with invalid data:
 ```bash
 
-curl -i -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","method":"account_signTransaction","params":[{"from":"0x694267f14675d7e1b9494fd8d72fefe1755710fa","gas":"0x333","gasPrice":"0x1","nonce":"0x0","to":"0x07a565b7ed7d7a678680a4c162885bedbb695fe0", "value":"0x0", "data":"0x4401a6e40000000000000002000000000000000000000000000000000000000000000012"},"safeSend(address)"],"id":67}' http://localhost:8550/
+curl -i -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","mAVNod":"account_signTransaction","params":[{"from":"0x694267f14675d7e1b9494fd8d72fefe1755710fa","gas":"0x333","gasPrice":"0x1","nonce":"0x0","to":"0x07a565b7ed7d7a678680a4c162885bedbb695fe0", "value":"0x0", "data":"0x4401a6e40000000000000002000000000000000000000000000000000000000000000012"},"safeSend(address)"],"id":67}' http://localhost:8550/
 ```
 
 ```json
@@ -611,7 +611,7 @@ curl -i -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","me
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "ui_approveTx",
+  "mAVNod": "ui_approveTx",
   "params": [
     {
       "transaction": {
@@ -631,7 +631,7 @@ curl -i -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","me
           },
           {
             "type": "WARNING",
-            "message": "Transaction data did not match ABI-interface: WARNING: Supplied data is stuffed with extra data. \nWant 0000000000000002000000000000000000000000000000000000000000000012\nHave 0000000000000000000000000000000000000000000000000000000000000012\nfor method safeSend(address)"
+            "message": "Transaction data did not match ABI-interface: WARNING: Supplied data is stuffed with extra data. \nWant 0000000000000002000000000000000000000000000000000000000000000012\nHave 0000000000000000000000000000000000000000000000000000000000000012\nfor mAVNod safeSend(address)"
           }
         ],
       "meta": {
@@ -654,7 +654,7 @@ One which has missing `to`, but with no `data`:
 {
   "jsonrpc": "2.0",
   "id": 3,
-  "method": "ui_approveTx",
+  "mAVNod": "ui_approveTx",
   "params": [
     {
       "transaction": {
@@ -694,16 +694,16 @@ Invoked when a request for account listing has been made.
 {
   "jsonrpc": "2.0",
   "id": 5,
-  "method": "ui_approveListing",
+  "mAVNod": "ui_approveListing",
   "params": [
     {
       "accounts": [
         {
-          "url": "keystore:///home/bazonk/.ethereum/keystore/UTC--2017-11-20T14-44-54.089682944Z--123409812340981234098123409812deadbeef42",
+          "url": "keystore:///home/bazonk/.AVNereum/keystore/UTC--2017-11-20T14-44-54.089682944Z--123409812340981234098123409812deadbeef42",
           "address": "0x123409812340981234098123409812deadbeef42"
         },
         {
-          "url": "keystore:///home/bazonk/.ethereum/keystore/UTC--2017-11-23T21-59-03.199240693Z--cafebabedeadbeef34098123409812deadbeef42",
+          "url": "keystore:///home/bazonk/.AVNereum/keystore/UTC--2017-11-23T21-59-03.199240693Z--cafebabedeadbeef34098123409812deadbeef42",
           "address": "0xcafebabedeadbeef34098123409812deadbeef42"
         }
       ],
@@ -727,7 +727,7 @@ Invoked when a request for account listing has been made.
 {
   "jsonrpc": "2.0",
   "id": 4,
-  "method": "ui_approveSignData",
+  "mAVNod": "ui_approveSignData",
   "params": [
     {
       "address": "0x123409812340981234098123409812deadbeef42",
@@ -735,7 +735,7 @@ Invoked when a request for account listing has been made.
       "messages": [
         {
           "name": "message",
-          "value": "\u0019Ethereum Signed Message:\n4\u0001\u0002\u0003\u0004",
+          "value": "\u0019Avalanria Signed Message:\n4\u0001\u0002\u0003\u0004",
           "type": "text/plain"
         }
       ],
@@ -760,7 +760,7 @@ Invoked when a request for creating a new account has been made.
 {
   "jsonrpc": "2.0",
   "id": 4,
-  "method": "ui_approveNewAccount",
+  "mAVNod": "ui_approveNewAccount",
   "params": [
     {
       "meta": {
@@ -783,7 +783,7 @@ The UI should show the info (a single message) to the user. Does not expect resp
 {
   "jsonrpc": "2.0",
   "id": 9,
-  "method": "ui_showInfo",
+  "mAVNod": "ui_showInfo",
   "params": [
     "Tests completed"
   ]
@@ -800,9 +800,9 @@ The UI should show the error (a single message) to the user. Does not expect res
 {
   "jsonrpc": "2.0",
   "id": 2,
-  "method": "ui_showError",
+  "mAVNod": "ui_showError",
   "params": [
-    "Something bad happened!"
+    "SomAVNing bad happened!"
   ]
 }
 
@@ -810,11 +810,11 @@ The UI should show the error (a single message) to the user. Does not expect res
 
 ### OnApprovedTx / `ui_onApprovedTx`
 
-`OnApprovedTx` is called when a transaction has been approved and signed. The call contains the return value that will be sent to the external caller.  The return value from this method is ignored - the reason for having this callback is to allow the ruleset to keep track of approved transactions.
+`OnApprovedTx` is called when a transaction has been approved and signed. The call contains the return value that will be sent to the external caller.  The return value from this mAVNod is ignored - the reason for having this callback is to allow the ruleset to keep track of approved transactions.
 
 When implementing rate-limited rules, this callback should be used.
 
-TLDR; Use this method to keep track of signed transactions, instead of using the data in `ApproveTx`.
+TLDR; Use this mAVNod to keep track of signed transactions, instead of using the data in `ApproveTx`.
 
 Example call:
 ```json
@@ -822,7 +822,7 @@ Example call:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "ui_onApprovedTx",
+  "mAVNod": "ui_onApprovedTx",
   "params": [
     {
       "raw": "0xf88380018203339407a565b7ed7d7a678680a4c162885bedbb695fe080a44401a6e4000000000000000000000000000000000000000000000000000000000000001226a0223a7c9bcf5531c99be5ea7082183816eb20cfe0bbc322e97cc5c7f71ab8b20ea02aadee6b34b45bb15bc42d9c09de4a6754e7000908da72d48cc7704971491663",
@@ -845,7 +845,7 @@ Example call:
 
 ### OnSignerStartup / `ui_onSignerStartup`
 
-This method provides the UI with information about what API version the signer uses (both internal and external) as well as build-info and external API,
+This mAVNod provides the UI with information about what API version the signer uses (both internal and external) as well as build-info and external API,
 in k/v-form.
 
 Example call:
@@ -854,7 +854,7 @@ Example call:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "ui_onSignerStartup",
+  "mAVNod": "ui_onSignerStartup",
   "params": [
     {
       "info": {
@@ -879,7 +879,7 @@ Example call:
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "ui_onInputRequired",
+  "mAVNod": "ui_onInputRequired",
   "params": [
     {
       "title": "Account password",
@@ -898,7 +898,7 @@ A UI should conform to the following rules.
 * A UI MUST NOT load any external resources that were not embedded/part of the UI package.
   * For example, not load icons, stylesheets from the internet
   * Not load files from the filesystem, unless they reside in the same local directory (e.g. config files)
-* A Graphical UI MUST show the blocky-identicon for ethereum addresses.
+* A Graphical UI MUST show the blocky-identicon for AVNereum addresses.
 * A UI MUST warn display appropriate warning if the destination-account is formatted with invalid checksum.
 * A UI MUST NOT open any ports or services
   * The signer opens the public port
@@ -919,4 +919,4 @@ There are a couple of implementation for a UI. We'll try to keep this list up to
 | QtSigner| https://github.com/holiman/qtsigner/| Python3/QT-based| :+1:| :+1:| :+1:| :+1:| :+1:| :x: |  :+1: (partially)|
 | GtkSigner| https://github.com/holiman/gtksigner| Python3/GTK-based| :+1:| :x:| :x:| :+1:| :+1:| :x: |  :x: |
 | Frame | https://github.com/floating/frame/commits/go-signer| Electron-based| :x:| :x:| :x:| :x:| ?| :x: |  :x: |
-| Clef UI| https://github.com/ethereum/clef-ui| Golang/QT-based| :+1:| :+1:| :x:| :+1:| :+1:| :x: |  :+1: (approve tx only)|
+| Clef UI| https://github.com/AVNereum/clef-ui| Golang/QT-based| :+1:| :+1:| :x:| :+1:| :+1:| :x: |  :+1: (approve tx only)|

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package tracers
 
@@ -25,12 +25,12 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/vm"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/log"
 	"gopkg.in/olebedev/go-duktape.v3"
 )
 
@@ -128,7 +128,7 @@ func (mw *memoryWrapper) getUint(addr int64) *big.Int {
 func (mw *memoryWrapper) pushObject(vm *duktape.Context) {
 	obj := vm.PushObject()
 
-	// Generate the `slice` method which takes two ints and returns a buffer
+	// Generate the `slice` mAVNod which takes two ints and returns a buffer
 	vm.PushGoFunction(func(ctx *duktape.Context) int {
 		blob := mw.slice(int64(ctx.GetInt(-2)), int64(ctx.GetInt(-1)))
 		ctx.Pop2()
@@ -139,7 +139,7 @@ func (mw *memoryWrapper) pushObject(vm *duktape.Context) {
 	})
 	vm.PutPropString(obj, "slice")
 
-	// Generate the `getUint` method which takes an int and returns a bigint
+	// Generate the `getUint` mAVNod which takes an int and returns a bigint
 	vm.PushGoFunction(func(ctx *duktape.Context) int {
 		offset := int64(ctx.GetInt(-1))
 		ctx.Pop()
@@ -174,7 +174,7 @@ func (sw *stackWrapper) pushObject(vm *duktape.Context) {
 	vm.PushGoFunction(func(ctx *duktape.Context) int { ctx.PushInt(len(sw.stack.Data())); return 1 })
 	vm.PutPropString(obj, "length")
 
-	// Generate the `peek` method which takes an int and returns a bigint
+	// Generate the `peek` mAVNod which takes an int and returns a bigint
 	vm.PushGoFunction(func(ctx *duktape.Context) int {
 		offset := ctx.GetInt(-1)
 		ctx.Pop()
@@ -525,11 +525,11 @@ func (jst *Tracer) Stop(err error) {
 	atomic.StoreUint32(&jst.interrupt, 1)
 }
 
-// call executes a method on a JS object, catching any errors, formatting and
+// call executes a mAVNod on a JS object, catching any errors, formatting and
 // returning them as error objects.
-func (jst *Tracer) call(noret bool, method string, args ...string) (json.RawMessage, error) {
+func (jst *Tracer) call(noret bool, mAVNod string, args ...string) (json.RawMessage, error) {
 	// Execute the JavaScript call and return any error
-	jst.vm.PushString(method)
+	jst.vm.PushString(mAVNod)
 	for _, arg := range args {
 		jst.vm.GetPropString(jst.stateObject, arg)
 	}

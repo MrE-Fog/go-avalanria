@@ -1,18 +1,18 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package abi
 
@@ -21,7 +21,7 @@ import (
 	"testing"
 )
 
-const methoddata = `
+const mAVNoddata = `
 [
 	{"type": "function", "name": "balance", "stateMutability": "view"},
 	{"type": "function", "name": "send", "inputs": [{ "name": "amount", "type": "uint256" }]},
@@ -34,62 +34,62 @@ const methoddata = `
 	{"stateMutability":"payable","type":"receive"}
 ]`
 
-func TestMethodString(t *testing.T) {
+func TestMAVNodString(t *testing.T) {
 	var table = []struct {
-		method      string
+		mAVNod      string
 		expectation string
 	}{
 		{
-			method:      "balance",
+			mAVNod:      "balance",
 			expectation: "function balance() view returns()",
 		},
 		{
-			method:      "send",
+			mAVNod:      "send",
 			expectation: "function send(uint256 amount) returns()",
 		},
 		{
-			method:      "transfer",
+			mAVNod:      "transfer",
 			expectation: "function transfer(address from, address to, uint256 value) returns(bool success)",
 		},
 		{
-			method:      "tuple",
+			mAVNod:      "tuple",
 			expectation: "function tuple((uint256,uint256) a) returns()",
 		},
 		{
-			method:      "tupleArray",
+			mAVNod:      "tupleArray",
 			expectation: "function tupleArray((uint256,uint256)[5] a) returns()",
 		},
 		{
-			method:      "tupleSlice",
+			mAVNod:      "tupleSlice",
 			expectation: "function tupleSlice((uint256,uint256)[] a) returns()",
 		},
 		{
-			method:      "complexTuple",
+			mAVNod:      "complexTuple",
 			expectation: "function complexTuple((uint256,uint256)[5][] a) returns()",
 		},
 		{
-			method:      "fallback",
+			mAVNod:      "fallback",
 			expectation: "fallback() returns()",
 		},
 		{
-			method:      "receive",
+			mAVNod:      "receive",
 			expectation: "receive() payable returns()",
 		},
 	}
 
-	abi, err := JSON(strings.NewReader(methoddata))
+	abi, err := JSON(strings.NewReader(mAVNoddata))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	for _, test := range table {
 		var got string
-		if test.method == "fallback" {
+		if test.mAVNod == "fallback" {
 			got = abi.Fallback.String()
-		} else if test.method == "receive" {
+		} else if test.mAVNod == "receive" {
 			got = abi.Receive.String()
 		} else {
-			got = abi.Methods[test.method].String()
+			got = abi.MAVNods[test.mAVNod].String()
 		}
 		if got != test.expectation {
 			t.Errorf("expected string to be %s, got %s", test.expectation, got)
@@ -97,47 +97,47 @@ func TestMethodString(t *testing.T) {
 	}
 }
 
-func TestMethodSig(t *testing.T) {
+func TestMAVNodSig(t *testing.T) {
 	var cases = []struct {
-		method string
+		mAVNod string
 		expect string
 	}{
 		{
-			method: "balance",
+			mAVNod: "balance",
 			expect: "balance()",
 		},
 		{
-			method: "send",
+			mAVNod: "send",
 			expect: "send(uint256)",
 		},
 		{
-			method: "transfer",
+			mAVNod: "transfer",
 			expect: "transfer(address,address,uint256)",
 		},
 		{
-			method: "tuple",
+			mAVNod: "tuple",
 			expect: "tuple((uint256,uint256))",
 		},
 		{
-			method: "tupleArray",
+			mAVNod: "tupleArray",
 			expect: "tupleArray((uint256,uint256)[5])",
 		},
 		{
-			method: "tupleSlice",
+			mAVNod: "tupleSlice",
 			expect: "tupleSlice((uint256,uint256)[])",
 		},
 		{
-			method: "complexTuple",
+			mAVNod: "complexTuple",
 			expect: "complexTuple((uint256,uint256)[5][])",
 		},
 	}
-	abi, err := JSON(strings.NewReader(methoddata))
+	abi, err := JSON(strings.NewReader(mAVNoddata))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	for _, test := range cases {
-		got := abi.Methods[test.method].Sig
+		got := abi.MAVNods[test.mAVNod].Sig
 		if got != test.expect {
 			t.Errorf("expected string to be %s, got %s", test.expect, got)
 		}

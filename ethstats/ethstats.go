@@ -1,21 +1,21 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2016 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package ethstats implements the network stats reporting service.
-package ethstats
+// Package AVNstats implements the network stats reporting service.
+package AVNstats
 
 import (
 	"context"
@@ -30,20 +30,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/mclock"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	ethproto "github.com/ethereum/go-ethereum/eth/protocols/eth"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/miner"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/mclock"
+	"github.com/AVNereum/go-AVNereum/consensus"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/AVN/downloader"
+	AVNproto "github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
+	"github.com/AVNereum/go-AVNereum/event"
+	"github.com/AVNereum/go-AVNereum/les"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/miner"
+	"github.com/AVNereum/go-AVNereum/node"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/rpc"
 	"github.com/gorilla/websocket"
 )
 
@@ -59,7 +59,7 @@ const (
 	chainHeadChanSize = 10
 )
 
-// backend encompasses the bare-minimum functionality needed for ethstats reporting
+// backend encompasses the bare-minimum functionality needed for AVNstats reporting
 type backend interface {
 	SubscribeChainHeadEvent(ch chan<- core.ChainHeadEvent) event.Subscription
 	SubscribeNewTxsEvent(ch chan<- core.NewTxsEvent) event.Subscription
@@ -71,7 +71,7 @@ type backend interface {
 }
 
 // fullNodeBackend encompasses the functionality necessary for a full node
-// reporting to ethstats
+// reporting to AVNstats
 type fullNodeBackend interface {
 	backend
 	Miner() *miner.Miner
@@ -80,7 +80,7 @@ type fullNodeBackend interface {
 	SuggestGasTipCap(ctx context.Context) (*big.Int, error)
 }
 
-// Service implements an Ethereum netstats reporting daemon that pushes local
+// Service implements an Avalanria netstats reporting daemon that pushes local
 // chain statistics up to a monitoring server.
 type Service struct {
 	server  *p2p.Server // Peer-to-peer server to retrieve networking infos
@@ -103,12 +103,12 @@ type Service struct {
 //
 // From Gorilla websocket docs:
 //   Connections support one concurrent reader and one concurrent writer.
-//   Applications are responsible for ensuring that no more than one goroutine calls the write methods
+//   Applications are responsible for ensuring that no more than one goroutine calls the write mAVNods
 //     - NextWriter, SetWriteDeadline, WriteMessage, WriteJSON, EnableWriteCompression, SetCompressionLevel
-//   concurrently and that no more than one goroutine calls the read methods
+//   concurrently and that no more than one goroutine calls the read mAVNods
 //     - NextReader, SetReadDeadline, ReadMessage, ReadJSON, SetPongHandler, SetPingHandler
 //   concurrently.
-//   The Close and WriteControl methods can be called concurrently with all other methods.
+//   The Close and WriteControl mAVNods can be called concurrently with all other mAVNods.
 type connWrapper struct {
 	conn *websocket.Conn
 
@@ -120,7 +120,7 @@ func newConnectionWrapper(conn *websocket.Conn) *connWrapper {
 	return &connWrapper{conn: conn}
 }
 
-// WriteJSON wraps corresponding method on the websocket but is safe for concurrent calling
+// WriteJSON wraps corresponding mAVNod on the websocket but is safe for concurrent calling
 func (w *connWrapper) WriteJSON(v interface{}) error {
 	w.wlock.Lock()
 	defer w.wlock.Unlock()
@@ -128,7 +128,7 @@ func (w *connWrapper) WriteJSON(v interface{}) error {
 	return w.conn.WriteJSON(v)
 }
 
-// ReadJSON wraps corresponding method on the websocket but is safe for concurrent calling
+// ReadJSON wraps corresponding mAVNod on the websocket but is safe for concurrent calling
 func (w *connWrapper) ReadJSON(v interface{}) error {
 	w.rlock.Lock()
 	defer w.rlock.Unlock()
@@ -136,9 +136,9 @@ func (w *connWrapper) ReadJSON(v interface{}) error {
 	return w.conn.ReadJSON(v)
 }
 
-// Close wraps corresponding method on the websocket but is safe for concurrent calling
+// Close wraps corresponding mAVNod on the websocket but is safe for concurrent calling
 func (w *connWrapper) Close() error {
-	// The Close and WriteControl methods can be called concurrently with all other methods,
+	// The Close and WriteControl mAVNods can be called concurrently with all other mAVNods,
 	// so the mutex is not used here
 	return w.conn.Close()
 }
@@ -173,7 +173,7 @@ func New(node *node.Node, backend backend, engine consensus.Engine, url string) 
 	if err != nil {
 		return err
 	}
-	ethstats := &Service{
+	AVNstats := &Service{
 		backend: backend,
 		engine:  engine,
 		server:  node.Server(),
@@ -184,7 +184,7 @@ func New(node *node.Node, backend backend, engine consensus.Engine, url string) 
 		histCh:  make(chan []uint64, 1),
 	}
 
-	node.RegisterLifecycle(ethstats)
+	node.RegisterLifecycle(AVNstats)
 	return nil
 }
 
@@ -470,8 +470,8 @@ func (s *Service) login(conn *connWrapper) error {
 		protocols = append(protocols, fmt.Sprintf("%s/%d", proto.Name, proto.Version))
 	}
 	var network string
-	if info := infos.Protocols["eth"]; info != nil {
-		network = fmt.Sprintf("%d", info.(*ethproto.NodeInfo).Network)
+	if info := infos.Protocols["AVN"]; info != nil {
+		network = fmt.Sprintf("%d", info.(*AVNproto.NodeInfo).Network)
 	} else {
 		network = fmt.Sprintf("%d", infos.Protocols["les"].(*les.NodeInfo).Network)
 	}
@@ -507,7 +507,7 @@ func (s *Service) login(conn *connWrapper) error {
 
 // report collects all possible data to report and send it to the stats server.
 // This should only be used on reconnects or rarely to avoid overloading the
-// server. Use the individual methods for reporting subscribed events.
+// server. Use the individual mAVNods for reporting subscribed events.
 func (s *Service) report(conn *connWrapper) error {
 	if err := s.reportLatency(conn); err != nil {
 		return err
@@ -527,7 +527,7 @@ func (s *Service) report(conn *connWrapper) error {
 // reportLatency sends a ping request to the server, measures the RTT time and
 // finally sends a latency update.
 func (s *Service) reportLatency(conn *connWrapper) error {
-	// Send the current time to the ethstats server
+	// Send the current time to the AVNstats server
 	start := time.Now()
 
 	ping := map[string][]interface{}{
@@ -550,7 +550,7 @@ func (s *Service) reportLatency(conn *connWrapper) error {
 	latency := strconv.Itoa(int((time.Since(start) / time.Duration(2)).Nanoseconds() / 1000000))
 
 	// Send back the measured latency
-	log.Trace("Sending measured latency to ethstats", "latency", latency)
+	log.Trace("Sending measured latency to AVNstats", "latency", latency)
 
 	stats := map[string][]interface{}{
 		"emit": {"latency", map[string]string{
@@ -600,7 +600,7 @@ func (s *Service) reportBlock(conn *connWrapper, block *types.Block) error {
 	details := s.assembleBlockStats(block)
 
 	// Assemble the block report and send it to the server
-	log.Trace("Sending new block to ethstats", "number", details.Number, "hash", details.Hash)
+	log.Trace("Sending new block to AVNstats", "number", details.Number, "hash", details.Hash)
 
 	stats := map[string]interface{}{
 		"id":    s.node,
@@ -711,7 +711,7 @@ func (s *Service) reportHistory(conn *connWrapper, list []uint64) error {
 	}
 	// Assemble the history report and send it to the server
 	if len(history) > 0 {
-		log.Trace("Sending historical blocks to ethstats", "first", history[0].Number, "last", history[len(history)-1].Number)
+		log.Trace("Sending historical blocks to AVNstats", "first", history[0].Number, "last", history[len(history)-1].Number)
 	} else {
 		log.Trace("No history to send to stats server")
 	}
@@ -736,7 +736,7 @@ func (s *Service) reportPending(conn *connWrapper) error {
 	// Retrieve the pending count from the local blockchain
 	pending, _ := s.backend.Stats()
 	// Assemble the transaction stats and send it to the server
-	log.Trace("Sending pending transactions to ethstats", "count", pending)
+	log.Trace("Sending pending transactions to AVNstats", "count", pending)
 
 	stats := map[string]interface{}{
 		"id": s.node,
@@ -790,7 +790,7 @@ func (s *Service) reportStats(conn *connWrapper) error {
 		syncing = s.backend.CurrentHeader().Number.Uint64() >= sync.HighestBlock
 	}
 	// Assemble the node stats and send it to the server
-	log.Trace("Sending node details to ethstats")
+	log.Trace("Sending node details to AVNstats")
 
 	stats := map[string]interface{}{
 		"id": s.node,

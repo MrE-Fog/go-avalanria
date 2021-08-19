@@ -1,21 +1,21 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package ethash implements the ethash proof-of-work consensus engine.
-package ethash
+// Package AVNash implements the AVNash proof-of-work consensus engine.
+package AVNash
 
 import (
 	"errors"
@@ -34,10 +34,10 @@ import (
 	"unsafe"
 
 	"github.com/edsrzf/mmap-go"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/consensus"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/metrics"
+	"github.com/AVNereum/go-AVNereum/rpc"
 	"github.com/hashicorp/golang-lru/simplelru"
 )
 
@@ -66,7 +66,7 @@ func init() {
 	sharedEthash = New(sharedConfig, nil, false)
 }
 
-// isLittleEndian returns whether the local system is running in little or big
+// isLittleEndian returns whAVNer the local system is running in little or big
 // endian byte order.
 func isLittleEndian() bool {
 	n := uint32(0x01020304)
@@ -181,7 +181,7 @@ func newlru(what string, maxItems int, new func(epoch uint64) interface{}) *lru 
 		maxItems = 1
 	}
 	cache, _ := simplelru.NewLRU(maxItems, func(key, value interface{}) {
-		log.Trace("Evicted ethash "+what, "epoch", key)
+		log.Trace("Evicted AVNash "+what, "epoch", key)
 	})
 	return &lru{what: what, new: new, cache: cache}
 }
@@ -199,14 +199,14 @@ func (lru *lru) get(epoch uint64) (item, future interface{}) {
 		if lru.future > 0 && lru.future == epoch {
 			item = lru.futureItem
 		} else {
-			log.Trace("Requiring new ethash "+lru.what, "epoch", epoch)
+			log.Trace("Requiring new AVNash "+lru.what, "epoch", epoch)
 			item = lru.new(epoch)
 		}
 		lru.cache.Add(epoch, item)
 	}
 	// Update the 'future item' if epoch is larger than previously seen.
 	if epoch < maxEpoch-1 && lru.future < epoch+1 {
-		log.Trace("Requiring new future ethash "+lru.what, "epoch", epoch+1)
+		log.Trace("Requiring new future AVNash "+lru.what, "epoch", epoch+1)
 		future = lru.new(epoch + 1)
 		lru.future = epoch + 1
 		lru.futureItem = future
@@ -214,7 +214,7 @@ func (lru *lru) get(epoch uint64) (item, future interface{}) {
 	return item, future
 }
 
-// cache wraps an ethash cache with some metadata to allow easier concurrent use.
+// cache wraps an AVNash cache with some metadata to allow easier concurrent use.
 type cache struct {
 	epoch uint64    // Epoch for which this cache is relevant
 	dump  *os.File  // File descriptor of the memory mapped cache
@@ -223,7 +223,7 @@ type cache struct {
 	once  sync.Once // Ensures the cache is generated only once
 }
 
-// newCache creates a new ethash verification cache and returns it as a plain Go
+// newCache creates a new AVNash verification cache and returns it as a plain Go
 // interface to be usable in an LRU cache.
 func newCache(epoch uint64) interface{} {
 	return &cache{epoch: epoch}
@@ -259,15 +259,15 @@ func (c *cache) generate(dir string, limit int, lock bool, test bool) {
 		var err error
 		c.dump, c.mmap, c.cache, err = memoryMap(path, lock)
 		if err == nil {
-			logger.Debug("Loaded old ethash cache from disk")
+			logger.Debug("Loaded old AVNash cache from disk")
 			return
 		}
-		logger.Debug("Failed to load old ethash cache", "err", err)
+		logger.Debug("Failed to load old AVNash cache", "err", err)
 
 		// No previous cache available, create a new cache file to fill
 		c.dump, c.mmap, c.cache, err = memoryMapAndGenerate(path, size, lock, func(buffer []uint32) { generateCache(buffer, c.epoch, seed) })
 		if err != nil {
-			logger.Error("Failed to generate mapped ethash cache", "err", err)
+			logger.Error("Failed to generate mapped AVNash cache", "err", err)
 
 			c.cache = make([]uint32, size/4)
 			generateCache(c.cache, c.epoch, seed)
@@ -290,7 +290,7 @@ func (c *cache) finalizer() {
 	}
 }
 
-// dataset wraps an ethash dataset with some metadata to allow easier concurrent use.
+// dataset wraps an AVNash dataset with some metadata to allow easier concurrent use.
 type dataset struct {
 	epoch   uint64    // Epoch for which this cache is relevant
 	dump    *os.File  // File descriptor of the memory mapped cache
@@ -300,7 +300,7 @@ type dataset struct {
 	done    uint32    // Atomic flag to determine generation status
 }
 
-// newDataset creates a new ethash mining dataset and returns it as a plain Go
+// newDataset creates a new AVNash mining dataset and returns it as a plain Go
 // interface to be usable in an LRU cache.
 func newDataset(epoch uint64) interface{} {
 	return &dataset{epoch: epoch}
@@ -345,10 +345,10 @@ func (d *dataset) generate(dir string, limit int, lock bool, test bool) {
 		var err error
 		d.dump, d.mmap, d.dataset, err = memoryMap(path, lock)
 		if err == nil {
-			logger.Debug("Loaded old ethash dataset from disk")
+			logger.Debug("Loaded old AVNash dataset from disk")
 			return
 		}
-		logger.Debug("Failed to load old ethash dataset", "err", err)
+		logger.Debug("Failed to load old AVNash dataset", "err", err)
 
 		// No previous dataset available, create a new dataset file to fill
 		cache := make([]uint32, csize/4)
@@ -356,7 +356,7 @@ func (d *dataset) generate(dir string, limit int, lock bool, test bool) {
 
 		d.dump, d.mmap, d.dataset, err = memoryMapAndGenerate(path, dsize, lock, func(buffer []uint32) { generateDataset(buffer, d.epoch, cache) })
 		if err != nil {
-			logger.Error("Failed to generate mapped ethash dataset", "err", err)
+			logger.Error("Failed to generate mapped AVNash dataset", "err", err)
 
 			d.dataset = make([]uint32, dsize/2)
 			generateDataset(d.dataset, d.epoch, cache)
@@ -370,7 +370,7 @@ func (d *dataset) generate(dir string, limit int, lock bool, test bool) {
 	})
 }
 
-// generated returns whether this particular dataset finished generating already
+// generated returns whAVNer this particular dataset finished generating already
 // or not (it may not have been started at all). This is useful for remote miners
 // to default to verification caches instead of blocking on DAG generations.
 func (d *dataset) generated() bool {
@@ -386,19 +386,19 @@ func (d *dataset) finalizer() {
 	}
 }
 
-// MakeCache generates a new ethash cache and optionally stores it to disk.
+// MakeCache generates a new AVNash cache and optionally stores it to disk.
 func MakeCache(block uint64, dir string) {
 	c := cache{epoch: block / epochLength}
 	c.generate(dir, math.MaxInt32, false, false)
 }
 
-// MakeDataset generates a new ethash dataset and optionally stores it to disk.
+// MakeDataset generates a new AVNash dataset and optionally stores it to disk.
 func MakeDataset(block uint64, dir string) {
 	d := dataset{epoch: block / epochLength}
 	d.generate(dir, math.MaxInt32, false, false)
 }
 
-// Mode defines the type and amount of PoW verification an ethash engine makes.
+// Mode defines the type and amount of PoW verification an AVNash engine makes.
 type Mode uint
 
 const (
@@ -409,7 +409,7 @@ const (
 	ModeFullFake
 )
 
-// Config are the configuration parameters of the ethash.
+// Config are the configuration parameters of the AVNash.
 type Config struct {
 	CacheDir         string
 	CachesInMem      int
@@ -428,7 +428,7 @@ type Config struct {
 	Log log.Logger `toml:"-"`
 }
 
-// Ethash is a consensus engine based on proof-of-work implementing the ethash
+// Ethash is a consensus engine based on proof-of-work implementing the AVNash
 // algorithm.
 type Ethash struct {
 	config Config
@@ -452,7 +452,7 @@ type Ethash struct {
 	closeOnce sync.Once  // Ensures exit channel will not be closed twice.
 }
 
-// New creates a full sized ethash PoW scheme and starts a background thread for
+// New creates a full sized AVNash PoW scheme and starts a background thread for
 // remote mining, also optionally notifying a batch of remote services of new work
 // packages.
 func New(config Config, notify []string, noverify bool) *Ethash {
@@ -460,16 +460,16 @@ func New(config Config, notify []string, noverify bool) *Ethash {
 		config.Log = log.Root()
 	}
 	if config.CachesInMem <= 0 {
-		config.Log.Warn("One ethash cache must always be in memory", "requested", config.CachesInMem)
+		config.Log.Warn("One AVNash cache must always be in memory", "requested", config.CachesInMem)
 		config.CachesInMem = 1
 	}
 	if config.CacheDir != "" && config.CachesOnDisk > 0 {
-		config.Log.Info("Disk storage enabled for ethash caches", "dir", config.CacheDir, "count", config.CachesOnDisk)
+		config.Log.Info("Disk storage enabled for AVNash caches", "dir", config.CacheDir, "count", config.CachesOnDisk)
 	}
 	if config.DatasetDir != "" && config.DatasetsOnDisk > 0 {
-		config.Log.Info("Disk storage enabled for ethash DAGs", "dir", config.DatasetDir, "count", config.DatasetsOnDisk)
+		config.Log.Info("Disk storage enabled for AVNash DAGs", "dir", config.DatasetDir, "count", config.DatasetsOnDisk)
 	}
-	ethash := &Ethash{
+	AVNash := &Ethash{
 		config:   config,
 		caches:   newlru("cache", config.CachesInMem, newCache),
 		datasets: newlru("dataset", config.DatasetsInMem, newDataset),
@@ -477,20 +477,20 @@ func New(config Config, notify []string, noverify bool) *Ethash {
 		hashrate: metrics.NewMeterForced(),
 	}
 	if config.PowMode == ModeShared {
-		ethash.shared = sharedEthash
+		AVNash.shared = sharedEthash
 	}
-	ethash.remote = startRemoteSealer(ethash, notify, noverify)
-	return ethash
+	AVNash.remote = startRemoteSealer(AVNash, notify, noverify)
+	return AVNash
 }
 
-// NewTester creates a small sized ethash PoW scheme useful only for testing
+// NewTester creates a small sized AVNash PoW scheme useful only for testing
 // purposes.
 func NewTester(notify []string, noverify bool) *Ethash {
 	return New(Config{PowMode: ModeTest}, notify, noverify)
 }
 
-// NewFaker creates a ethash consensus engine with a fake PoW scheme that accepts
-// all blocks' seal as valid, though they still have to conform to the Ethereum
+// NewFaker creates a AVNash consensus engine with a fake PoW scheme that accepts
+// all blocks' seal as valid, though they still have to conform to the Avalanria
 // consensus rules.
 func NewFaker() *Ethash {
 	return &Ethash{
@@ -501,9 +501,9 @@ func NewFaker() *Ethash {
 	}
 }
 
-// NewFakeFailer creates a ethash consensus engine with a fake PoW scheme that
+// NewFakeFailer creates a AVNash consensus engine with a fake PoW scheme that
 // accepts all blocks as valid apart from the single one specified, though they
-// still have to conform to the Ethereum consensus rules.
+// still have to conform to the Avalanria consensus rules.
 func NewFakeFailer(fail uint64) *Ethash {
 	return &Ethash{
 		config: Config{
@@ -514,9 +514,9 @@ func NewFakeFailer(fail uint64) *Ethash {
 	}
 }
 
-// NewFakeDelayer creates a ethash consensus engine with a fake PoW scheme that
+// NewFakeDelayer creates a AVNash consensus engine with a fake PoW scheme that
 // accepts all blocks as valid, but delays verifications by some time, though
-// they still have to conform to the Ethereum consensus rules.
+// they still have to conform to the Avalanria consensus rules.
 func NewFakeDelayer(delay time.Duration) *Ethash {
 	return &Ethash{
 		config: Config{
@@ -527,7 +527,7 @@ func NewFakeDelayer(delay time.Duration) *Ethash {
 	}
 }
 
-// NewFullFaker creates an ethash consensus engine with a full fake scheme that
+// NewFullFaker creates an AVNash consensus engine with a full fake scheme that
 // accepts all blocks as valid, without checking any consensus rules whatsoever.
 func NewFullFaker() *Ethash {
 	return &Ethash{
@@ -538,21 +538,21 @@ func NewFullFaker() *Ethash {
 	}
 }
 
-// NewShared creates a full sized ethash PoW shared between all requesters running
+// NewShared creates a full sized AVNash PoW shared between all requesters running
 // in the same process.
 func NewShared() *Ethash {
 	return &Ethash{shared: sharedEthash}
 }
 
 // Close closes the exit channel to notify all backend threads exiting.
-func (ethash *Ethash) Close() error {
-	ethash.closeOnce.Do(func() {
+func (AVNash *Ethash) Close() error {
+	AVNash.closeOnce.Do(func() {
 		// Short circuit if the exit channel is not allocated.
-		if ethash.remote == nil {
+		if AVNash.remote == nil {
 			return
 		}
-		close(ethash.remote.requestExit)
-		<-ethash.remote.exitCh
+		close(AVNash.remote.requestExit)
+		<-AVNash.remote.exitCh
 	})
 	return nil
 }
@@ -560,18 +560,18 @@ func (ethash *Ethash) Close() error {
 // cache tries to retrieve a verification cache for the specified block number
 // by first checking against a list of in-memory caches, then against caches
 // stored on disk, and finally generating one if none can be found.
-func (ethash *Ethash) cache(block uint64) *cache {
+func (AVNash *Ethash) cache(block uint64) *cache {
 	epoch := block / epochLength
-	currentI, futureI := ethash.caches.get(epoch)
+	currentI, futureI := AVNash.caches.get(epoch)
 	current := currentI.(*cache)
 
 	// Wait for generation finish.
-	current.generate(ethash.config.CacheDir, ethash.config.CachesOnDisk, ethash.config.CachesLockMmap, ethash.config.PowMode == ModeTest)
+	current.generate(AVNash.config.CacheDir, AVNash.config.CachesOnDisk, AVNash.config.CachesLockMmap, AVNash.config.PowMode == ModeTest)
 
 	// If we need a new future cache, now's a good time to regenerate it.
 	if futureI != nil {
 		future := futureI.(*cache)
-		go future.generate(ethash.config.CacheDir, ethash.config.CachesOnDisk, ethash.config.CachesLockMmap, ethash.config.PowMode == ModeTest)
+		go future.generate(AVNash.config.CacheDir, AVNash.config.CachesOnDisk, AVNash.config.CachesLockMmap, AVNash.config.PowMode == ModeTest)
 	}
 	return current
 }
@@ -582,29 +582,29 @@ func (ethash *Ethash) cache(block uint64) *cache {
 //
 // If async is specified, not only the future but the current DAG is also
 // generates on a background thread.
-func (ethash *Ethash) dataset(block uint64, async bool) *dataset {
-	// Retrieve the requested ethash dataset
+func (AVNash *Ethash) dataset(block uint64, async bool) *dataset {
+	// Retrieve the requested AVNash dataset
 	epoch := block / epochLength
-	currentI, futureI := ethash.datasets.get(epoch)
+	currentI, futureI := AVNash.datasets.get(epoch)
 	current := currentI.(*dataset)
 
 	// If async is specified, generate everything in a background thread
 	if async && !current.generated() {
 		go func() {
-			current.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.DatasetsLockMmap, ethash.config.PowMode == ModeTest)
+			current.generate(AVNash.config.DatasetDir, AVNash.config.DatasetsOnDisk, AVNash.config.DatasetsLockMmap, AVNash.config.PowMode == ModeTest)
 
 			if futureI != nil {
 				future := futureI.(*dataset)
-				future.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.DatasetsLockMmap, ethash.config.PowMode == ModeTest)
+				future.generate(AVNash.config.DatasetDir, AVNash.config.DatasetsOnDisk, AVNash.config.DatasetsLockMmap, AVNash.config.PowMode == ModeTest)
 			}
 		}()
 	} else {
 		// Either blocking generation was requested, or already done
-		current.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.DatasetsLockMmap, ethash.config.PowMode == ModeTest)
+		current.generate(AVNash.config.DatasetDir, AVNash.config.DatasetsOnDisk, AVNash.config.DatasetsLockMmap, AVNash.config.PowMode == ModeTest)
 
 		if futureI != nil {
 			future := futureI.(*dataset)
-			go future.generate(ethash.config.DatasetDir, ethash.config.DatasetsOnDisk, ethash.config.DatasetsLockMmap, ethash.config.PowMode == ModeTest)
+			go future.generate(AVNash.config.DatasetDir, AVNash.config.DatasetsOnDisk, AVNash.config.DatasetsLockMmap, AVNash.config.PowMode == ModeTest)
 		}
 	}
 	return current
@@ -612,31 +612,31 @@ func (ethash *Ethash) dataset(block uint64, async bool) *dataset {
 
 // Threads returns the number of mining threads currently enabled. This doesn't
 // necessarily mean that mining is running!
-func (ethash *Ethash) Threads() int {
-	ethash.lock.Lock()
-	defer ethash.lock.Unlock()
+func (AVNash *Ethash) Threads() int {
+	AVNash.lock.Lock()
+	defer AVNash.lock.Unlock()
 
-	return ethash.threads
+	return AVNash.threads
 }
 
 // SetThreads updates the number of mining threads currently enabled. Calling
-// this method does not start mining, only sets the thread count. If zero is
+// this mAVNod does not start mining, only sets the thread count. If zero is
 // specified, the miner will use all cores of the machine. Setting a thread
 // count below zero is allowed and will cause the miner to idle, without any
 // work being done.
-func (ethash *Ethash) SetThreads(threads int) {
-	ethash.lock.Lock()
-	defer ethash.lock.Unlock()
+func (AVNash *Ethash) SetThreads(threads int) {
+	AVNash.lock.Lock()
+	defer AVNash.lock.Unlock()
 
 	// If we're running a shared PoW, set the thread count on that instead
-	if ethash.shared != nil {
-		ethash.shared.SetThreads(threads)
+	if AVNash.shared != nil {
+		AVNash.shared.SetThreads(threads)
 		return
 	}
 	// Update the threads and ping any running seal to pull in any changes
-	ethash.threads = threads
+	AVNash.threads = threads
 	select {
-	case ethash.update <- struct{}{}:
+	case AVNash.update <- struct{}{}:
 	default:
 	}
 }
@@ -645,39 +645,39 @@ func (ethash *Ethash) SetThreads(threads int) {
 // per second over the last minute.
 // Note the returned hashrate includes local hashrate, but also includes the total
 // hashrate of all remote miner.
-func (ethash *Ethash) Hashrate() float64 {
-	// Short circuit if we are run the ethash in normal/test mode.
-	if ethash.config.PowMode != ModeNormal && ethash.config.PowMode != ModeTest {
-		return ethash.hashrate.Rate1()
+func (AVNash *Ethash) Hashrate() float64 {
+	// Short circuit if we are run the AVNash in normal/test mode.
+	if AVNash.config.PowMode != ModeNormal && AVNash.config.PowMode != ModeTest {
+		return AVNash.hashrate.Rate1()
 	}
 	var res = make(chan uint64, 1)
 
 	select {
-	case ethash.remote.fetchRateCh <- res:
-	case <-ethash.remote.exitCh:
-		// Return local hashrate only if ethash is stopped.
-		return ethash.hashrate.Rate1()
+	case AVNash.remote.fetchRateCh <- res:
+	case <-AVNash.remote.exitCh:
+		// Return local hashrate only if AVNash is stopped.
+		return AVNash.hashrate.Rate1()
 	}
 
 	// Gather total submitted hash rate of remote sealers.
-	return ethash.hashrate.Rate1() + float64(<-res)
+	return AVNash.hashrate.Rate1() + float64(<-res)
 }
 
 // APIs implements consensus.Engine, returning the user facing RPC APIs.
-func (ethash *Ethash) APIs(chain consensus.ChainHeaderReader) []rpc.API {
-	// In order to ensure backward compatibility, we exposes ethash RPC APIs
-	// to both eth and ethash namespaces.
+func (AVNash *Ethash) APIs(chain consensus.ChainHeaderReader) []rpc.API {
+	// In order to ensure backward compatibility, we exposes AVNash RPC APIs
+	// to both AVN and AVNash namespaces.
 	return []rpc.API{
 		{
-			Namespace: "eth",
+			Namespace: "AVN",
 			Version:   "1.0",
-			Service:   &API{ethash},
+			Service:   &API{AVNash},
 			Public:    true,
 		},
 		{
-			Namespace: "ethash",
+			Namespace: "AVNash",
 			Version:   "1.0",
-			Service:   &API{ethash},
+			Service:   &API{AVNash},
 			Public:    true,
 		},
 	}

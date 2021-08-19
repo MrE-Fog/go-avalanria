@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2019 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package fourbyte
 
@@ -22,8 +22,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/AVNereum/go-AVNereum/accounts/abi"
+	"github.com/AVNereum/go-AVNereum/common"
 )
 
 // Tests that all the selectors contained in the 4byte database are valid.
@@ -43,9 +43,9 @@ func TestEmbeddedDatabase(t *testing.T) {
 			t.Errorf("Failed to parse ABI: %v", err)
 			continue
 		}
-		m, err := abistruct.MethodById(common.Hex2Bytes(id))
+		m, err := abistruct.MAVNodById(common.Hex2Bytes(id))
 		if err != nil {
-			t.Errorf("Failed to get method by id (%s): %v", id, err)
+			t.Errorf("Failed to get mAVNod by id (%s): %v", id, err)
 			continue
 		}
 		if m.Sig != selector {

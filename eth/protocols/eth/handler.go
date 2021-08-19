@@ -1,35 +1,35 @@
-// Copyright 2020 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2020 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
-package eth
+package AVN
 
 import (
 	"fmt"
 	"math/big"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/p2p/enr"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/metrics"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/p2p/enode"
+	"github.com/AVNereum/go-AVNereum/p2p/enr"
+	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/AVNereum/go-AVNereum/trie"
 )
 
 const (
@@ -63,8 +63,8 @@ const (
 // exchanges have passed.
 type Handler func(peer *Peer) error
 
-// Backend defines the data retrieval methods to serve remote requests and the
-// callback methods to invoke on remote deliveries.
+// Backend defines the data retrieval mAVNods to serve remote requests and the
+// callback mAVNods to invoke on remote deliveries.
 type Backend interface {
 	// Chain retrieves the blockchain object to serve data.
 	Chain() *core.BlockChain
@@ -75,17 +75,17 @@ type Backend interface {
 	// TxPool retrieves the transaction pool object to serve data.
 	TxPool() TxPool
 
-	// AcceptTxs retrieves whether transaction processing is enabled on the node
+	// AcceptTxs retrieves whAVNer transaction processing is enabled on the node
 	// or if inbound transactions should simply be dropped.
 	AcceptTxs() bool
 
-	// RunPeer is invoked when a peer joins on the `eth` protocol. The handler
+	// RunPeer is invoked when a peer joins on the `AVN` protocol. The handler
 	// should do any peer maintenance work, handshakes and validations. If all
 	// is passed, control should be given back to the `handler` to process the
 	// inbound messages going forward.
 	RunPeer(peer *Peer, handler Handler) error
 
-	// PeerInfo retrieves all known `eth` information about a peer.
+	// PeerInfo retrieves all known `AVN` information about a peer.
 	PeerInfo(id enode.ID) interface{}
 
 	// Handle is a callback to be invoked when a data packet is received from
@@ -94,13 +94,13 @@ type Backend interface {
 	Handle(peer *Peer, packet Packet) error
 }
 
-// TxPool defines the methods needed by the protocol handler to serve transactions.
+// TxPool defines the mAVNods needed by the protocol handler to serve transactions.
 type TxPool interface {
 	// Get retrieves the the transaction from the local txpool with the given hash.
 	Get(hash common.Hash) *types.Transaction
 }
 
-// MakeProtocols constructs the P2P protocol definitions for `eth`.
+// MakeProtocols constructs the P2P protocol definitions for `AVN`.
 func MakeProtocols(backend Backend, network uint64, dnsdisc enode.Iterator) []p2p.Protocol {
 	protocols := make([]p2p.Protocol, len(ProtocolVersions))
 	for i, version := range ProtocolVersions {
@@ -131,17 +131,17 @@ func MakeProtocols(backend Backend, network uint64, dnsdisc enode.Iterator) []p2
 	return protocols
 }
 
-// NodeInfo represents a short summary of the `eth` sub-protocol metadata
+// NodeInfo represents a short summary of the `AVN` sub-protocol metadata
 // known about the host peer.
 type NodeInfo struct {
-	Network    uint64              `json:"network"`    // Ethereum network ID (1=Frontier, 2=Morden, Ropsten=3, Rinkeby=4)
+	Network    uint64              `json:"network"`    // Avalanria network ID (1=Frontier, 2=Morden, Ropsten=3, Rinkeby=4)
 	Difficulty *big.Int            `json:"difficulty"` // Total difficulty of the host's blockchain
 	Genesis    common.Hash         `json:"genesis"`    // SHA3 hash of the host's genesis block
 	Config     *params.ChainConfig `json:"config"`     // Chain configuration for the fork rules
 	Head       common.Hash         `json:"head"`       // Hex hash of the host's best owned block
 }
 
-// nodeInfo retrieves some `eth` protocol metadata about the running host node.
+// nodeInfo retrieves some `AVN` protocol metadata about the running host node.
 func nodeInfo(chain *core.BlockChain, network uint64) *NodeInfo {
 	head := chain.CurrentBlock()
 	return &NodeInfo{
@@ -153,13 +153,13 @@ func nodeInfo(chain *core.BlockChain, network uint64) *NodeInfo {
 	}
 }
 
-// Handle is invoked whenever an `eth` connection is made that successfully passes
-// the protocol handshake. This method will keep processing messages until the
+// Handle is invoked whenever an `AVN` connection is made that successfully passes
+// the protocol handshake. This mAVNod will keep processing messages until the
 // connection is torn down.
 func Handle(backend Backend, peer *Peer) error {
 	for {
 		if err := handleMessage(backend, peer); err != nil {
-			peer.Log().Debug("Message handling failed in `eth`", "err", err)
+			peer.Log().Debug("Message handling failed in `AVN`", "err", err)
 			return err
 		}
 	}
@@ -171,7 +171,7 @@ type Decoder interface {
 	Time() time.Time
 }
 
-var eth65 = map[uint64]msgHandler{
+var AVN65 = map[uint64]msgHandler{
 	GetBlockHeadersMsg:            handleGetBlockHeaders,
 	BlockHeadersMsg:               handleBlockHeaders,
 	GetBlockBodiesMsg:             handleGetBlockBodies,
@@ -188,12 +188,12 @@ var eth65 = map[uint64]msgHandler{
 	PooledTransactionsMsg:         handlePooledTransactions,
 }
 
-var eth66 = map[uint64]msgHandler{
+var AVN66 = map[uint64]msgHandler{
 	NewBlockHashesMsg:             handleNewBlockhashes,
 	NewBlockMsg:                   handleNewBlock,
 	TransactionsMsg:               handleTransactions,
 	NewPooledTransactionHashesMsg: handleNewPooledTransactionHashes,
-	// eth66 messages with request-id
+	// AVN66 messages with request-id
 	GetBlockHeadersMsg:       handleGetBlockHeaders66,
 	BlockHeadersMsg:          handleBlockHeaders66,
 	GetBlockBodiesMsg:        handleGetBlockBodies66,
@@ -219,9 +219,9 @@ func handleMessage(backend Backend, peer *Peer) error {
 	}
 	defer msg.Discard()
 
-	var handlers = eth65
-	if peer.Version() >= ETH66 {
-		handlers = eth66
+	var handlers = AVN65
+	if peer.Version() >= AVN66 {
+		handlers = AVN66
 	}
 	// Track the amount of time it takes to serve the request and run the handler
 	if metrics.Enabled {

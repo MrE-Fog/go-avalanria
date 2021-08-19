@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of go-ethereum.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of go-AVNereum.
 //
-// go-ethereum is free software: you can redistribute it and/or modify
+// go-AVNereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ethereum is distributed in the hope that it will be useful,
+// go-AVNereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -26,10 +26,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
-// makeWizard creates and returns a new puppeth wizard.
+// makeWizard creates and returns a new puppAVN wizard.
 func makeWizard(network string) *wizard {
 	return &wizard{
 		network: network,
@@ -43,16 +43,16 @@ func makeWizard(network string) *wizard {
 }
 
 // run displays some useful infos to the user, starting on the journey of
-// setting up a new or managing an existing Ethereum private network.
+// setting up a new or managing an existing Avalanria private network.
 func (w *wizard) run() {
 	fmt.Println("+-----------------------------------------------------------+")
-	fmt.Println("| Welcome to puppeth, your Ethereum private network manager |")
+	fmt.Println("| Welcome to puppAVN, your Avalanria private network manager |")
 	fmt.Println("|                                                           |")
-	fmt.Println("| This tool lets you create a new Ethereum network down to  |")
-	fmt.Println("| the genesis block, bootnodes, miners and ethstats servers |")
+	fmt.Println("| This tool lets you create a new Avalanria network down to  |")
+	fmt.Println("| the genesis block, bootnodes, miners and AVNstats servers |")
 	fmt.Println("| without the hassle that it would normally entail.         |")
 	fmt.Println("|                                                           |")
-	fmt.Println("| Puppeth uses SSH to dial in to remote servers, and builds |")
+	fmt.Println("| PuppAVN uses SSH to dial in to remote servers, and builds |")
 	fmt.Println("| its network components out of Docker containers using the |")
 	fmt.Println("| docker-compose toolset.                                   |")
 	fmt.Println("+-----------------------------------------------------------+")
@@ -71,10 +71,10 @@ func (w *wizard) run() {
 			log.Error("I also like to live dangerously, still no spaces, hyphens or capital letters")
 		}
 	}
-	log.Info("Administering Ethereum network", "name", w.network)
+	log.Info("Administering Avalanria network", "name", w.network)
 
 	// Load initial configurations and connect to all live servers
-	w.conf.path = filepath.Join(os.Getenv("HOME"), ".puppeth", w.network)
+	w.conf.path = filepath.Join(os.Getenv("HOME"), ".puppAVN", w.network)
 
 	blob, err := ioutil.ReadFile(w.conf.path)
 	if err != nil {
@@ -143,7 +143,7 @@ func (w *wizard) run() {
 				case choice == "2":
 					w.importGenesis()
 				default:
-					log.Error("That's not something I can do")
+					log.Error("That's not somAVNing I can do")
 				}
 			} else {
 				w.manageGenesis()
@@ -163,7 +163,7 @@ func (w *wizard) run() {
 				w.manageComponents()
 			}
 		default:
-			log.Error("That's not something I can do")
+			log.Error("That's not somAVNing I can do")
 		}
 	}
 }

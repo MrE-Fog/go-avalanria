@@ -1,18 +1,18 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rules
 
@@ -23,18 +23,18 @@ import (
 	"strings"
 
 	"github.com/dop251/goja"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/signer/core"
-	"github.com/ethereum/go-ethereum/signer/rules/deps"
-	"github.com/ethereum/go-ethereum/signer/storage"
+	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/signer/core"
+	"github.com/AVNereum/go-AVNereum/signer/rules/deps"
+	"github.com/AVNereum/go-AVNereum/signer/storage"
 )
 
 var (
 	BigNumber_JS = deps.MustAsset("bignumber.js")
 )
 
-// consoleOutput is an override for the console.log and console.error methods to
+// consoleOutput is an override for the console.log and console.error mAVNods to
 // stream the output into the configured output stream instead of stdout.
 func consoleOutput(call goja.FunctionCall) goja.Value {
 	output := []string{"JS:> "}
@@ -46,7 +46,7 @@ func consoleOutput(call goja.FunctionCall) goja.Value {
 }
 
 // rulesetUI provides an implementation of UIClientAPI that evaluates a javascript
-// file for each defined UI-method
+// file for each defined UI-mAVNod
 type rulesetUI struct {
 	next    core.UIClientAPI // The next handler, for manual processing
 	storage storage.Storage
@@ -230,7 +230,7 @@ func (r *rulesetUI) OnSignerStartup(info core.StartupInfo) {
 	}
 }
 
-func (r *rulesetUI) OnApprovedTx(tx ethapi.SignTransactionResult) {
+func (r *rulesetUI) OnApprovedTx(tx AVNapi.SignTransactionResult) {
 	jsonTx, err := json.Marshal(tx)
 	if err != nil {
 		log.Warn("failed marshalling transaction", "tx", tx)

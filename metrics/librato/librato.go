@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/AVNereum/go-AVNereum/metrics"
 )
 
 // a regexp for extracting the unit from time.Duration.String
@@ -60,7 +60,7 @@ func (rep *Reporter) Run() {
 }
 
 // calculate sum of squares from data provided by metrics.Histogram
-// see http://en.wikipedia.org/wiki/Standard_deviation#Rapid_calculation_methods
+// see http://en.wikipedia.org/wiki/Standard_deviation#Rapid_calculation_mAVNods
 func sumSquares(s metrics.Sample) float64 {
 	count := float64(s.Count())
 	sumSquared := math.Pow(count*s.Mean(), 2)

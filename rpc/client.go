@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2016 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -28,7 +28,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
 var (
@@ -42,7 +42,7 @@ var (
 const (
 	// Timeouts
 	defaultDialTimeout = 10 * time.Second // used if context has no deadline
-	subscribeTimeout   = 5 * time.Second  // overall timeout eth_subscribe, rpc_modules calls
+	subscribeTimeout   = 5 * time.Second  // overall timeout AVN_subscribe, rpc_modules calls
 )
 
 const (
@@ -61,7 +61,7 @@ const (
 
 // BatchElem is an element in a batch request.
 type BatchElem struct {
-	Method string
+	MAVNod string
 	Args   []interface{}
 	// The result is unmarshaled into this field. Result must be set to a
 	// non-nil pointer value of the desired type, otherwise the response will be
@@ -186,7 +186,7 @@ func DialContext(ctx context.Context, rawurl string) (*Client, error) {
 }
 
 // Client retrieves the client from the context, if any. This can be used to perform
-// 'reverse calls' in a handler method.
+// 'reverse calls' in a handler mAVNod.
 func ClientFromContext(ctx context.Context) (*Client, bool) {
 	client, ok := ctx.Value(clientContextKey{}).(*Client)
 	return client, ok
@@ -226,7 +226,7 @@ func initClient(conn ServerCodec, idgen func() ID, services *serviceRegistry) *C
 }
 
 // RegisterName creates a service for the given receiver type under the given name. When no
-// methods on the given receiver match the criteria to be either a RPC method or a
+// mAVNods on the given receiver match the criteria to be either a RPC mAVNod or a
 // subscription an error is returned. Otherwise a new service is created and added to the
 // service collection this client provides to the server.
 func (c *Client) RegisterName(name string, receiver interface{}) error {
@@ -238,7 +238,7 @@ func (c *Client) nextID() json.RawMessage {
 	return strconv.AppendUint(nil, uint64(id), 10)
 }
 
-// SupportedModules calls the rpc_modules method, retrieving the list of
+// SupportedModules calls the rpc_modules mAVNod, retrieving the list of
 // APIs that are available on the server.
 func (c *Client) SupportedModules() (map[string]string, error) {
 	var result map[string]string
@@ -261,7 +261,7 @@ func (c *Client) Close() {
 }
 
 // SetHeader adds a custom HTTP header to the client's requests.
-// This method only works for clients using HTTP, it doesn't have
+// This mAVNod only works for clients using HTTP, it doesn't have
 // any effect for clients using another transport.
 func (c *Client) SetHeader(key, value string) {
 	if !c.isHTTP {
@@ -278,9 +278,9 @@ func (c *Client) SetHeader(key, value string) {
 //
 // The result must be a pointer so that package json can unmarshal into it. You
 // can also pass nil, in which case the result is ignored.
-func (c *Client) Call(result interface{}, method string, args ...interface{}) error {
+func (c *Client) Call(result interface{}, mAVNod string, args ...interface{}) error {
 	ctx := context.Background()
-	return c.CallContext(ctx, result, method, args...)
+	return c.CallContext(ctx, result, mAVNod, args...)
 }
 
 // CallContext performs a JSON-RPC call with the given arguments. If the context is
@@ -288,11 +288,11 @@ func (c *Client) Call(result interface{}, method string, args ...interface{}) er
 //
 // The result must be a pointer so that package json can unmarshal into it. You
 // can also pass nil, in which case the result is ignored.
-func (c *Client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
+func (c *Client) CallContext(ctx context.Context, result interface{}, mAVNod string, args ...interface{}) error {
 	if result != nil && reflect.TypeOf(result).Kind() != reflect.Ptr {
 		return fmt.Errorf("call result parameter must be pointer or nil interface: %v", result)
 	}
-	msg, err := c.newMessage(method, args...)
+	msg, err := c.newMessage(mAVNod, args...)
 	if err != nil {
 		return err
 	}
@@ -348,7 +348,7 @@ func (c *Client) BatchCallContext(ctx context.Context, b []BatchElem) error {
 		resp: make(chan *jsonrpcMessage, len(b)),
 	}
 	for i, elem := range b {
-		msg, err := c.newMessage(elem.Method, elem.Args...)
+		msg, err := c.newMessage(elem.MAVNod, elem.Args...)
 		if err != nil {
 			return err
 		}
@@ -393,10 +393,10 @@ func (c *Client) BatchCallContext(ctx context.Context, b []BatchElem) error {
 	return err
 }
 
-// Notify sends a notification, i.e. a method call that doesn't expect a response.
-func (c *Client) Notify(ctx context.Context, method string, args ...interface{}) error {
+// Notify sends a notification, i.e. a mAVNod call that doesn't expect a response.
+func (c *Client) Notify(ctx context.Context, mAVNod string, args ...interface{}) error {
 	op := new(requestOp)
-	msg, err := c.newMessage(method, args...)
+	msg, err := c.newMessage(mAVNod, args...)
 	if err != nil {
 		return err
 	}
@@ -408,9 +408,9 @@ func (c *Client) Notify(ctx context.Context, method string, args ...interface{})
 	return c.send(ctx, op, msg)
 }
 
-// EthSubscribe registers a subscripion under the "eth" namespace.
+// EthSubscribe registers a subscripion under the "AVN" namespace.
 func (c *Client) EthSubscribe(ctx context.Context, channel interface{}, args ...interface{}) (*ClientSubscription, error) {
-	return c.Subscribe(ctx, "eth", channel, args...)
+	return c.Subscribe(ctx, "AVN", channel, args...)
 }
 
 // ShhSubscribe registers a subscripion under the "shh" namespace.
@@ -419,7 +419,7 @@ func (c *Client) ShhSubscribe(ctx context.Context, channel interface{}, args ...
 	return c.Subscribe(ctx, "shh", channel, args...)
 }
 
-// Subscribe calls the "<namespace>_subscribe" method with the given arguments,
+// Subscribe calls the "<namespace>_subscribe" mAVNod with the given arguments,
 // registering a subscription. Server notifications for the subscription are
 // sent to the given channel. The element type of the channel must match the
 // expected type of content returned by the subscription.
@@ -444,7 +444,7 @@ func (c *Client) Subscribe(ctx context.Context, namespace string, channel interf
 		return nil, ErrNotificationsUnsupported
 	}
 
-	msg, err := c.newMessage(namespace+subscribeMethodSuffix, args...)
+	msg, err := c.newMessage(namespace+subscribeMAVNodSuffix, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -465,8 +465,8 @@ func (c *Client) Subscribe(ctx context.Context, namespace string, channel interf
 	return op.sub, nil
 }
 
-func (c *Client) newMessage(method string, paramsIn ...interface{}) (*jsonrpcMessage, error) {
-	msg := &jsonrpcMessage{Version: vsn, ID: c.nextID(), Method: method}
+func (c *Client) newMessage(mAVNod string, paramsIn ...interface{}) (*jsonrpcMessage, error) {
+	msg := &jsonrpcMessage{Version: vsn, ID: c.nextID(), MAVNod: mAVNod}
 	if paramsIn != nil { // prevent sending "params":null
 		var err error
 		if msg.Params, err = json.Marshal(paramsIn); err != nil {

@@ -1,18 +1,18 @@
-// Copyright 2021 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2021 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package tracers
 
@@ -29,20 +29,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/AVNereum/go-AVNereum/consensus"
+	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
+	"github.com/AVNereum/go-AVNereum/core"
+	"github.com/AVNereum/go-AVNereum/core/rawdb"
+	"github.com/AVNereum/go-AVNereum/core/state"
+	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/AVNereum/go-AVNereum/core/vm"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/AVNdb"
+	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
+	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/AVNereum/go-AVNereum/rpc"
 )
 
 var (
@@ -54,14 +54,14 @@ var (
 type testBackend struct {
 	chainConfig *params.ChainConfig
 	engine      consensus.Engine
-	chaindb     ethdb.Database
+	chaindb     AVNdb.Database
 	chain       *core.BlockChain
 }
 
 func newTestBackend(t *testing.T, n int, gspec *core.Genesis, generator func(i int, b *core.BlockGen)) *testBackend {
 	backend := &testBackend{
 		chainConfig: params.TestChainConfig,
-		engine:      ethash.NewFaker(),
+		engine:      AVNash.NewFaker(),
 		chaindb:     rawdb.NewMemoryDatabase(),
 	}
 	// Generate blocks for testing
@@ -134,7 +134,7 @@ func (b *testBackend) Engine() consensus.Engine {
 	return b.engine
 }
 
-func (b *testBackend) ChainDb() ethdb.Database {
+func (b *testBackend) ChainDb() AVNdb.Database {
 	return b.chaindb
 }
 
@@ -198,7 +198,7 @@ func TestTraceCall(t *testing.T) {
 
 	var testSuite = []struct {
 		blockNumber rpc.BlockNumber
-		call        ethapi.TransactionArgs
+		call        AVNapi.TransactionArgs
 		config      *TraceCallConfig
 		expectErr   error
 		expect      interface{}
@@ -206,41 +206,41 @@ func TestTraceCall(t *testing.T) {
 		// Standard JSON trace upon the genesis, plain transfer.
 		{
 			blockNumber: rpc.BlockNumber(0),
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From:  &accounts[0].addr,
 				To:    &accounts[1].addr,
 				Value: (*hexutil.Big)(big.NewInt(1000)),
 			},
 			config:    nil,
 			expectErr: nil,
-			expect: &ethapi.ExecutionResult{
+			expect: &AVNapi.ExecutionResult{
 				Gas:         params.TxGas,
 				Failed:      false,
 				ReturnValue: "",
-				StructLogs:  []ethapi.StructLogRes{},
+				StructLogs:  []AVNapi.StructLogRes{},
 			},
 		},
 		// Standard JSON trace upon the head, plain transfer.
 		{
 			blockNumber: rpc.BlockNumber(genBlocks),
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From:  &accounts[0].addr,
 				To:    &accounts[1].addr,
 				Value: (*hexutil.Big)(big.NewInt(1000)),
 			},
 			config:    nil,
 			expectErr: nil,
-			expect: &ethapi.ExecutionResult{
+			expect: &AVNapi.ExecutionResult{
 				Gas:         params.TxGas,
 				Failed:      false,
 				ReturnValue: "",
-				StructLogs:  []ethapi.StructLogRes{},
+				StructLogs:  []AVNapi.StructLogRes{},
 			},
 		},
 		// Standard JSON trace upon the non-existent block, error expects
 		{
 			blockNumber: rpc.BlockNumber(genBlocks + 1),
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From:  &accounts[0].addr,
 				To:    &accounts[1].addr,
 				Value: (*hexutil.Big)(big.NewInt(1000)),
@@ -252,35 +252,35 @@ func TestTraceCall(t *testing.T) {
 		// Standard JSON trace upon the latest block
 		{
 			blockNumber: rpc.LatestBlockNumber,
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From:  &accounts[0].addr,
 				To:    &accounts[1].addr,
 				Value: (*hexutil.Big)(big.NewInt(1000)),
 			},
 			config:    nil,
 			expectErr: nil,
-			expect: &ethapi.ExecutionResult{
+			expect: &AVNapi.ExecutionResult{
 				Gas:         params.TxGas,
 				Failed:      false,
 				ReturnValue: "",
-				StructLogs:  []ethapi.StructLogRes{},
+				StructLogs:  []AVNapi.StructLogRes{},
 			},
 		},
 		// Standard JSON trace upon the pending block
 		{
 			blockNumber: rpc.PendingBlockNumber,
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From:  &accounts[0].addr,
 				To:    &accounts[1].addr,
 				Value: (*hexutil.Big)(big.NewInt(1000)),
 			},
 			config:    nil,
 			expectErr: nil,
-			expect: &ethapi.ExecutionResult{
+			expect: &AVNapi.ExecutionResult{
 				Gas:         params.TxGas,
 				Failed:      false,
 				ReturnValue: "",
-				StructLogs:  []ethapi.StructLogRes{},
+				StructLogs:  []AVNapi.StructLogRes{},
 			},
 		},
 	}
@@ -329,7 +329,7 @@ func TestOverriddenTraceCall(t *testing.T) {
 
 	var testSuite = []struct {
 		blockNumber rpc.BlockNumber
-		call        ethapi.TransactionArgs
+		call        AVNapi.TransactionArgs
 		config      *TraceCallConfig
 		expectErr   error
 		expect      *callTrace
@@ -337,15 +337,15 @@ func TestOverriddenTraceCall(t *testing.T) {
 		// Succcessful call with state overriding
 		{
 			blockNumber: rpc.PendingBlockNumber,
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From:  &randomAccounts[0].addr,
 				To:    &randomAccounts[1].addr,
 				Value: (*hexutil.Big)(big.NewInt(1000)),
 			},
 			config: &TraceCallConfig{
 				Tracer: &tracer,
-				StateOverrides: &ethapi.StateOverride{
-					randomAccounts[0].addr: ethapi.OverrideAccount{Balance: newRPCBalance(new(big.Int).Mul(big.NewInt(1), big.NewInt(params.Ether)))},
+				StateOverrides: &AVNapi.StateOverride{
+					randomAccounts[0].addr: AVNapi.OverrideAccount{Balance: newRPCBalance(new(big.Int).Mul(big.NewInt(1), big.NewInt(params.Ether)))},
 				},
 			},
 			expectErr: nil,
@@ -361,7 +361,7 @@ func TestOverriddenTraceCall(t *testing.T) {
 		// Invalid call without state overriding
 		{
 			blockNumber: rpc.PendingBlockNumber,
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From:  &randomAccounts[0].addr,
 				To:    &randomAccounts[1].addr,
 				Value: (*hexutil.Big)(big.NewInt(1000)),
@@ -390,15 +390,15 @@ func TestOverriddenTraceCall(t *testing.T) {
 		//  }
 		{
 			blockNumber: rpc.PendingBlockNumber,
-			call: ethapi.TransactionArgs{
+			call: AVNapi.TransactionArgs{
 				From: &randomAccounts[0].addr,
 				To:   &randomAccounts[2].addr,
 				Data: newRPCBytes(common.Hex2Bytes("8381f58a")), // call number()
 			},
 			config: &TraceCallConfig{
 				Tracer: &tracer,
-				StateOverrides: &ethapi.StateOverride{
-					randomAccounts[2].addr: ethapi.OverrideAccount{
+				StateOverrides: &AVNapi.StateOverride{
+					randomAccounts[2].addr: AVNapi.OverrideAccount{
 						Code:      newRPCBytes(common.Hex2Bytes("6080604052348015600f57600080fd5b506004361060285760003560e01c80638381f58a14602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000548156fea2646970667358221220eab35ffa6ab2adfe380772a48b8ba78e82a1b820a18fcb6f59aa4efb20a5f60064736f6c63430007040033")),
 						StateDiff: newStates([]common.Hash{{}}, []common.Hash{common.BigToHash(big.NewInt(123))}),
 					},
@@ -470,11 +470,11 @@ func TestTraceTransaction(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to trace transaction %v", err)
 	}
-	if !reflect.DeepEqual(result, &ethapi.ExecutionResult{
+	if !reflect.DeepEqual(result, &AVNapi.ExecutionResult{
 		Gas:         params.TxGas,
 		Failed:      false,
 		ReturnValue: "",
-		StructLogs:  []ethapi.StructLogRes{},
+		StructLogs:  []AVNapi.StructLogRes{},
 	}) {
 		t.Error("Transaction tracing result is different")
 	}
@@ -520,11 +520,11 @@ func TestTraceBlock(t *testing.T) {
 			expectErr:   nil,
 			expect: []*txTraceResult{
 				{
-					Result: &ethapi.ExecutionResult{
+					Result: &AVNapi.ExecutionResult{
 						Gas:         params.TxGas,
 						Failed:      false,
 						ReturnValue: "",
-						StructLogs:  []ethapi.StructLogRes{},
+						StructLogs:  []AVNapi.StructLogRes{},
 					},
 				},
 			},
@@ -543,11 +543,11 @@ func TestTraceBlock(t *testing.T) {
 			expectErr:   nil,
 			expect: []*txTraceResult{
 				{
-					Result: &ethapi.ExecutionResult{
+					Result: &AVNapi.ExecutionResult{
 						Gas:         params.TxGas,
 						Failed:      false,
 						ReturnValue: "",
-						StructLogs:  []ethapi.StructLogRes{},
+						StructLogs:  []AVNapi.StructLogRes{},
 					},
 				},
 			},
@@ -559,11 +559,11 @@ func TestTraceBlock(t *testing.T) {
 			expectErr:   nil,
 			expect: []*txTraceResult{
 				{
-					Result: &ethapi.ExecutionResult{
+					Result: &AVNapi.ExecutionResult{
 						Gas:         params.TxGas,
 						Failed:      false,
 						ReturnValue: "",
-						StructLogs:  []ethapi.StructLogRes{},
+						StructLogs:  []AVNapi.StructLogRes{},
 					},
 				},
 			},

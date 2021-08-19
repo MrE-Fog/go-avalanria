@@ -1,18 +1,18 @@
-// Copyright 2018 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2018 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -25,16 +25,16 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/accounts/scwallet"
-	"github.com/ethereum/go-ethereum/accounts/usbwallet"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/signer/core/apitypes"
-	"github.com/ethereum/go-ethereum/signer/storage"
+	"github.com/AVNereum/go-AVNereum/accounts"
+	"github.com/AVNereum/go-AVNereum/accounts/keystore"
+	"github.com/AVNereum/go-AVNereum/accounts/scwallet"
+	"github.com/AVNereum/go-AVNereum/accounts/usbwallet"
+	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
+	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/AVNereum/go-AVNereum/signer/core/apitypes"
+	"github.com/AVNereum/go-AVNereum/signer/storage"
 )
 
 const (
@@ -53,7 +53,7 @@ type ExternalAPI interface {
 	// New request to create a new account
 	New(ctx context.Context) (common.Address, error)
 	// SignTransaction request to sign the specified transaction
-	SignTransaction(ctx context.Context, args apitypes.SendTxArgs, methodSelector *string) (*ethapi.SignTransactionResult, error)
+	SignTransaction(ctx context.Context, args apitypes.SendTxArgs, mAVNodSelector *string) (*AVNapi.SignTransactionResult, error)
 	// SignData - request to sign the given data (plus prefix)
 	SignData(ctx context.Context, contentType string, addr common.MixedcaseAddress, data interface{}) (hexutil.Bytes, error)
 	// SignTypedData - request to sign the given structured data (plus prefix)
@@ -63,10 +63,10 @@ type ExternalAPI interface {
 	// Version info about the APIs
 	Version(ctx context.Context) (string, error)
 	// SignGnosisSafeTransaction signs/confirms a gnosis-safe multisig transaction
-	SignGnosisSafeTx(ctx context.Context, signerAddress common.MixedcaseAddress, gnosisTx GnosisSafeTx, methodSelector *string) (*GnosisSafeTx, error)
+	SignGnosisSafeTx(ctx context.Context, signerAddress common.MixedcaseAddress, gnosisTx GnosisSafeTx, mAVNodSelector *string) (*GnosisSafeTx, error)
 }
 
-// UIClientAPI specifies what method a UI needs to implement to be able to be used as a
+// UIClientAPI specifies what mAVNod a UI needs to implement to be able to be used as a
 // UI for the signer
 type UIClientAPI interface {
 	// ApproveTx prompt the user for confirmation to request to sign Transaction
@@ -83,8 +83,8 @@ type UIClientAPI interface {
 	// ShowInfo displays info message to user
 	ShowInfo(message string)
 	// OnApprovedTx notifies the UI about a transaction having been successfully signed.
-	// This method can be used by a UI to keep track of e.g. how much has been sent to a particular recipient.
-	OnApprovedTx(tx ethapi.SignTransactionResult)
+	// This mAVNod can be used by a UI to keep track of e.g. how much has been sent to a particular recipient.
+	OnApprovedTx(tx AVNapi.SignTransactionResult)
 	// OnSignerStartup is invoked when the signer boots, and tells the UI info about external API location and version
 	// information
 	OnSignerStartup(info StartupInfo)
@@ -95,8 +95,8 @@ type UIClientAPI interface {
 	RegisterUIServer(api *UIServerAPI)
 }
 
-// Validator defines the methods required to validate a transaction against some
-// sanity defaults as well as any underlying 4byte method database.
+// Validator defines the mAVNods required to validate a transaction against some
+// sanity defaults as well as any underlying 4byte mAVNod database.
 //
 // Use fourbyte.Database as an implementation. It is separated out of this package
 // to allow pieces of the signer package to be used without having to load the
@@ -421,7 +421,7 @@ func (api *SignerAPI) New(ctx context.Context) (common.Address, error) {
 	return api.newAccount()
 }
 
-// newAccount is the internal method to create a new account. It should be used
+// newAccount is the internal mAVNod to create a new account. It should be used
 // _after_ user-approval has been obtained
 func (api *SignerAPI) newAccount() (common.Address, error) {
 	be := api.am.Backends(keystore.KeyStoreType)
@@ -531,19 +531,19 @@ func (api *SignerAPI) lookupOrQueryPassword(address common.Address, title, promp
 	if err != nil {
 		log.Warn("error obtaining password", "error", err)
 		// We'll not forward the error here, in case the error contains info about the response from the UI,
-		// which could leak the password if it was malformed json or something
+		// which could leak the password if it was malformed json or somAVNing
 		return "", errors.New("internal error")
 	}
 	return pwResp.Text, nil
 }
 
 // SignTransaction signs the given Transaction and returns it both as json and rlp-encoded form
-func (api *SignerAPI) SignTransaction(ctx context.Context, args apitypes.SendTxArgs, methodSelector *string) (*ethapi.SignTransactionResult, error) {
+func (api *SignerAPI) SignTransaction(ctx context.Context, args apitypes.SendTxArgs, mAVNodSelector *string) (*AVNapi.SignTransactionResult, error) {
 	var (
 		err    error
 		result SignTxResponse
 	)
-	msgs, err := api.validator.ValidateTransaction(methodSelector, &args)
+	msgs, err := api.validator.ValidateTransaction(mAVNodSelector, &args)
 	if err != nil {
 		return nil, err
 	}
@@ -604,7 +604,7 @@ func (api *SignerAPI) SignTransaction(ctx context.Context, args apitypes.SendTxA
 	if err != nil {
 		return nil, err
 	}
-	response := ethapi.SignTransactionResult{Raw: data, Tx: signedTx}
+	response := AVNapi.SignTransactionResult{Raw: data, Tx: signedTx}
 
 	// Finally, send the signed tx to the UI
 	api.UI.OnApprovedTx(response)
@@ -613,10 +613,10 @@ func (api *SignerAPI) SignTransaction(ctx context.Context, args apitypes.SendTxA
 
 }
 
-func (api *SignerAPI) SignGnosisSafeTx(ctx context.Context, signerAddress common.MixedcaseAddress, gnosisTx GnosisSafeTx, methodSelector *string) (*GnosisSafeTx, error) {
+func (api *SignerAPI) SignGnosisSafeTx(ctx context.Context, signerAddress common.MixedcaseAddress, gnosisTx GnosisSafeTx, mAVNodSelector *string) (*GnosisSafeTx, error) {
 	// Do the usual validations, but on the last-stage transaction
 	args := gnosisTx.ArgsForValidation()
-	msgs, err := api.validator.ValidateTransaction(methodSelector, args)
+	msgs, err := api.validator.ValidateTransaction(mAVNodSelector, args)
 	if err != nil {
 		return nil, err
 	}
@@ -640,7 +640,7 @@ func (api *SignerAPI) SignGnosisSafeTx(ctx context.Context, signerAddress common
 	return &gnosisTx, nil
 }
 
-// Returns the external api version. This method does not require user acceptance. Available methods are
+// Returns the external api version. This mAVNod does not require user acceptance. Available mAVNods are
 // available via enumeration anyway, and this info does not contain user-specific data
 func (api *SignerAPI) Version(ctx context.Context) (string, error) {
 	return ExternalAPIVersion, nil

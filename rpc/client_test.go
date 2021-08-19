@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
+// Copyright 2016 The go-AVNereum Authors
+// This file is part of the go-AVNereum library.
 //
-// The go-ethereum library is free software: you can redistribute it and/or modify
+// The go-AVNereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ethereum library is distributed in the hope that it will be useful,
+// The go-AVNereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
 func TestClientRequest(t *testing.T) {
@@ -103,17 +103,17 @@ func TestClientBatchRequest(t *testing.T) {
 
 	batch := []BatchElem{
 		{
-			Method: "test_echo",
+			MAVNod: "test_echo",
 			Args:   []interface{}{"hello", 10, &echoArgs{"world"}},
 			Result: new(echoResult),
 		},
 		{
-			Method: "test_echo",
+			MAVNod: "test_echo",
 			Args:   []interface{}{"hello2", 11, &echoArgs{"world"}},
 			Result: new(echoResult),
 		},
 		{
-			Method: "no_such_method",
+			MAVNod: "no_such_mAVNod",
 			Args:   []interface{}{1, 2, 3},
 			Result: new(int),
 		},
@@ -123,20 +123,20 @@ func TestClientBatchRequest(t *testing.T) {
 	}
 	wantResult := []BatchElem{
 		{
-			Method: "test_echo",
+			MAVNod: "test_echo",
 			Args:   []interface{}{"hello", 10, &echoArgs{"world"}},
 			Result: &echoResult{"hello", 10, &echoArgs{"world"}},
 		},
 		{
-			Method: "test_echo",
+			MAVNod: "test_echo",
 			Args:   []interface{}{"hello2", 11, &echoArgs{"world"}},
 			Result: &echoResult{"hello2", 11, &echoArgs{"world"}},
 		},
 		{
-			Method: "no_such_method",
+			MAVNod: "no_such_mAVNod",
 			Args:   []interface{}{1, 2, 3},
 			Result: new(int),
-			Error:  &jsonError{Code: -32601, Message: "the method no_such_method does not exist/is not available"},
+			Error:  &jsonError{Code: -32601, Message: "the mAVNod no_such_mAVNod does not exist/is not available"},
 		},
 	}
 	if !reflect.DeepEqual(batch, wantResult) {
@@ -354,7 +354,7 @@ func TestClientSubscribeClose(t *testing.T) {
 	}
 }
 
-// This test reproduces https://github.com/ethereum/go-ethereum/issues/17837 where the
+// This test reproduces https://github.com/AVNereum/go-AVNereum/issues/17837 where the
 // client hangs during shutdown when Unsubscribe races with Client.Close.
 func TestClientCloseUnsubscribeRace(t *testing.T) {
 	server := newTestServer()
@@ -401,7 +401,7 @@ func (r *unsubscribeRecorder) readBatch() ([]*jsonrpcMessage, bool, error) {
 	return msgs, batch, err
 }
 
-// This checks that Client calls the _unsubscribe method on the server when Unsubscribe is
+// This checks that Client calls the _unsubscribe mAVNod on the server when Unsubscribe is
 // called on a subscription.
 func TestClientSubscriptionUnsubscribeServer(t *testing.T) {
 	t.Parallel()
@@ -411,7 +411,7 @@ func TestClientSubscriptionUnsubscribeServer(t *testing.T) {
 	srv.RegisterName("nftest", new(notificationTestService))
 	p1, p2 := net.Pipe()
 	recorder := &unsubscribeRecorder{ServerCodec: NewCodec(p1)}
-	go srv.ServeCodec(recorder, OptionMethodInvocation|OptionSubscriptions)
+	go srv.ServeCodec(recorder, OptionMAVNodInvocation|OptionSubscriptions)
 	defer srv.Stop()
 
 	// Create the client on the other end of the pipe.
@@ -430,7 +430,7 @@ func TestClientSubscriptionUnsubscribeServer(t *testing.T) {
 	// Unsubscribe and check that unsubscribe was called.
 	sub.Unsubscribe()
 	if !recorder.unsubscribes[sub.subid] {
-		t.Fatal("client did not call unsubscribe method")
+		t.Fatal("client did not call unsubscribe mAVNod")
 	}
 	if _, open := <-sub.Err(); open {
 		t.Fatal("subscription error channel not closed after unsubscribe")
@@ -438,7 +438,7 @@ func TestClientSubscriptionUnsubscribeServer(t *testing.T) {
 }
 
 // This checks that the subscribed channel can be closed after Unsubscribe.
-// It is the reproducer for https://github.com/ethereum/go-ethereum/issues/22322
+// It is the reproducer for https://github.com/AVNereum/go-AVNereum/issues/22322
 func TestClientSubscriptionChannelClose(t *testing.T) {
 	t.Parallel()
 
@@ -638,7 +638,7 @@ func TestClientReconnect(t *testing.T) {
 	}
 
 	// Start it up again and call again. The connection should be reestablished.
-	// We spawn multiple calls here to check whether this hangs somehow.
+	// We spawn multiple calls here to check whAVNer this hangs somehow.
 	s2, l2 := startServer(l1.Addr().String())
 	defer l2.Close()
 	defer s2.Stop()
@@ -692,7 +692,7 @@ func httpTestClient(srv *Server, transport string, fl *flakeyListener) (*Client,
 
 func ipcTestClient(srv *Server, fl *flakeyListener) (*Client, net.Listener) {
 	// Listen on a random endpoint.
-	endpoint := fmt.Sprintf("go-ethereum-test-ipc-%d-%d", os.Getpid(), rand.Int63())
+	endpoint := fmt.Sprintf("go-AVNereum-test-ipc-%d-%d", os.Getpid(), rand.Int63())
 	if runtime.GOOS == "windows" {
 		endpoint = `\\.\pipe\` + endpoint
 	} else {

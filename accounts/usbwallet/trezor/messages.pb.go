@@ -96,17 +96,17 @@ const (
 	MessageType_MessageType_DebugLinkMemory      MessageType = 111
 	MessageType_MessageType_DebugLinkMemoryWrite MessageType = 112
 	MessageType_MessageType_DebugLinkFlashErase  MessageType = 113
-	// Ethereum
-	MessageType_MessageType_EthereumGetPublicKey     MessageType = 450
-	MessageType_MessageType_EthereumPublicKey        MessageType = 451
-	MessageType_MessageType_EthereumGetAddress       MessageType = 56
-	MessageType_MessageType_EthereumAddress          MessageType = 57
-	MessageType_MessageType_EthereumSignTx           MessageType = 58
-	MessageType_MessageType_EthereumTxRequest        MessageType = 59
-	MessageType_MessageType_EthereumTxAck            MessageType = 60
-	MessageType_MessageType_EthereumSignMessage      MessageType = 64
-	MessageType_MessageType_EthereumVerifyMessage    MessageType = 65
-	MessageType_MessageType_EthereumMessageSignature MessageType = 66
+	// Avalanria
+	MessageType_MessageType_AvalanriaGetPublicKey     MessageType = 450
+	MessageType_MessageType_AvalanriaPublicKey        MessageType = 451
+	MessageType_MessageType_AvalanriaGetAddress       MessageType = 56
+	MessageType_MessageType_AvalanriaAddress          MessageType = 57
+	MessageType_MessageType_AvalanriaSignTx           MessageType = 58
+	MessageType_MessageType_AvalanriaTxRequest        MessageType = 59
+	MessageType_MessageType_AvalanriaTxAck            MessageType = 60
+	MessageType_MessageType_AvalanriaSignMessage      MessageType = 64
+	MessageType_MessageType_AvalanriaVerifyMessage    MessageType = 65
+	MessageType_MessageType_AvalanriaMessageSignature MessageType = 66
 	// NEM
 	MessageType_MessageType_NEMGetAddress       MessageType = 67
 	MessageType_MessageType_NEMAddress          MessageType = 68
@@ -306,16 +306,16 @@ var MessageType_name = map[int32]string{
 	111: "MessageType_DebugLinkMemory",
 	112: "MessageType_DebugLinkMemoryWrite",
 	113: "MessageType_DebugLinkFlashErase",
-	450: "MessageType_EthereumGetPublicKey",
-	451: "MessageType_EthereumPublicKey",
-	56:  "MessageType_EthereumGetAddress",
-	57:  "MessageType_EthereumAddress",
-	58:  "MessageType_EthereumSignTx",
-	59:  "MessageType_EthereumTxRequest",
-	60:  "MessageType_EthereumTxAck",
-	64:  "MessageType_EthereumSignMessage",
-	65:  "MessageType_EthereumVerifyMessage",
-	66:  "MessageType_EthereumMessageSignature",
+	450: "MessageType_AvalanriaGetPublicKey",
+	451: "MessageType_AvalanriaPublicKey",
+	56:  "MessageType_AvalanriaGetAddress",
+	57:  "MessageType_AvalanriaAddress",
+	58:  "MessageType_AvalanriaSignTx",
+	59:  "MessageType_AvalanriaTxRequest",
+	60:  "MessageType_AvalanriaTxAck",
+	64:  "MessageType_AvalanriaSignMessage",
+	65:  "MessageType_AvalanriaVerifyMessage",
+	66:  "MessageType_AvalanriaMessageSignature",
 	67:  "MessageType_NEMGetAddress",
 	68:  "MessageType_NEMAddress",
 	69:  "MessageType_NEMSignTx",
@@ -502,16 +502,16 @@ var MessageType_value = map[string]int32{
 	"MessageType_DebugLinkMemory":                           111,
 	"MessageType_DebugLinkMemoryWrite":                      112,
 	"MessageType_DebugLinkFlashErase":                       113,
-	"MessageType_EthereumGetPublicKey":                      450,
-	"MessageType_EthereumPublicKey":                         451,
-	"MessageType_EthereumGetAddress":                        56,
-	"MessageType_EthereumAddress":                           57,
-	"MessageType_EthereumSignTx":                            58,
-	"MessageType_EthereumTxRequest":                         59,
-	"MessageType_EthereumTxAck":                             60,
-	"MessageType_EthereumSignMessage":                       64,
-	"MessageType_EthereumVerifyMessage":                     65,
-	"MessageType_EthereumMessageSignature":                  66,
+	"MessageType_AvalanriaGetPublicKey":                      450,
+	"MessageType_AvalanriaPublicKey":                         451,
+	"MessageType_AvalanriaGetAddress":                        56,
+	"MessageType_AvalanriaAddress":                           57,
+	"MessageType_AvalanriaSignTx":                            58,
+	"MessageType_AvalanriaTxRequest":                         59,
+	"MessageType_AvalanriaTxAck":                             60,
+	"MessageType_AvalanriaSignMessage":                       64,
+	"MessageType_AvalanriaVerifyMessage":                     65,
+	"MessageType_AvalanriaMessageSignature":                  66,
 	"MessageType_NEMGetAddress":                             67,
 	"MessageType_NEMAddress":                                68,
 	"MessageType_NEMSignTx":                                 69,

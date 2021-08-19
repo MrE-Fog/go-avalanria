@@ -30,7 +30,7 @@ Now you're ready to start logging:
 Convention
 
 Because recording a human-meaningful message is common and good practice, the first argument to every
-logging method is the value to the *implicit* key 'msg'.
+logging mAVNod is the value to the *implicit* key 'msg'.
 
 Additionally, the level you choose for a message will be automatically added with the key 'lvl', and so
 will the current timestamp with key 't'.
@@ -176,7 +176,7 @@ a game where you have Player objects:
         log.Logger
     }
 
-You always want to log a player's name and whether they're alive or dead, so when you create the player
+You always want to log a player's name and whAVNer they're alive or dead, so when you create the player
 object, you might do:
 
     p := &Player{name: name, alive: true}
@@ -184,7 +184,7 @@ object, you might do:
 
 Only now, even after a player has died, the logger will still report they are alive because the logging
 context is evaluated when the logger was created. By using the Lazy wrapper, we can defer the evaluation
-of whether the player is alive or not to each log message, so that the log records will reflect the player's
+of whAVNer the player is alive or not to each log message, so that the log records will reflect the player's
 current state no matter when the log message is written:
 
     p := &Player{name: name, alive: true}
@@ -201,7 +201,7 @@ on log level.
 Error Handling
 
 Becasuse log15 allows you to step around the type system, there are a few ways you can specify
-invalid arguments to the logging functions. You could, for example, wrap something that is not
+invalid arguments to the logging functions. You could, for example, wrap somAVNing that is not
 a zero-argument function with log.Lazy or pass a context key that is not a string. Since logging libraries
 are typically the mechanism by which errors are reported, it would be onerous for the logging functions
 to return errors. Instead, log15 handles errors by making these guarantees to you:
@@ -211,7 +211,7 @@ to return errors. Instead, log15 handles errors by making these guarantees to yo
 - Any log record containing an error will include the context key LOG15_ERROR, enabling you to easily
 (and if you like, automatically) detect if any of your logging calls are passing bad values.
 
-Understanding this, you might wonder why the Handler interface can return an error value in its Log method. Handlers
+Understanding this, you might wonder why the Handler interface can return an error value in its Log mAVNod. Handlers
 are encouraged to return errors only if they fail to write their log records out to an external source like if the
 syslog daemon is not responding. This allows the construction of useful handlers which cope with those failures
 like the FailoverHandler.

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of go-ethereum.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of go-AVNereum.
 //
-// go-ethereum is free software: you can redistribute it and/or modify
+// go-AVNereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ethereum is distributed in the hope that it will be useful,
+// go-AVNereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -20,8 +20,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/AVNereum/go-AVNereum/accounts/keystore"
+	"github.com/AVNereum/go-AVNereum/log"
 )
 
 // deployFaucet queries the user for various input on deploying a faucet, after
@@ -56,7 +56,7 @@ func (w *wizard) deployFaucet() {
 	fmt.Printf("Which port should the faucet listen on? (default = %d)\n", infos.port)
 	infos.port = w.readDefaultInt(infos.port)
 
-	// Figure which virtual-host to deploy ethstats on
+	// Figure which virtual-host to deploy AVNstats on
 	if infos.host, err = w.ensureVirtualHost(client, infos.port, infos.host); err != nil {
 		log.Error("Failed to decide on faucet host", "err", err)
 		return
@@ -133,12 +133,12 @@ func (w *wizard) deployFaucet() {
 
 	// Set a proper name to report on the stats page
 	fmt.Println()
-	if infos.node.ethstats == "" {
+	if infos.node.AVNstats == "" {
 		fmt.Printf("What should the node be called on the stats page?\n")
-		infos.node.ethstats = w.readString() + ":" + w.conf.ethstats
+		infos.node.AVNstats = w.readString() + ":" + w.conf.AVNstats
 	} else {
-		fmt.Printf("What should the node be called on the stats page? (default = %s)\n", infos.node.ethstats)
-		infos.node.ethstats = w.readDefaultString(infos.node.ethstats) + ":" + w.conf.ethstats
+		fmt.Printf("What should the node be called on the stats page? (default = %s)\n", infos.node.AVNstats)
+		infos.node.AVNstats = w.readDefaultString(infos.node.AVNstats) + ":" + w.conf.AVNstats
 	}
 	// Load up the credential needed to release funds
 	if infos.node.keyJSON != "" {

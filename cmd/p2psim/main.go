@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of go-ethereum.
+// Copyright 2017 The go-AVNereum Authors
+// This file is part of go-AVNereum.
 //
-// go-ethereum is free software: you can redistribute it and/or modify
+// go-AVNereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ethereum is distributed in the hope that it will be useful,
+// go-AVNereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
 
 // p2psim provides a command-line client for a simulation HTTP API.
 //
@@ -45,12 +45,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/p2p/simulations"
-	"github.com/ethereum/go-ethereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/AVNereum/go-AVNereum/p2p/enode"
+	"github.com/AVNereum/go-AVNereum/p2p/simulations"
+	"github.com/AVNereum/go-AVNereum/p2p/simulations/adapters"
+	"github.com/AVNereum/go-AVNereum/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -167,13 +167,13 @@ func main() {
 				},
 				{
 					Name:      "rpc",
-					ArgsUsage: "<node> <method> [<args>]",
-					Usage:     "call a node RPC method",
+					ArgsUsage: "<node> <mAVNod> [<args>]",
+					Usage:     "call a node RPC mAVNod",
 					Action:    rpcNode,
 					Flags: []cli.Flag{
 						cli.BoolFlag{
 							Name:  "subscribe",
-							Usage: "method is a subscription",
+							Usage: "mAVNod is a subscription",
 						},
 					},
 				},
@@ -384,32 +384,32 @@ func rpcNode(ctx *cli.Context) error {
 		return cli.ShowCommandHelp(ctx, ctx.Command.Name)
 	}
 	nodeName := args[0]
-	method := args[1]
+	mAVNod := args[1]
 	rpcClient, err := client.RPCClient(context.Background(), nodeName)
 	if err != nil {
 		return err
 	}
 	if ctx.Bool("subscribe") {
-		return rpcSubscribe(rpcClient, ctx.App.Writer, method, args[3:]...)
+		return rpcSubscribe(rpcClient, ctx.App.Writer, mAVNod, args[3:]...)
 	}
 	var result interface{}
 	params := make([]interface{}, len(args[3:]))
 	for i, v := range args[3:] {
 		params[i] = v
 	}
-	if err := rpcClient.Call(&result, method, params...); err != nil {
+	if err := rpcClient.Call(&result, mAVNod, params...); err != nil {
 		return err
 	}
 	return json.NewEncoder(ctx.App.Writer).Encode(result)
 }
 
-func rpcSubscribe(client *rpc.Client, out io.Writer, method string, args ...string) error {
-	parts := strings.SplitN(method, "_", 2)
+func rpcSubscribe(client *rpc.Client, out io.Writer, mAVNod string, args ...string) error {
+	parts := strings.SplitN(mAVNod, "_", 2)
 	namespace := parts[0]
-	method = parts[1]
+	mAVNod = parts[1]
 	ch := make(chan interface{})
 	subArgs := make([]interface{}, len(args)+1)
-	subArgs[0] = method
+	subArgs[0] = mAVNod
 	for i, v := range args {
 		subArgs[i+1] = v
 	}
