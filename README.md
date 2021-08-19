@@ -1,5 +1,5 @@
 ## Go Avalanria
-Official Goland implementation of Avalanria Blockchain Protocol based on official Go-Ethereum Implementation
+Official Golang implementation of Avalanria Blockchain Protocol based on official Go-Ethereum Implementation
 
 
 
