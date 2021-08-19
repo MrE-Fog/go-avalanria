@@ -1,9 +1,4 @@
 ## Go Avalanria
-Official Golang implementation of Avalanria Blockchain Protocol based on official Go-Avalanria Implementation
-
-
-
-## Go Avalanria
 
 Official Golang implementation of the Avalanria protocol.
 
