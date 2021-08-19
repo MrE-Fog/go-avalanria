@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package enode
 
@@ -26,8 +26,8 @@ import (
 	"net"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/p2p/enr"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/p2p/enr"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 var errMissingPrefix = errors.New("missing 'enr:' prefix for base64-encoded record")
@@ -144,8 +144,8 @@ func (n *Node) Record() *enr.Record {
 	return &cpy
 }
 
-// ValidateComplete checks whAVNer n has a valid IP and UDP port.
-// Deprecated: don't use this mAVNod.
+// ValidateComplete checks whavner n has a valid IP and UDP port.
+// Deprecated: don't use this mavnod.
 func (n *Node) ValidateComplete() error {
 	if n.Incomplete() {
 		return errors.New("missing IP address")

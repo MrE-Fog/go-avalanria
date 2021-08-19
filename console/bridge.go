@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package console
 
@@ -25,16 +25,16 @@ import (
 	"time"
 
 	"github.com/dop251/goja"
-	"github.com/AVNereum/go-AVNereum/accounts/scwallet"
-	"github.com/AVNereum/go-AVNereum/accounts/usbwallet"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/console/prompt"
-	"github.com/AVNereum/go-AVNereum/internal/jsre"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/accounts/scwallet"
+	"github.com/avalanria/go-avalanria/accounts/usbwallet"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/console/prompt"
+	"github.com/avalanria/go-avalanria/internal/jsre"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
-// bridge is a collection of JavaScript utility mAVNods to bride the .js runtime
-// environment and the Go RPC connection backing the remote mAVNod calls.
+// bridge is a collection of JavaScript utility mavnods to bride the .js runtime
+// environment and the Go RPC connection backing the remote mavnod calls.
 type bridge struct {
 	client   *rpc.Client         // RPC client to execute Avalanria requests through
 	prompter prompt.UserPrompter // Input prompter to allow interactive user feedback
@@ -50,17 +50,17 @@ func newBridge(client *rpc.Client, prompter prompt.UserPrompter, printer io.Writ
 	}
 }
 
-func getJAVN(vm *goja.Runtime) *goja.Object {
-	jAVN := vm.Get("jAVN")
-	if jAVN == nil {
-		panic(vm.ToValue("jAVN object does not exist"))
+func getJavn(vm *goja.Runtime) *goja.Object {
+	javn := vm.Get("javn")
+	if javn == nil {
+		panic(vm.ToValue("javn object does not exist"))
 	}
-	return jAVN.ToObject(vm)
+	return javn.ToObject(vm)
 }
 
-// NewAccount is a wrapper around the personal.newAccount RPC mAVNod that uses a
+// NewAccount is a wrapper around the personal.newAccount RPC mavnod that uses a
 // non-echoing password prompt to acquire the passphrase and executes the original
-// RPC mAVNod (saved in jAVN.newAccount) with it to actually execute the RPC call.
+// RPC mavnod (saved in javn.newAccount) with it to actually execute the RPC call.
 func (b *bridge) NewAccount(call jsre.Call) (goja.Value, error) {
 	var (
 		password string
@@ -86,9 +86,9 @@ func (b *bridge) NewAccount(call jsre.Call) (goja.Value, error) {
 		return nil, fmt.Errorf("expected 0 or 1 string argument")
 	}
 	// Password acquired, execute the call and return
-	newAccount, callable := goja.AssertFunction(getJAVN(call.VM).Get("newAccount"))
+	newAccount, callable := goja.AssertFunction(getJavn(call.VM).Get("newAccount"))
 	if !callable {
-		return nil, fmt.Errorf("jAVN.newAccount is not callable")
+		return nil, fmt.Errorf("javn.newAccount is not callable")
 	}
 	ret, err := newAccount(goja.Null(), call.VM.ToValue(password))
 	if err != nil {
@@ -113,9 +113,9 @@ func (b *bridge) OpenWallet(call jsre.Call) (goja.Value, error) {
 		passwd = call.Argument(1)
 	}
 	// Open the wallet and return if successful in itself
-	openWallet, callable := goja.AssertFunction(getJAVN(call.VM).Get("openWallet"))
+	openWallet, callable := goja.AssertFunction(getJavn(call.VM).Get("openWallet"))
 	if !callable {
-		return nil, fmt.Errorf("jAVN.openWallet is not callable")
+		return nil, fmt.Errorf("javn.openWallet is not callable")
 	}
 	val, err := openWallet(goja.Null(), wallet, passwd)
 	if err == nil {
@@ -196,9 +196,9 @@ func (b *bridge) readPassphraseAndReopenWallet(call jsre.Call) (goja.Value, erro
 	if err != nil {
 		return nil, err
 	}
-	openWallet, callable := goja.AssertFunction(getJAVN(call.VM).Get("openWallet"))
+	openWallet, callable := goja.AssertFunction(getJavn(call.VM).Get("openWallet"))
 	if !callable {
-		return nil, fmt.Errorf("jAVN.openWallet is not callable")
+		return nil, fmt.Errorf("javn.openWallet is not callable")
 	}
 	return openWallet(goja.Null(), wallet, call.VM.ToValue(input))
 }
@@ -217,16 +217,16 @@ func (b *bridge) readPinAndReopenWallet(call jsre.Call) (goja.Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	openWallet, callable := goja.AssertFunction(getJAVN(call.VM).Get("openWallet"))
+	openWallet, callable := goja.AssertFunction(getJavn(call.VM).Get("openWallet"))
 	if !callable {
-		return nil, fmt.Errorf("jAVN.openWallet is not callable")
+		return nil, fmt.Errorf("javn.openWallet is not callable")
 	}
 	return openWallet(goja.Null(), wallet, call.VM.ToValue(input))
 }
 
-// UnlockAccount is a wrapper around the personal.unlockAccount RPC mAVNod that
+// UnlockAccount is a wrapper around the personal.unlockAccount RPC mavnod that
 // uses a non-echoing password prompt to acquire the passphrase and executes the
-// original RPC mAVNod (saved in jAVN.unlockAccount) with it to actually execute
+// original RPC mavnod (saved in javn.unlockAccount) with it to actually execute
 // the RPC call.
 func (b *bridge) UnlockAccount(call jsre.Call) (goja.Value, error) {
 	if len(call.Arguments) < 1 {
@@ -265,16 +265,16 @@ func (b *bridge) UnlockAccount(call jsre.Call) (goja.Value, error) {
 	}
 
 	// Send the request to the backend and return.
-	unlockAccount, callable := goja.AssertFunction(getJAVN(call.VM).Get("unlockAccount"))
+	unlockAccount, callable := goja.AssertFunction(getJavn(call.VM).Get("unlockAccount"))
 	if !callable {
-		return nil, fmt.Errorf("jAVN.unlockAccount is not callable")
+		return nil, fmt.Errorf("javn.unlockAccount is not callable")
 	}
 	return unlockAccount(goja.Null(), account, passwd, duration)
 }
 
-// Sign is a wrapper around the personal.sign RPC mAVNod that uses a non-echoing password
-// prompt to acquire the passphrase and executes the original RPC mAVNod (saved in
-// jAVN.sign) with it to actually execute the RPC call.
+// Sign is a wrapper around the personal.sign RPC mavnod that uses a non-echoing password
+// prompt to acquire the passphrase and executes the original RPC mavnod (saved in
+// javn.sign) with it to actually execute the RPC call.
 func (b *bridge) Sign(call jsre.Call) (goja.Value, error) {
 	if nArgs := len(call.Arguments); nArgs < 2 {
 		return nil, fmt.Errorf("usage: sign(message, account, [ password ])")
@@ -305,9 +305,9 @@ func (b *bridge) Sign(call jsre.Call) (goja.Value, error) {
 	}
 
 	// Send the request to the backend and return
-	sign, callable := goja.AssertFunction(getJAVN(call.VM).Get("sign"))
+	sign, callable := goja.AssertFunction(getJavn(call.VM).Get("sign"))
 	if !callable {
-		return nil, fmt.Errorf("jAVN.sign is not callable")
+		return nil, fmt.Errorf("javn.sign is not callable")
 	}
 	return sign(goja.Null(), message, account, passwd)
 }
@@ -354,12 +354,12 @@ func (b *bridge) SleepBlocks(call jsre.Call) (goja.Value, error) {
 	// Poll the current block number until either it or a timeout is reached.
 	deadline := time.Now().Add(time.Duration(sleep) * time.Second)
 	var lastNumber hexutil.Uint64
-	if err := b.client.Call(&lastNumber, "AVN_blockNumber"); err != nil {
+	if err := b.client.Call(&lastNumber, "avn_blockNumber"); err != nil {
 		return nil, err
 	}
 	for time.Now().Before(deadline) {
 		var number hexutil.Uint64
-		if err := b.client.Call(&number, "AVN_blockNumber"); err != nil {
+		if err := b.client.Call(&number, "avn_blockNumber"); err != nil {
 			return nil, err
 		}
 		if number != lastNumber {
@@ -376,11 +376,11 @@ func (b *bridge) SleepBlocks(call jsre.Call) (goja.Value, error) {
 
 type jsonrpcCall struct {
 	ID     int64
-	MAVNod string
+	Mavnod string
 	Params []interface{}
 }
 
-// Send implements the web3 provider "send" mAVNod.
+// Send implements the web3 provider "send" mavnod.
 func (b *bridge) Send(call jsre.Call) (goja.Value, error) {
 	// Remarshal the request into a Go value.
 	reqVal, err := call.Argument(0).ToObject(call.VM).MarshalJSON()
@@ -412,7 +412,7 @@ func (b *bridge) Send(call jsre.Call) (goja.Value, error) {
 		resp.Set("id", req.ID)
 
 		var result json.RawMessage
-		if err = b.client.Call(&result, req.MAVNod, req.Params...); err == nil {
+		if err = b.client.Call(&result, req.Mavnod, req.Params...); err == nil {
 			if result == nil {
 				// Special case null because it is decoded as an empty
 				// raw message for some reason.

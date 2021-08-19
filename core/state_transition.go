@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -21,12 +21,12 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	cmath "github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	cmath "github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 var emptyCodeHash = crypto.Keccak256Hash(nil)
@@ -93,7 +93,7 @@ func (result *ExecutionResult) Unwrap() error {
 	return result.Err
 }
 
-// Failed returns the indicator whAVNer the execution is successful or not
+// Failed returns the indicator whavner the execution is successful or not
 func (result *ExecutionResult) Failed() bool { return result.Err != nil }
 
 // Return is a helper function to help caller distinguish between revert reason
@@ -230,7 +230,7 @@ func (st *StateTransition) preCheck() error {
 	}
 	// Make sure that transaction gasFeeCap is greater than the baseFee (post london)
 	if st.evm.ChainConfig().IsLondon(st.evm.Context.BlockNumber) {
-		// Skip the checks if gas fields are zero and baseFee was explicitly disabled (AVN_call)
+		// Skip the checks if gas fields are zero and baseFee was explicitly disabled (avn_call)
 		if !st.evm.Config.NoBaseFee || st.gasFeeCap.BitLen() > 0 || st.gasTipCap.BitLen() > 0 {
 			if l := st.gasFeeCap.BitLen(); l > 256 {
 				return fmt.Errorf("%w: address %v, maxFeePerGas bit length: %d", ErrFeeCapVeryHigh,

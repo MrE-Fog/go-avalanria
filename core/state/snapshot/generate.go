@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package snapshot
 
@@ -25,17 +25,17 @@ import (
 	"time"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb/memorydb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/avndb/memorydb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 var (
@@ -110,7 +110,7 @@ func (gs *generatorStats) Log(msg string, root common.Hash, marker []byte) {
 	if root != (common.Hash{}) {
 		ctx = append(ctx, []interface{}{"root", root}...)
 	}
-	// Figure out whAVNer we're after or within an account
+	// Figure out whavner we're after or within an account
 	switch len(marker) {
 	case common.HashLength:
 		ctx = append(ctx, []interface{}{"at", common.BytesToHash(marker)}...)
@@ -144,7 +144,7 @@ func (gs *generatorStats) Log(msg string, root common.Hash, marker []byte) {
 // generateSnapshot regenerates a brand new snapshot based on an existing state
 // database and head block asynchronously. The snapshot is returned immediately
 // and generation is continued in the background until done.
-func generateSnapshot(diskdb AVNdb.KeyValueStore, triedb *trie.Database, cache int, root common.Hash) *diskLayer {
+func generateSnapshot(diskdb avndb.KeyValueStore, triedb *trie.Database, cache int, root common.Hash) *diskLayer {
 	// Create a new disk layer with an initialized state marker at zero
 	var (
 		stats     = &generatorStats{start: time.Now()}
@@ -171,7 +171,7 @@ func generateSnapshot(diskdb AVNdb.KeyValueStore, triedb *trie.Database, cache i
 }
 
 // journalProgress persists the generator stats into the database to resume later.
-func journalProgress(db AVNdb.KeyValueWriter, marker []byte, stats *generatorStats) {
+func journalProgress(db avndb.KeyValueWriter, marker []byte, stats *generatorStats) {
 	// Write out the generator marker. Note it's a standalone disk layer generator
 	// which is not mixed with journal. It's ok if the generator is persisted while
 	// journal is not.
@@ -210,7 +210,7 @@ type proofResult struct {
 	vals     [][]byte   // The val set of all elements being iterated, even proving is failed
 	diskMore bool       // Set when the database has extra snapshot states since last iteration
 	trieMore bool       // Set when the trie has extra snapshot states(only meaningful for successful proving)
-	proofErr error      // Indicator whAVNer the given state range is valid or not
+	proofErr error      // Indicator whavner the given state range is valid or not
 	tr       *trie.Trie // The trie, in case the trie was resolved by the prover (may be nil)
 }
 
@@ -219,7 +219,7 @@ func (result *proofResult) valid() bool {
 	return result.proofErr == nil
 }
 
-// last returns the last verified element key regardless of whAVNer the range proof is
+// last returns the last verified element key regardless of whavner the range proof is
 // successful or not. Nil is returned if nothing involved in the proving.
 func (result *proofResult) last() []byte {
 	var last []byte
@@ -428,7 +428,7 @@ func (dl *diskLayer) generateRange(root common.Hash, prefix []byte, kind string,
 
 	// We use the snap data to build up a cache which can be used by the
 	// main account trie as a primary lookup when resolving hashes
-	var snapNodeCache AVNdb.KeyValueStore
+	var snapNodeCache avndb.KeyValueStore
 	if len(result.keys) > 0 {
 		snapNodeCache = memorydb.New()
 		snapTrieDb := trie.NewDatabase(snapNodeCache)
@@ -534,7 +534,7 @@ func (dl *diskLayer) generateRange(root common.Hash, prefix []byte, kind string,
 
 // generate is a background thread that iterates over the state and storage tries,
 // constructing the state snapshot. All the arguments are purely for statistics
-// gathering and logging, since the mAVNod surfs the blocks as they arrive, often
+// gathering and logging, since the mavnod surfs the blocks as they arrive, often
 // being restarted.
 func (dl *diskLayer) generate(stats *generatorStats) {
 	var (
@@ -559,7 +559,7 @@ func (dl *diskLayer) generate(stats *generatorStats) {
 		case abort = <-dl.genAbort:
 		default:
 		}
-		if batch.ValueSize() > AVNdb.IdealBatchSize || abort != nil {
+		if batch.ValueSize() > avndb.IdealBatchSize || abort != nil {
 			// Flush out the batch anyway no matter it's empty or not.
 			// It's possible that all the states are recovered and the
 			// generation indeed makes progress.

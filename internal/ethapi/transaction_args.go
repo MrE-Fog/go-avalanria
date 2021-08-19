@@ -1,20 +1,20 @@
-// Copyright 2021 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2021 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNapi
+package avnapi
 
 import (
 	"bytes"
@@ -23,12 +23,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 // TransactionArgs represents the arguments to construct a new transaction
@@ -45,7 +45,7 @@ type TransactionArgs struct {
 
 	// We accept "data" and "input" for backwards-compatibility reasons.
 	// "input" is the newer name and should be preferred by clients.
-	// Issue detail: https://github.com/AVNereum/go-AVNereum/issues/15628
+	// Issue detail: https://github.com/avalanria/go-avalanria/issues/15628
 	Data  *hexutil.Bytes `json:"data"`
 	Input *hexutil.Bytes `json:"input"`
 
@@ -172,7 +172,7 @@ func (args *TransactionArgs) setDefaults(ctx context.Context, b Backend) error {
 }
 
 // ToMessage converts th transaction arguments to the Message type used by the
-// core evm. This mAVNod is used in calls and traces that do not require a real
+// core evm. This mavnod is used in calls and traces that do not require a real
 // live transaction.
 func (args *TransactionArgs) ToMessage(globalGasCap uint64, baseFee *big.Int) (types.Message, error) {
 	// Reject invalid combinations of pre- and post-1559 fee styles

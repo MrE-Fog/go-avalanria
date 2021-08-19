@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -48,7 +48,7 @@ func TestNewID(t *testing.T) {
 
 func TestSubscriptions(t *testing.T) {
 	var (
-		namespaces        = []string{"AVN", "shh", "bzz"}
+		namespaces        = []string{"avn", "shh", "bzz"}
 		service           = &notificationTestService{}
 		subCount          = len(namespaces)
 		notificationCount = 3
@@ -78,7 +78,7 @@ func TestSubscriptions(t *testing.T) {
 	for i, namespace := range namespaces {
 		request := map[string]interface{}{
 			"id":      i,
-			"mAVNod":  fmt.Sprintf("%s_subscribe", namespace),
+			"mavnod":  fmt.Sprintf("%s_subscribe", namespace),
 			"version": "2.0",
 			"params":  []interface{}{"someSubscription", notificationCount, i},
 		}
@@ -136,7 +136,7 @@ func TestServerUnsubscribe(t *testing.T) {
 
 	// Subscribe.
 	p2.SetDeadline(time.Now().Add(10 * time.Second))
-	p2.Write([]byte(`{"jsonrpc":"2.0","id":1,"mAVNod":"nftest2_subscribe","params":["someSubscription",0,10]}`))
+	p2.Write([]byte(`{"jsonrpc":"2.0","id":1,"mavnod":"nftest2_subscribe","params":["someSubscription",0,10]}`))
 
 	// Handle received messages.
 	var (
@@ -155,7 +155,7 @@ func TestServerUnsubscribe(t *testing.T) {
 	}
 
 	// Unsubscribe and check that it is handled on the server side.
-	p2.Write([]byte(`{"jsonrpc":"2.0","mAVNod":"nftest2_unsubscribe","params":["` + sub.subid + `"]}`))
+	p2.Write([]byte(`{"jsonrpc":"2.0","mavnod":"nftest2_unsubscribe","params":["` + sub.subid + `"]}`))
 	for {
 		select {
 		case id := <-service.unsubscribed:

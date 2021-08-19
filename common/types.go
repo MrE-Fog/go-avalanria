@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package common
 
@@ -28,7 +28,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/hexutil"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -216,7 +216,7 @@ func BigToAddress(b *big.Int) Address { return BytesToAddress(b.Bytes()) }
 // If s is larger than len(h), s will be cropped from the left.
 func HexToAddress(s string) Address { return BytesToAddress(FromHex(s)) }
 
-// IsHexAddress verifies whAVNer a string can represent a valid hex-encoded
+// IsHexAddress verifies whavner a string can represent a valid hex-encoded
 // Avalanria address or not.
 func IsHexAddress(s string) bool {
 	if has0xPrefix(s) {

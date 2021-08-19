@@ -1,45 +1,45 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Contains all the wrappers from the node package to support client side node
 // management on mobile platforms.
 
-package gAVN
+package gavn
 
 import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
 
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVNclient"
-	"github.com/AVNereum/go-AVNereum/AVNstats"
-	"github.com/AVNereum/go-AVNereum/internal/debug"
-	"github.com/AVNereum/go-AVNereum/les"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/nat"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avnclient"
+	"github.com/avalanria/go-avalanria/avnstats"
+	"github.com/avalanria/go-avalanria/internal/debug"
+	"github.com/avalanria/go-avalanria/les"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/nat"
+	"github.com/avalanria/go-avalanria/params"
 )
 
-// NodeConfig represents the collection of configuration values to fine tune the GAVN
+// NodeConfig represents the collection of configuration values to fine tune the Gavn
 // node embedded into a mobile process. The available values are a subset of the
-// entire API provided by go-AVNereum to reduce the maintenance surface and dev
+// entire API provided by go-avalanria to reduce the maintenance surface and dev
 // complexity.
 type NodeConfig struct {
 	// Bootstrap nodes used to establish connectivity with the rest of the network.
@@ -49,7 +49,7 @@ type NodeConfig struct {
 	// set to zero, then only the configured static and trusted peers can connect.
 	MaxPeers int
 
-	// AvalanriaEnabled specifies whAVNer the node should run the Avalanria protocol.
+	// AvalanriaEnabled specifies whavner the node should run the Avalanria protocol.
 	AvalanriaEnabled bool
 
 	// AvalanriaNetworkID is the network identifier used by the Avalanria protocol to
@@ -106,12 +106,12 @@ func (conf *NodeConfig) String() string {
 	return encodeOrError(conf)
 }
 
-// Node represents a GAVN Avalanria node instance.
+// Node represents a Gavn Avalanria node instance.
 type Node struct {
 	node *node.Node
 }
 
-// NewNode creates and configures a new GAVN node.
+// NewNode creates and configures a new Gavn node.
 func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 	// If no or partial configurations were specified, use defaults
 	if config == nil {
@@ -182,18 +182,18 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 	}
 	// Register the Avalanria protocol if requested
 	if config.AvalanriaEnabled {
-		AVNConf := AVNconfig.Defaults
-		AVNConf.Genesis = genesis
-		AVNConf.SyncMode = downloader.LightSync
-		AVNConf.NetworkId = uint64(config.AvalanriaNetworkID)
-		AVNConf.DatabaseCache = config.AvalanriaDatabaseCache
-		lesBackend, err := les.New(rawStack, &AVNConf)
+		avnConf := avnconfig.Defaults
+		avnConf.Genesis = genesis
+		avnConf.SyncMode = downloader.LightSync
+		avnConf.NetworkId = uint64(config.AvalanriaNetworkID)
+		avnConf.DatabaseCache = config.AvalanriaDatabaseCache
+		lesBackend, err := les.New(rawStack, &avnConf)
 		if err != nil {
-			return nil, fmt.Errorf("AVNereum init: %v", err)
+			return nil, fmt.Errorf("avalanria init: %v", err)
 		}
 		// If netstats reporting is requested, do it
 		if config.AvalanriaNetStats != "" {
-			if err := AVNstats.New(rawStack, lesBackend.ApiBackend, lesBackend.Engine(), config.AvalanriaNetStats); err != nil {
+			if err := avnstats.New(rawStack, lesBackend.ApiBackend, lesBackend.Engine(), config.AvalanriaNetStats); err != nil {
 				return nil, fmt.Errorf("netstats init: %v", err)
 			}
 		}
@@ -227,7 +227,7 @@ func (n *Node) GetAvalanriaClient() (client *AvalanriaClient, _ error) {
 	if err != nil {
 		return nil, err
 	}
-	return &AvalanriaClient{AVNclient.NewClient(rpc)}, nil
+	return &AvalanriaClient{avnclient.NewClient(rpc)}, nil
 }
 
 // GetNodeInfo gathers and returns a collection of metadata known about the host.

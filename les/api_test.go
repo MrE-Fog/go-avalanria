@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -28,19 +28,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/les/flowcontrol"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/simulations"
-	"github.com/AVNereum/go-AVNereum/p2p/simulations/adapters"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/les/flowcontrol"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/simulations"
+	"github.com/avalanria/go-avalanria/p2p/simulations/adapters"
+	"github.com/avalanria/go-avalanria/rpc"
 	"github.com/mattn/go-colorable"
 )
 
@@ -87,7 +87,7 @@ func TestCapacityAPI10(t *testing.T) {
 // testCapacityAPI runs an end-to-end simulation test connecting one server with
 // a given number of clients. It sets different priority capacities to all clients
 // except a randomly selected one which runs in free client mode. All clients send
-// similar requests at the maximum allowed rate and the test verifies whAVNer the
+// similar requests at the maximum allowed rate and the test verifies whavner the
 // ratio of processed requests is close enough to the ratio of assigned capacities.
 // Running multiple rounds with different settings ensures that changing capacity
 // while connected and going back and forth between free and priority mode with
@@ -304,7 +304,7 @@ func testCapacityAPI(t *testing.T, clientCount int) {
 
 func getHead(ctx context.Context, t *testing.T, client *rpc.Client) (uint64, common.Hash) {
 	res := make(map[string]interface{})
-	if err := client.CallContext(ctx, &res, "AVN_getBlockByNumber", "latest", false); err != nil {
+	if err := client.CallContext(ctx, &res, "avn_getBlockByNumber", "latest", false); err != nil {
 		t.Fatalf("Failed to obtain head block: %v", err)
 	}
 	numStr, ok := res["number"].(string)
@@ -329,7 +329,7 @@ func testRequest(ctx context.Context, t *testing.T, client *rpc.Client) bool {
 	rand.Read(addr[:])
 	c, cancel := context.WithTimeout(ctx, time.Second*12)
 	defer cancel()
-	err := client.CallContext(c, &res, "AVN_getBalance", addr, "latest")
+	err := client.CallContext(c, &res, "avn_getBalance", addr, "latest")
 	if err != nil {
 		t.Log("request error:", err)
 	}
@@ -493,24 +493,24 @@ func testSim(t *testing.T, serverCount, clientCount int, serverDir, clientDir []
 }
 
 func newLesClientService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
-	config := AVNconfig.Defaults
+	config := avnconfig.Defaults
 	config.SyncMode = downloader.LightSync
-	config.Ethash.PowMode = AVNash.ModeFake
+	config.Ethash.PowMode = avnash.ModeFake
 	return New(stack, &config)
 }
 
 func newLesServerService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
-	config := AVNconfig.Defaults
+	config := avnconfig.Defaults
 	config.SyncMode = downloader.FullSync
 	config.LightServ = testServerCapacity
 	config.LightPeers = testMaxClients
-	AVNereum, err := AVN.New(stack, &config)
+	avalanria, err := avn.New(stack, &config)
 	if err != nil {
 		return nil, err
 	}
-	_, err = NewLesServer(stack, AVNereum, &config)
+	_, err = NewLesServer(stack, avalanria, &config)
 	if err != nil {
 		return nil, err
 	}
-	return AVNereum, nil
+	return avalanria, nil
 }

@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rawdb
 
@@ -26,12 +26,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/promAVNeus/tsdb/fileutil"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/promavneus/tsdb/fileutil"
 )
 
 var (
@@ -68,8 +68,8 @@ const (
 //
 // - The append only nature ensures that disk writes are minimized.
 // - The memory mapping ensures we can max out system memory for caching without
-//   reserving it for go-AVNereum. This would also reduce the memory requirements
-//   of GAVN, and thus also GC overhead.
+//   reserving it for go-avalanria. This would also reduce the memory requirements
+//   of Gavn, and thus also GC overhead.
 type freezer struct {
 	// WARNING: The `frozen` field is accessed atomically. On 32 bit platforms, only
 	// 64-bit aligned fields can be atomic. The struct is guaranteed to be so aligned,
@@ -163,7 +163,7 @@ func (f *freezer) Close() error {
 	return nil
 }
 
-// HasAncient returns an indicator whAVNer the specified ancient data exists
+// HasAncient returns an indicator whavner the specified ancient data exists
 // in the freezer.
 func (f *freezer) HasAncient(kind string, number uint64) (bool, error) {
 	if table := f.tables[kind]; table != nil {
@@ -279,7 +279,7 @@ func (f *freezer) Sync() error {
 //
 // This functionality is deliberately broken off from block importing to avoid
 // incurring additional data shuffling delays on block propagation.
-func (f *freezer) freeze(db AVNdb.KeyValueStore) {
+func (f *freezer) freeze(db avndb.KeyValueStore) {
 	nfdb := &nofreezedb{KeyValueStore: db}
 
 	var (
@@ -452,7 +452,7 @@ func (f *freezer) freeze(db AVNdb.KeyValueStore) {
 				log.Crit("Failed to delete dangling side blocks", "err", err)
 			}
 		}
-		// Log somAVNing friendly for the user
+		// Log somavning friendly for the user
 		context := []interface{}{
 			"blocks", f.frozen - first, "elapsed", common.PrettyDuration(time.Since(start)), "number", f.frozen - 1,
 		}

@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package checkpointoracle
 
@@ -27,13 +27,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind/backends"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/contracts/checkpointoracle/contract"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind/backends"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/contracts/checkpointoracle/contract"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 var (
@@ -140,7 +140,7 @@ func signCheckpoint(addr common.Address, privateKey *ecdsa.PrivateKey, index uin
 	return sig
 }
 
-// assertSignature verifies whAVNer the recovered signers are equal with expected.
+// assertSignature verifies whavner the recovered signers are equal with expected.
 func assertSignature(addr common.Address, index uint64, hash [32]byte, r, s [32]byte, v uint8, expect common.Address) bool {
 	buf := make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, index)
@@ -218,7 +218,7 @@ func TestCheckpointRegister(t *testing.T) {
 			contractBackend.Commit()
 		}
 	}
-	// assert checks whAVNer the current contract status is same with
+	// assert checks whavner the current contract status is same with
 	// the expected.
 	assert := func(index uint64, hash [32]byte, height *big.Int) error {
 		lindex, lhash, lheight, err := c.GetLatestCheckpoint(nil)

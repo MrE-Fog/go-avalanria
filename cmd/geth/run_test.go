@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -25,19 +25,19 @@ import (
 	"time"
 
 	"github.com/docker/docker/pkg/reexec"
-	"github.com/AVNereum/go-AVNereum/internal/cmdtest"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/internal/cmdtest"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 func tmpdir(t *testing.T) string {
-	dir, err := ioutil.TempDir("", "gAVN-test")
+	dir, err := ioutil.TempDir("", "gavn-test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	return dir
 }
 
-type testgAVN struct {
+type testgavn struct {
 	*cmdtest.TestCmd
 
 	// template variables for expect
@@ -46,8 +46,8 @@ type testgAVN struct {
 }
 
 func init() {
-	// Run the app if we've been exec'd as "gAVN-test" in runGAVN.
-	reexec.Register("gAVN-test", func() {
+	// Run the app if we've been exec'd as "gavn-test" in runGavn.
+	reexec.Register("gavn-test", func() {
 		if err := app.Run(os.Args); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -64,10 +64,10 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// spawns gAVN with the given command line args. If the args don't set --datadir, the
+// spawns gavn with the given command line args. If the args don't set --datadir, the
 // child g gets a temporary data directory.
-func runGAVN(t *testing.T, args ...string) *testgAVN {
-	tt := &testgAVN{}
+func runGavn(t *testing.T, args ...string) *testgavn {
+	tt := &testgavn{}
 	tt.TestCmd = cmdtest.NewTestCmd(t, tt)
 	for i, arg := range args {
 		switch arg {
@@ -75,7 +75,7 @@ func runGAVN(t *testing.T, args ...string) *testgAVN {
 			if i < len(args)-1 {
 				tt.Datadir = args[i+1]
 			}
-		case "--miner.AVNerbase":
+		case "--miner.avnerbase":
 			if i < len(args)-1 {
 				tt.Etherbase = args[i+1]
 			}
@@ -85,7 +85,7 @@ func runGAVN(t *testing.T, args ...string) *testgAVN {
 		tt.Datadir = tmpdir(t)
 		tt.Cleanup = func() { os.RemoveAll(tt.Datadir) }
 		args = append([]string{"--datadir", tt.Datadir}, args...)
-		// Remove the temporary datadir if somAVNing fails below.
+		// Remove the temporary datadir if somavning fails below.
 		defer func() {
 			if t.Failed() {
 				tt.Cleanup()
@@ -93,9 +93,9 @@ func runGAVN(t *testing.T, args ...string) *testgAVN {
 		}()
 	}
 
-	// Boot "gAVN". This actually runs the test binary but the TestMain
+	// Boot "gavn". This actually runs the test binary but the TestMain
 	// function will prevent any tests from running.
-	tt.Run("gAVN-test", args...)
+	tt.Run("gavn-test", args...)
 
 	return tt
 }

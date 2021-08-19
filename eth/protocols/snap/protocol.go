@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package snap
 
@@ -20,9 +20,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/state/snapshot"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/state/snapshot"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 // Constants to match up protocol versions and messages
@@ -95,7 +95,7 @@ type AccountData struct {
 // wire representation to consensus format. The returned data is RLP encoded
 // since it's expected to be serialized to disk without further interpretation.
 //
-// Note, this mAVNod does a round of RLP decoding and reencoding, so only use it
+// Note, this mavnod does a round of RLP decoding and reencoding, so only use it
 // once and cache the results if need be. Ideally discard the packet afterwards
 // to not double the memory use.
 func (p *AccountRangePacket) Unpack() ([]common.Hash, [][]byte, error) {

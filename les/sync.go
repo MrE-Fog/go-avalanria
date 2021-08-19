@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -21,12 +21,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 var errInvalidCheckpoint = errors.New("invalid advertised checkpoint")
@@ -127,7 +127,7 @@ func (h *clientHandler) synchronise(peer *serverPeer) {
 			checkpoint = &params.TrustedCheckpoint{}
 		}
 	}
-	// Determine whAVNer we should run checkpoint syncing or normal light syncing.
+	// Determine whavner we should run checkpoint syncing or normal light syncing.
 	//
 	// Here has four situations that we will disable the checkpoint syncing:
 	//
@@ -178,7 +178,7 @@ func (h *clientHandler) synchronise(peer *serverPeer) {
 
 		// Fetch the start point block header.
 		//
-		// For the AVNash consensus engine, the start header is the block header
+		// For the avnash consensus engine, the start header is the block header
 		// of the checkpoint.
 		//
 		// For the clique consensus engine, the start header is the block header

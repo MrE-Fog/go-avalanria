@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 // evm executes EVM code snippets.
 package main
@@ -22,9 +22,9 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/AVNereum/go-AVNereum/cmd/evm/internal/t8ntool"
-	"github.com/AVNereum/go-AVNereum/cmd/utils"
-	"github.com/AVNereum/go-AVNereum/internal/flags"
+	"github.com/avalanria/go-avalanria/cmd/evm/internal/t8ntool"
+	"github.com/avalanria/go-avalanria/cmd/utils"
+	"github.com/avalanria/go-avalanria/internal/flags"
 	"gopkg.in/urfave/cli.v1"
 )
 

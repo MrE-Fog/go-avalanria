@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package light implements on-demand retrieval capable state and chain objects
 // for the Avalanria Light Client.
@@ -26,17 +26,17 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
 	lru "github.com/hashicorp/golang-lru"
 )
 
@@ -51,7 +51,7 @@ var (
 type LightChain struct {
 	hc            *core.HeaderChain
 	indexerConfig *IndexerConfig
-	chainDb       AVNdb.Database
+	chainDb       avndb.Database
 	engine        consensus.Engine
 	odr           OdrBackend
 	chainFeed     event.Feed
@@ -69,7 +69,7 @@ type LightChain struct {
 	wg      sync.WaitGroup
 
 	// Atomic boolean switches:
-	running          int32 // whAVNer LightChain is running or stopped
+	running          int32 // whavner LightChain is running or stopped
 	procInterrupt    int32 // interrupts chain insert
 	disableCheckFreq int32 // disables header verification
 }
@@ -148,7 +148,7 @@ func (lc *LightChain) HeaderChain() *core.HeaderChain {
 	return lc.hc
 }
 
-// loadLastState loads the last known chain state from the database. This mAVNod
+// loadLastState loads the last known chain state from the database. This mavnod
 // assumes that the chain manager mutex is held.
 func (lc *LightChain) loadLastState() error {
 	if head := rawdb.ReadHeadHeaderHash(lc.chainDb); head == (common.Hash{}) {
@@ -322,9 +322,9 @@ func (lc *LightChain) Stop() {
 	log.Info("Blockchain stopped")
 }
 
-// StopInsert interrupts all insertion mAVNods, causing them to return
+// StopInsert interrupts all insertion mavnods, causing them to return
 // errInsertionInterrupted as soon as possible. Insertion is permanently disabled after
-// calling this mAVNod.
+// calling this mavnod.
 func (lc *LightChain) StopInsert() {
 	atomic.StoreInt32(&lc.procInterrupt, 1)
 }
@@ -373,7 +373,7 @@ func (lc *LightChain) postChainEvents(events []interface{}) {
 // chain, possibly creating a reorg. If an error is returned, it will return the
 // index number of the failing header as well an error describing what went wrong.
 //
-// The verify parameter can be used to fine tune whAVNer nonce verification
+// The verify parameter can be used to fine tune whavner nonce verification
 // should be done or not. The reason behind the optional check is because some
 // of the header retrieval mechanisms already need to verfy nonces, as well as
 // because nonces can be verified sparsely, not needing to check each.

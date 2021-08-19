@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -28,13 +28,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-// sshClient is a small wrapper around Go's SSH client with a few utility mAVNods
+// sshClient is a small wrapper around Go's SSH client with a few utility mavnods
 // implemented on top.
 type sshClient struct {
 	server  string // Server name or IP without port number
@@ -83,9 +83,9 @@ func dial(server string, pubkey []byte) (*sshClient, error) {
 		username = user.Username
 	}
 
-	// Configure the supported authentication mAVNods (ssh agent, private key and password)
+	// Configure the supported authentication mavnods (ssh agent, private key and password)
 	var (
-		auths []ssh.AuthMAVNod
+		auths []ssh.AuthMavnod
 		conn  net.Conn
 	)
 	if conn, err = net.Dial("unix", os.Getenv(EnvSSHAuthSock)); err != nil {
@@ -186,7 +186,7 @@ func dial(server string, pubkey []byte) (*sshClient, error) {
 }
 
 // init runs some initialization commands on the remote server to ensure it's
-// capable of acting as puppAVN target.
+// capable of acting as puppavn target.
 func (client *sshClient) init() error {
 	client.logger.Debug("Verifying if docker is available")
 	if out, err := client.Run("docker version"); err != nil {

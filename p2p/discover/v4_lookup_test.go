@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package discover
 
@@ -23,10 +23,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/p2p/discover/v4wire"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/enr"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/p2p/discover/v4wire"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/enr"
 )
 
 func TestUDPv4_Lookup(t *testing.T) {
@@ -98,7 +98,7 @@ func TestUDPv4_LookupIterator(t *testing.T) {
 }
 
 // TestUDPv4_LookupIteratorClose checks that lookupIterator ends when its Close
-// mAVNod is called.
+// mavnod is called.
 func TestUDPv4_LookupIteratorClose(t *testing.T) {
 	t.Parallel()
 	test := newUDPTest(t)

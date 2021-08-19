@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/core/types"
 )
 
 var _ = (*btHeaderMarshaling)(nil)

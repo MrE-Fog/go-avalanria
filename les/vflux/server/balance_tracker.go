@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package server
 
@@ -20,12 +20,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/les/utils"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/enr"
-	"github.com/AVNereum/go-AVNereum/p2p/nodestate"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/les/utils"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/enr"
+	"github.com/avalanria/go-avalanria/p2p/nodestate"
 )
 
 const (
@@ -59,7 +59,7 @@ type balanceTracker struct {
 }
 
 // newBalanceTracker creates a new balanceTracker
-func newBalanceTracker(ns *nodestate.NodeStateMachine, setup *serverSetup, db AVNdb.KeyValueStore, clock mclock.Clock, posExp, negExp utils.ValueExpirer) *balanceTracker {
+func newBalanceTracker(ns *nodestate.NodeStateMachine, setup *serverSetup, db avndb.KeyValueStore, clock mclock.Clock, posExp, negExp utils.ValueExpirer) *balanceTracker {
 	ndb := newNodeDB(db, clock)
 	bt := &balanceTracker{
 		ns:           ns,
@@ -216,7 +216,7 @@ func (bt *balanceTracker) GetExpirationTCs() (pos, neg uint64) {
 	return bt.posExpTC, bt.negExpTC
 }
 
-// BalanceOperation allows atomic operations on the balance of a node regardless of whAVNer
+// BalanceOperation allows atomic operations on the balance of a node regardless of whavner
 // it is currently connected or not
 func (bt *balanceTracker) BalanceOperation(id enode.ID, connAddress string, cb func(AtomicBalanceOperator)) {
 	bt.ns.Operation(func() {
@@ -265,7 +265,7 @@ func (bt *balanceTracker) storeBalance(id []byte, neg bool, value utils.ExpiredV
 	}
 }
 
-// canDropBalance tells whAVNer a positive or negative balance is below the threshold
+// canDropBalance tells whavner a positive or negative balance is below the threshold
 // and therefore can be dropped from the database
 func (bt *balanceTracker) canDropBalance(now mclock.AbsTime, neg bool, b utils.ExpiredValue) bool {
 	if neg {

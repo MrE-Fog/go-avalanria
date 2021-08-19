@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package discover
 
@@ -29,12 +29,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/discover/v5wire"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/enr"
-	"github.com/AVNereum/go-AVNereum/p2p/netutil"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/discover/v5wire"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/enr"
+	"github.com/avalanria/go-avalanria/p2p/netutil"
 )
 
 const (
@@ -749,7 +749,7 @@ func (t *UDPv5) handleWhoareyou(p *v5wire.Whoareyou, fromID enode.ID, fromAddr *
 	t.sendCall(c)
 }
 
-// matchWithCall checks whAVNer a handshake attempt matches the active call.
+// matchWithCall checks whavner a handshake attempt matches the active call.
 func (t *UDPv5) matchWithCall(fromID enode.ID, nonce v5wire.Nonce) (*callV5, error) {
 	c := t.activeCallByAuth[nonce]
 	if c == nil {

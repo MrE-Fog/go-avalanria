@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package vm
 
@@ -20,9 +20,9 @@ import (
 	"hash"
 	"sync/atomic"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // Config are the configuration options for the Interpreter
@@ -46,7 +46,7 @@ type ScopeContext struct {
 	Contract *Contract
 }
 
-// keccakState wraps sha3.state. In addition to the usual hash mAVNods, it also supports
+// keccakState wraps sha3.state. In addition to the usual hash mavnods, it also supports
 // Read to get a variable amount of data from the hash state. Read is faster than Sum
 // because it doesn't copy the internal state, but also modifies the internal state.
 type keccakState interface {
@@ -62,13 +62,13 @@ type EVMInterpreter struct {
 	hasher    keccakState // Keccak256 hasher instance shared across opcodes
 	hasherBuf common.Hash // Keccak256 hasher result array shared aross opcodes
 
-	readOnly   bool   // WhAVNer to throw on stateful modifications
+	readOnly   bool   // Whavner to throw on stateful modifications
 	returnData []byte // Last CALL's return data for subsequent reuse
 }
 
 // NewEVMInterpreter returns a new instance of the Interpreter.
 func NewEVMInterpreter(evm *EVM, cfg Config) *EVMInterpreter {
-	// We use the STOP instruction whAVNer to see
+	// We use the STOP instruction whavner to see
 	// the jump table was initialised. If it was not
 	// we'll set the default jump table.
 	if cfg.JumpTable[STOP] == nil {
@@ -157,7 +157,7 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 		logged  bool   // deferred Tracer should ignore already logged steps
 		res     []byte // result of the opcode execution function
 	)
-	// Don't move this deferrred function, it's placed before the capturestate-deferred mAVNod,
+	// Don't move this deferrred function, it's placed before the capturestate-deferred mavnod,
 	// so that it get's executed _after_: the capturestate needs the stacks before
 	// they are returned to the pools
 	defer func() {
@@ -239,7 +239,7 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 		}
 		// Dynamic portion of gas
 		// consume the gas and return an error if not enough gas is available.
-		// cost is explicitly set so that the capture state defer mAVNod can get the proper cost
+		// cost is explicitly set so that the capture state defer mavnod can get the proper cost
 		if operation.dynamicGas != nil {
 			var dynamicCost uint64
 			dynamicCost, err = operation.dynamicGas(in.evm, contract, stack, mem, memorySize)

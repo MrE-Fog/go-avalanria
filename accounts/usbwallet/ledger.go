@@ -1,22 +1,22 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // This file contains the implementation for interacting with the Ledger hardware
 // wallets. The wire protocol spec can be found in the Ledger Blue GitHub repo:
-// https://raw.githubusercontent.com/LedgerHQ/blue-app-AVN/master/doc/AVNapp.asc
+// https://raw.githubusercontent.com/LedgerHQ/blue-app-avn/master/doc/avnapp.asc
 
 package usbwallet
 
@@ -28,13 +28,13 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 // ledgerOpcode is an enumeration encoding the supported Ledger opcodes.
@@ -74,7 +74,7 @@ var errLedgerInvalidVersionReply = errors.New("ledger: invalid version reply")
 type ledgerDriver struct {
 	device  io.ReadWriter // USB device connection to communicate through
 	version [3]byte       // Current version of the Ledger firmware (zero if app is offline)
-	browser bool          // Flag whAVNer the Ledger is in browser mode (reply channel mismatch)
+	browser bool          // Flag whavner the Ledger is in browser mode (reply channel mismatch)
 	failure error         // Any failure that would make the device unusable
 	log     log.Logger    // Contextual logger to tag the ledger with its id
 }
@@ -101,9 +101,9 @@ func (w *ledgerDriver) Status() (string, error) {
 	return fmt.Sprintf("Avalanria app v%d.%d.%d online", w.version[0], w.version[1], w.version[2]), w.failure
 }
 
-// offline returns whAVNer the wallet and the Avalanria app is offline or not.
+// offline returns whavner the wallet and the Avalanria app is offline or not.
 //
-// The mAVNod assumes that the state lock is held!
+// The mavnod assumes that the state lock is held!
 func (w *ledgerDriver) offline() bool {
 	return w.version == [3]byte{0, 0, 0}
 }
@@ -156,7 +156,7 @@ func (w *ledgerDriver) Derive(path accounts.DerivationPath) (common.Address, err
 // waiting for the user to confirm or deny the transaction.
 //
 // Note, if the version of the Avalanria application running on the Ledger wallet is
-// too old to sign EIP-155 transactions, but such is requested nonAVNeless, an error
+// too old to sign EIP-155 transactions, but such is requested nonavneless, an error
 // will be returned opposed to silently signing in Homestead mode.
 func (w *ledgerDriver) SignTx(path accounts.DerivationPath, tx *types.Transaction, chainID *big.Int) (common.Address, *types.Transaction, error) {
 	// If the Avalanria app doesn't run, abort
@@ -326,7 +326,7 @@ func (w *ledgerDriver) ledgerSign(derivationPath []uint32, tx *types.Transaction
 	for i, component := range derivationPath {
 		binary.BigEndian.PutUint32(path[1+4*i:], component)
 	}
-	// Create the transaction RLP based on whAVNer legacy or EIP155 signing was requested
+	// Create the transaction RLP based on whavner legacy or EIP155 signing was requested
 	var (
 		txrlp []byte
 		err   error

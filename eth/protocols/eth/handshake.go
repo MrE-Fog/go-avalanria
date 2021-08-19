@@ -1,38 +1,38 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"fmt"
 	"math/big"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/forkid"
-	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/forkid"
+	"github.com/avalanria/go-avalanria/p2p"
 )
 
 const (
-	// handshakeTimeout is the maximum allowed time for the `AVN` handshake to
+	// handshakeTimeout is the maximum allowed time for the `avn` handshake to
 	// complete before dropping the connection.= as malicious.
 	handshakeTimeout = 5 * time.Second
 )
 
-// Handshake executes the AVN protocol handshake, negotiating version number,
+// Handshake executes the avn protocol handshake, negotiating version number,
 // network IDs, difficulties, head and genesis blocks.
 func (p *Peer) Handshake(network uint64, td *big.Int, head common.Hash, genesis common.Hash, forkID forkid.ID, forkFilter forkid.Filter) error {
 	// Send out own handshake in a new thread

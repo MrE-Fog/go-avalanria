@@ -1,20 +1,20 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package catalyst implements the temporary AVN1/AVN2 RPC integration.
+// Package catalyst implements the temporary avn1/avn2 RPC integration.
 package catalyst
 
 import (
@@ -23,21 +23,21 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/misc"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/node"
-	chainParams "github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/misc"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/node"
+	chainParams "github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 // Register adds catalyst APIs to the node.
-func Register(stack *node.Node, backend *AVN.Avalanria) error {
+func Register(stack *node.Node, backend *avn.Avalanria) error {
 	chainconfig := backend.BlockChain().Config()
 	if chainconfig.CatalystBlock == nil {
 		return errors.New("catalystBlock is not set in genesis config")
@@ -58,11 +58,11 @@ func Register(stack *node.Node, backend *AVN.Avalanria) error {
 }
 
 type consensusAPI struct {
-	AVN *AVN.Avalanria
+	avn *avn.Avalanria
 }
 
-func newConsensusAPI(AVN *AVN.Avalanria) *consensusAPI {
-	return &consensusAPI{AVN: AVN}
+func newConsensusAPI(avn *avn.Avalanria) *consensusAPI {
+	return &consensusAPI{avn: avn}
 }
 
 // blockExecutionEnv gathers all the data required to execute
@@ -92,12 +92,12 @@ func (env *blockExecutionEnv) commitTransaction(tx *types.Transaction, coinbase 
 }
 
 func (api *consensusAPI) makeEnv(parent *types.Block, header *types.Header) (*blockExecutionEnv, error) {
-	state, err := api.AVN.BlockChain().StateAt(parent.Root())
+	state, err := api.avn.BlockChain().StateAt(parent.Root())
 	if err != nil {
 		return nil, err
 	}
 	env := &blockExecutionEnv{
-		chain:   api.AVN.BlockChain(),
+		chain:   api.avn.BlockChain(),
 		state:   state,
 		header:  header,
 		gasPool: new(core.GasPool).AddGas(header.GasLimit),
@@ -106,18 +106,18 @@ func (api *consensusAPI) makeEnv(parent *types.Block, header *types.Header) (*bl
 }
 
 // AssembleBlock creates a new block, inserts it into the chain, and returns the "execution
-// data" required for AVN2 clients to process the new block.
+// data" required for avn2 clients to process the new block.
 func (api *consensusAPI) AssembleBlock(params assembleBlockParams) (*executableData, error) {
 	log.Info("Producing block", "parentHash", params.ParentHash)
 
-	bc := api.AVN.BlockChain()
+	bc := api.avn.BlockChain()
 	parent := bc.GetBlockByHash(params.ParentHash)
 	if parent == nil {
 		log.Warn("Cannot assemble block with parent hash to unknown block", "parentHash", params.ParentHash)
 		return nil, fmt.Errorf("cannot assemble block with unknown parent %s", params.ParentHash)
 	}
 
-	pool := api.AVN.TxPool()
+	pool := api.avn.TxPool()
 
 	if parent.Time() >= params.Timestamp {
 		return nil, fmt.Errorf("child timestamp lower than parent's: %d >= %d", parent.Time(), params.Timestamp)
@@ -133,7 +133,7 @@ func (api *consensusAPI) AssembleBlock(params assembleBlockParams) (*executableD
 		return nil, err
 	}
 
-	coinbase, err := api.AVN.Etherbase()
+	coinbase, err := api.avn.Etherbase()
 	if err != nil {
 		return nil, err
 	}
@@ -146,10 +146,10 @@ func (api *consensusAPI) AssembleBlock(params assembleBlockParams) (*executableD
 		Extra:      []byte{},
 		Time:       params.Timestamp,
 	}
-	if config := api.AVN.BlockChain().Config(); config.IsLondon(header.Number) {
+	if config := api.avn.BlockChain().Config(); config.IsLondon(header.Number) {
 		header.BaseFee = misc.CalcBaseFee(config, parent.Header())
 	}
-	err = api.AVN.Engine().Prepare(bc, header)
+	err = api.avn.Engine().Prepare(bc, header)
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +211,7 @@ func (api *consensusAPI) AssembleBlock(params assembleBlockParams) (*executableD
 	}
 
 	// Create the block.
-	block, err := api.AVN.Engine().FinalizeAndAssemble(bc, header, env.state, transactions, nil /* uncles */, env.receipts)
+	block, err := api.avn.Engine().FinalizeAndAssemble(bc, header, env.state, transactions, nil /* uncles */, env.receipts)
 	if err != nil {
 		return nil, err
 	}
@@ -281,24 +281,24 @@ func insertBlockParamsToBlock(config *chainParams.ChainConfig, parent *types.Hea
 
 // NewBlock creates an Eth1 block, inserts it in the chain, and either returns true,
 // or false + an error. This is a bit redundant for go, but simplifies things on the
-// AVN2 side.
+// avn2 side.
 func (api *consensusAPI) NewBlock(params executableData) (*newBlockResponse, error) {
-	parent := api.AVN.BlockChain().GetBlockByHash(params.ParentHash)
+	parent := api.avn.BlockChain().GetBlockByHash(params.ParentHash)
 	if parent == nil {
 		return &newBlockResponse{false}, fmt.Errorf("could not find parent %x", params.ParentHash)
 	}
-	block, err := insertBlockParamsToBlock(api.AVN.BlockChain().Config(), parent.Header(), params)
+	block, err := insertBlockParamsToBlock(api.avn.BlockChain().Config(), parent.Header(), params)
 	if err != nil {
 		return nil, err
 	}
-	_, err = api.AVN.BlockChain().InsertChainWithoutSealVerification(block)
+	_, err = api.avn.BlockChain().InsertChainWithoutSealVerification(block)
 	return &newBlockResponse{err == nil}, err
 }
 
 // Used in tests to add a the list of transactions from a block to the tx pool.
 func (api *consensusAPI) addBlockTxs(block *types.Block) error {
 	for _, tx := range block.Transactions() {
-		api.AVN.TxPool().AddLocal(tx)
+		api.avn.TxPool().AddLocal(tx)
 	}
 	return nil
 }

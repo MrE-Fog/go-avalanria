@@ -22,8 +22,8 @@ build_script:
   - go run build\ci.go install -dlgo -arch %GAVN_ARCH% -cc %GAVN_CC%
 
 after_build:
-  - go run build\ci.go archive -arch %GAVN_ARCH% -type zip -signer WINDOWS_SIGNING_KEY -upload gAVNstore/builds
-  - go run build\ci.go nsis -arch %GAVN_ARCH% -signer WINDOWS_SIGNING_KEY -upload gAVNstore/builds
+  - go run build\ci.go archive -arch %GAVN_ARCH% -type zip -signer WINDOWS_SIGNING_KEY -upload gavnstore/builds
+  - go run build\ci.go nsis -arch %GAVN_ARCH% -signer WINDOWS_SIGNING_KEY -upload gavnstore/builds
 
 test_script:
   - go run build\ci.go test -dlgo -arch %GAVN_ARCH% -cc %GAVN_CC% -coverage

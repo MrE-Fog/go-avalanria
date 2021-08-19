@@ -48,8 +48,8 @@ func errorJSON(msg string) []byte {
 }
 
 func (h GraphiQL) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.MAVNod != "GET" {
-		respond(w, errorJSON("only GET requests are supported"), http.StatusMAVNodNotAllowed)
+	if r.Mavnod != "GET" {
+		respond(w, errorJSON("only GET requests are supported"), http.StatusMavnodNotAllowed)
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
@@ -97,7 +97,7 @@ var graphiql = []byte(`
 		<script>
 			function fetchGQL(params) {
 				return fetch("/graphql", {
-					mAVNod: "post",
+					mavnod: "post",
 					body: JSON.stringify(params),
 					credentials: "include",
 				}).then(function (resp) {

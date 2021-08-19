@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package light
 
@@ -26,16 +26,16 @@ import (
 	"time"
 
 	mapset "github.com/deckarep/golang-set"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/bitutil"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/bitutil"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 // IndexerConfig includes a set of configs for chain indexers.
@@ -114,7 +114,7 @@ type ChtNode struct {
 }
 
 // GetChtRoot reads the CHT root associated to the given section from the database
-func GetChtRoot(db AVNdb.Database, sectionIdx uint64, sectionHead common.Hash) common.Hash {
+func GetChtRoot(db avndb.Database, sectionIdx uint64, sectionHead common.Hash) common.Hash {
 	var encNumber [8]byte
 	binary.BigEndian.PutUint64(encNumber[:], sectionIdx)
 	data, _ := db.Get(append(append(chtPrefix, encNumber[:]...), sectionHead.Bytes()...))
@@ -122,7 +122,7 @@ func GetChtRoot(db AVNdb.Database, sectionIdx uint64, sectionHead common.Hash) c
 }
 
 // StoreChtRoot writes the CHT root associated to the given section into the database
-func StoreChtRoot(db AVNdb.Database, sectionIdx uint64, sectionHead, root common.Hash) {
+func StoreChtRoot(db avndb.Database, sectionIdx uint64, sectionHead, root common.Hash) {
 	var encNumber [8]byte
 	binary.BigEndian.PutUint64(encNumber[:], sectionIdx)
 	db.Put(append(append(chtPrefix, encNumber[:]...), sectionHead.Bytes()...), root.Bytes())
@@ -131,7 +131,7 @@ func StoreChtRoot(db AVNdb.Database, sectionIdx uint64, sectionHead, root common
 // ChtIndexerBackend implements core.ChainIndexerBackend.
 type ChtIndexerBackend struct {
 	disablePruning       bool
-	diskdb, trieTable    AVNdb.Database
+	diskdb, trieTable    avndb.Database
 	odr                  OdrBackend
 	triedb               *trie.Database
 	trieset              mapset.Set
@@ -141,7 +141,7 @@ type ChtIndexerBackend struct {
 }
 
 // NewChtIndexer creates a Cht chain indexer
-func NewChtIndexer(db AVNdb.Database, odr OdrBackend, size, confirms uint64, disablePruning bool) *core.ChainIndexer {
+func NewChtIndexer(db avndb.Database, odr OdrBackend, size, confirms uint64, disablePruning bool) *core.ChainIndexer {
 	trieTable := rawdb.NewTable(db, ChtTablePrefix)
 	backend := &ChtIndexerBackend{
 		diskdb:         db,
@@ -283,7 +283,7 @@ func (c *ChtIndexerBackend) Prune(threshold uint64) error {
 			rawdb.DeleteCanonicalHash(batch, numbers[i])
 			rawdb.DeleteBlockWithoutNumber(batch, hashes[i], numbers[i])
 		}
-		if batch.ValueSize() > AVNdb.IdealBatchSize {
+		if batch.ValueSize() > avndb.IdealBatchSize {
 			if err := batch.Write(); err != nil {
 				return err
 			}
@@ -304,7 +304,7 @@ var (
 )
 
 // GetBloomTrieRoot reads the BloomTrie root assoctiated to the given section from the database
-func GetBloomTrieRoot(db AVNdb.Database, sectionIdx uint64, sectionHead common.Hash) common.Hash {
+func GetBloomTrieRoot(db avndb.Database, sectionIdx uint64, sectionHead common.Hash) common.Hash {
 	var encNumber [8]byte
 	binary.BigEndian.PutUint64(encNumber[:], sectionIdx)
 	data, _ := db.Get(append(append(bloomTriePrefix, encNumber[:]...), sectionHead.Bytes()...))
@@ -312,7 +312,7 @@ func GetBloomTrieRoot(db AVNdb.Database, sectionIdx uint64, sectionHead common.H
 }
 
 // StoreBloomTrieRoot writes the BloomTrie root assoctiated to the given section into the database
-func StoreBloomTrieRoot(db AVNdb.Database, sectionIdx uint64, sectionHead, root common.Hash) {
+func StoreBloomTrieRoot(db avndb.Database, sectionIdx uint64, sectionHead, root common.Hash) {
 	var encNumber [8]byte
 	binary.BigEndian.PutUint64(encNumber[:], sectionIdx)
 	db.Put(append(append(bloomTriePrefix, encNumber[:]...), sectionHead.Bytes()...), root.Bytes())
@@ -321,7 +321,7 @@ func StoreBloomTrieRoot(db AVNdb.Database, sectionIdx uint64, sectionHead, root 
 // BloomTrieIndexerBackend implements core.ChainIndexerBackend
 type BloomTrieIndexerBackend struct {
 	disablePruning    bool
-	diskdb, trieTable AVNdb.Database
+	diskdb, trieTable avndb.Database
 	triedb            *trie.Database
 	trieset           mapset.Set
 	odr               OdrBackend
@@ -334,7 +334,7 @@ type BloomTrieIndexerBackend struct {
 }
 
 // NewBloomTrieIndexer creates a BloomTrie chain indexer
-func NewBloomTrieIndexer(db AVNdb.Database, odr OdrBackend, parentSize, size uint64, disablePruning bool) *core.ChainIndexer {
+func NewBloomTrieIndexer(db avndb.Database, odr OdrBackend, parentSize, size uint64, disablePruning bool) *core.ChainIndexer {
 	trieTable := rawdb.NewTable(db, BloomTrieTablePrefix)
 	backend := &BloomTrieIndexerBackend{
 		diskdb:         db,

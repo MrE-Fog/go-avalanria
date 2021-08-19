@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package simulations
 
@@ -29,11 +29,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/simulations/adapters"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/simulations/adapters"
+	"github.com/avalanria/go-avalanria/rpc"
 	"github.com/gorilla/websocket"
 	"github.com/julienschmidt/httprouter"
 )
@@ -230,7 +230,7 @@ func (c *Client) Delete(path string) error {
 
 // Send performs a HTTP request, sending "in" as the JSON request body and
 // decoding the JSON response into "out"
-func (c *Client) Send(mAVNod, path string, in, out interface{}) error {
+func (c *Client) Send(mavnod, path string, in, out interface{}) error {
 	var body []byte
 	if in != nil {
 		var err error
@@ -239,7 +239,7 @@ func (c *Client) Send(mAVNod, path string, in, out interface{}) error {
 			return err
 		}
 	}
-	req, err := http.NewRequest(mAVNod, c.URL+path, bytes.NewReader(body))
+	req, err := http.NewRequest(mavnod, c.URL+path, bytes.NewReader(body))
 	if err != nil {
 		return err
 	}
@@ -642,7 +642,7 @@ func (s *Server) DisconnectNode(w http.ResponseWriter, req *http.Request) {
 	s.JSON(w, http.StatusOK, node.NodeInfo())
 }
 
-// Options responds to the OPTIONS HTTP mAVNod by returning a 200 OK response
+// Options responds to the OPTIONS HTTP mavnod by returning a 200 OK response
 // with the "Access-Control-Allow-Headers" header set to "Content-Type"
 func (s *Server) Options(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -703,7 +703,7 @@ func (s *Server) JSON(w http.ResponseWriter, status int, data interface{}) {
 func (s *Server) wrapHandler(handler http.HandlerFunc) httprouter.Handle {
 	return func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-MAVNods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Mavnods", "GET, POST, PUT, DELETE, OPTIONS")
 
 		ctx := req.Context()
 

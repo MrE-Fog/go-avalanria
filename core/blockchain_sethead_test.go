@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Tests that setting the chain head backwards doesn't leave the database in some
 // strange state with gaps in the chain, nor with block data dangling in the future.
@@ -28,12 +28,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 // rewindTest is a test case for chain rollback upon user request.
@@ -44,7 +44,7 @@ type rewindTest struct {
 	commitBlock     uint64  // Block number for which to commit the state to disk
 	pivotBlock      *uint64 // Pivot block number in case of fast sync
 
-	sAVNeadBlock       uint64 // Block number to set head back to
+	savneadBlock       uint64 // Block number to set head back to
 	expCanonicalBlocks int    // Number of canonical blocks expected to remain in the database (excl. genesis)
 	expSidechainBlocks int    // Number of sidechain blocks expected to remain in the database (excl. genesis)
 	expFrozen          int    // Number of canonical blocks expected to be in the freezer (incl. genesis)
@@ -93,7 +93,7 @@ func (tt *rewindTest) dump(crash bool) string {
 	if crash {
 		fmt.Fprintf(buffer, "\nCRASH\n\n")
 	} else {
-		fmt.Fprintf(buffer, "\nSetHead(%d)\n\n", tt.sAVNeadBlock)
+		fmt.Fprintf(buffer, "\nSetHead(%d)\n\n", tt.savneadBlock)
 	}
 	fmt.Fprintf(buffer, "------------------------------\n\n")
 
@@ -146,9 +146,9 @@ func (tt *rewindTest) dump(crash bool) string {
 	return buffer.String()
 }
 
-// Tests a sAVNead for a short canonical chain where a recent block was already
-// committed to disk and then the sAVNead called. In this case we expect the full
-// chain to be rolled back to the committed block. Everything above the sAVNead
+// Tests a savnead for a short canonical chain where a recent block was already
+// committed to disk and then the savnead called. In this case we expect the full
+// chain to be rolled back to the committed block. Everything above the savnead
 // point should be deleted. In between the committed block and the requested head
 // the data can remain as "fast sync" data to avoid redownloading it.
 func TestShortSetHead(t *testing.T)              { testShortSetHead(t, false) }
@@ -178,7 +178,7 @@ func testShortSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 0,
 		expFrozen:          0,
@@ -188,10 +188,10 @@ func testShortSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain where the fast sync pivot point was
-// already committed, after which sAVNead was called. In this case we expect the
+// Tests a savnead for a short canonical chain where the fast sync pivot point was
+// already committed, after which savnead was called. In this case we expect the
 // chain to behave like in full sync mode, rolling back to the committed block
-// Everything above the sAVNead point should be deleted. In between the committed
+// Everything above the savnead point should be deleted. In between the committed
 // block and the requested head the data can remain as "fast sync" data to avoid
 // redownloading it.
 func TestShortFastSyncedSetHead(t *testing.T)              { testShortFastSyncedSetHead(t, false) }
@@ -221,7 +221,7 @@ func testShortFastSyncedSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 0,
 		expFrozen:          0,
@@ -231,8 +231,8 @@ func testShortFastSyncedSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain where the fast sync pivot point was
-// not yet committed, but sAVNead was called. In this case we expect the chain to
+// Tests a savnead for a short canonical chain where the fast sync pivot point was
+// not yet committed, but savnead was called. In this case we expect the chain to
 // detect that it was fast syncing and delete everything from the new head, since
 // we can just pick up fast syncing from there. The head full block should be set
 // to the genesis.
@@ -263,7 +263,7 @@ func testShortFastSyncingSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 0,
 		expFrozen:          0,
@@ -273,11 +273,11 @@ func testShortFastSyncingSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a shorter side chain, where a
-// recent block was already committed to disk and then sAVNead was called. In this
+// Tests a savnead for a short canonical chain and a shorter side chain, where a
+// recent block was already committed to disk and then savnead was called. In this
 // test scenario the side chain is below the committed block. In this case we expect
 // the canonical full chain to be rolled back to the committed block. Everything
-// above the sAVNead point should be deleted. In between the committed block and
+// above the savnead point should be deleted. In between the committed block and
 // the requested head the data can remain as "fast sync" data to avoid redownloading
 // it. The side chain should be left alone as it was shorter.
 func TestShortOldForkedSetHead(t *testing.T)              { testShortOldForkedSetHead(t, false) }
@@ -309,7 +309,7 @@ func testShortOldForkedSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 3,
 		expFrozen:          0,
@@ -319,11 +319,11 @@ func testShortOldForkedSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a shorter side chain, where
-// the fast sync pivot point was already committed to disk and then sAVNead was
+// Tests a savnead for a short canonical chain and a shorter side chain, where
+// the fast sync pivot point was already committed to disk and then savnead was
 // called. In this test scenario the side chain is below the committed block. In
 // this case we expect the canonical full chain to be rolled back to the committed
-// block. Everything above the sAVNead point should be deleted. In between the
+// block. Everything above the savnead point should be deleted. In between the
 // committed block and the requested head the data can remain as "fast sync" data
 // to avoid redownloading it. The side chain should be left alone as it was shorter.
 func TestShortOldForkedFastSyncedSetHead(t *testing.T) {
@@ -359,7 +359,7 @@ func testShortOldForkedFastSyncedSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 3,
 		expFrozen:          0,
@@ -369,8 +369,8 @@ func testShortOldForkedFastSyncedSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a shorter side chain, where
-// the fast sync pivot point was not yet committed, but sAVNead was called. In this
+// Tests a savnead for a short canonical chain and a shorter side chain, where
+// the fast sync pivot point was not yet committed, but savnead was called. In this
 // test scenario the side chain is below the committed block. In this case we expect
 // the chain to detect that it was fast syncing and delete everything from the new
 // head, since we can just pick up fast syncing from there. The head full block
@@ -408,7 +408,7 @@ func testShortOldForkedFastSyncingSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 3,
 		expFrozen:          0,
@@ -418,11 +418,11 @@ func testShortOldForkedFastSyncingSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a shorter side chain, where a
-// recent block was already committed to disk and then sAVNead was called. In this
+// Tests a savnead for a short canonical chain and a shorter side chain, where a
+// recent block was already committed to disk and then savnead was called. In this
 // test scenario the side chain reaches above the committed block. In this case we
 // expect the canonical full chain to be rolled back to the committed block. All
-// data above the sAVNead point should be deleted. In between the committed block
+// data above the savnead point should be deleted. In between the committed block
 // and the requested head the data can remain as "fast sync" data to avoid having
 // to redownload it. The side chain should be truncated to the head set.
 //
@@ -458,7 +458,7 @@ func testShortNewlyForkedSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 7,
 		expFrozen:          0,
@@ -468,8 +468,8 @@ func testShortNewlyForkedSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a shorter side chain, where
-// the fast sync pivot point was already committed to disk and then sAVNead was
+// Tests a savnead for a short canonical chain and a shorter side chain, where
+// the fast sync pivot point was already committed to disk and then savnead was
 // called. In this case we expect the canonical full chain to be rolled back to
 // between the committed block and the requested head the data can remain as
 // "fast sync" data to avoid having to redownload it. The side chain should be
@@ -511,7 +511,7 @@ func testShortNewlyForkedFastSyncedSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 7,
 		expFrozen:          0,
@@ -521,8 +521,8 @@ func testShortNewlyForkedFastSyncedSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a shorter side chain, where
-// the fast sync pivot point was not yet committed, but sAVNead was called. In
+// Tests a savnead for a short canonical chain and a shorter side chain, where
+// the fast sync pivot point was not yet committed, but savnead was called. In
 // this test scenario the side chain reaches above the committed block. In this
 // case we expect the chain to detect that it was fast syncing and delete
 // everything from the new head, since we can just pick up fast syncing from
@@ -564,7 +564,7 @@ func testShortNewlyForkedFastSyncingSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 7,
 		expFrozen:          0,
@@ -574,10 +574,10 @@ func testShortNewlyForkedFastSyncingSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a longer side chain, where a
-// recent block was already committed to disk and then sAVNead was called. In this
+// Tests a savnead for a short canonical chain and a longer side chain, where a
+// recent block was already committed to disk and then savnead was called. In this
 // case we expect the canonical full chain to be rolled back to the committed block.
-// All data above the sAVNead point should be deleted. In between the committed
+// All data above the savnead point should be deleted. In between the committed
 // block and the requested head the data can remain as "fast sync" data to avoid
 // having to redownload it. The side chain should be truncated to the head set.
 //
@@ -613,7 +613,7 @@ func testShortReorgedSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 7,
 		expFrozen:          0,
@@ -623,10 +623,10 @@ func testShortReorgedSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a longer side chain, where
-// the fast sync pivot point was already committed to disk and then sAVNead was
+// Tests a savnead for a short canonical chain and a longer side chain, where
+// the fast sync pivot point was already committed to disk and then savnead was
 // called. In this case we expect the canonical full chain to be rolled back to
-// the committed block. All data above the sAVNead point should be deleted. In
+// the committed block. All data above the savnead point should be deleted. In
 // between the committed block and the requested head the data can remain as
 // "fast sync" data to avoid having to redownload it. The side chain should be
 // truncated to the head set.
@@ -667,7 +667,7 @@ func testShortReorgedFastSyncedSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 7,
 		expFrozen:          0,
@@ -677,8 +677,8 @@ func testShortReorgedFastSyncedSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a short canonical chain and a longer side chain, where
-// the fast sync pivot point was not yet committed, but sAVNead was called. In
+// Tests a savnead for a short canonical chain and a longer side chain, where
+// the fast sync pivot point was not yet committed, but savnead was called. In
 // this case we expect the chain to detect that it was fast syncing and delete
 // everything from the new head, since we can just pick up fast syncing from
 // there.
@@ -719,7 +719,7 @@ func testShortReorgedFastSyncingSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       7,
+		savneadBlock:       7,
 		expCanonicalBlocks: 7,
 		expSidechainBlocks: 7,
 		expFrozen:          0,
@@ -729,10 +729,10 @@ func testShortReorgedFastSyncingSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks where a recent
+// Tests a savnead for a long canonical chain with frozen blocks where a recent
 // block - newer than the ancient limit - was already committed to disk and then
-// sAVNead was called. In this case we expect the full chain to be rolled back
-// to the committed block. Everything above the sAVNead point should be deleted.
+// savnead was called. In this case we expect the full chain to be rolled back
+// to the committed block. Everything above the savnead point should be deleted.
 // In between the committed block and the requested head the data can remain as
 // "fast sync" data to avoid redownloading it.
 func TestLongShallowSetHead(t *testing.T)              { testLongShallowSetHead(t, false) }
@@ -767,7 +767,7 @@ func testLongShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -777,9 +777,9 @@ func testLongShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks where a recent
+// Tests a savnead for a long canonical chain with frozen blocks where a recent
 // block - older than the ancient limit - was already committed to disk and then
-// sAVNead was called. In this case we expect the full chain to be rolled back
+// savnead was called. In this case we expect the full chain to be rolled back
 // to the committed block. Since the ancient limit was underflown, everything
 // needs to be deleted onwards to avoid creating a gap.
 func TestLongDeepSetHead(t *testing.T)              { testLongDeepSetHead(t, false) }
@@ -813,7 +813,7 @@ func testLongDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -823,10 +823,10 @@ func testLongDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks where the fast
+// Tests a savnead for a long canonical chain with frozen blocks where the fast
 // sync pivot point - newer than the ancient limit - was already committed, after
-// which sAVNead was called. In this case we expect the full chain to be rolled
-// back to the committed block. Everything above the sAVNead point should be
+// which savnead was called. In this case we expect the full chain to be rolled
+// back to the committed block. Everything above the savnead point should be
 // deleted. In between the committed block and the requested head the data can
 // remain as "fast sync" data to avoid redownloading it.
 func TestLongFastSyncedShallowSetHead(t *testing.T) {
@@ -865,7 +865,7 @@ func testLongFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -875,9 +875,9 @@ func testLongFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks where the fast
+// Tests a savnead for a long canonical chain with frozen blocks where the fast
 // sync pivot point - older than the ancient limit - was already committed, after
-// which sAVNead was called. In this case we expect the full chain to be rolled
+// which savnead was called. In this case we expect the full chain to be rolled
 // back to the committed block. Since the ancient limit was underflown, everything
 // needs to be deleted onwards to avoid creating a gap.
 func TestLongFastSyncedDeepSetHead(t *testing.T)              { testLongFastSyncedDeepSetHead(t, false) }
@@ -911,7 +911,7 @@ func testLongFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -921,9 +921,9 @@ func testLongFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks where the fast
+// Tests a savnead for a long canonical chain with frozen blocks where the fast
 // sync pivot point - newer than the ancient limit - was not yet committed, but
-// sAVNead was called. In this case we expect the chain to detect that it was fast
+// savnead was called. In this case we expect the chain to detect that it was fast
 // syncing and delete everything from the new head, since we can just pick up fast
 // syncing from there.
 func TestLongFastSyncingShallowSetHead(t *testing.T) {
@@ -962,7 +962,7 @@ func testLongFastSyncingShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -972,9 +972,9 @@ func testLongFastSyncingShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks where the fast
+// Tests a savnead for a long canonical chain with frozen blocks where the fast
 // sync pivot point - older than the ancient limit - was not yet committed, but
-// sAVNead was called. In this case we expect the chain to detect that it was fast
+// savnead was called. In this case we expect the chain to detect that it was fast
 // syncing and delete everything from the new head, since we can just pick up fast
 // syncing from there.
 func TestLongFastSyncingDeepSetHead(t *testing.T) {
@@ -1012,7 +1012,7 @@ func testLongFastSyncingDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          7,
@@ -1022,10 +1022,10 @@ func testLongFastSyncingDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter side
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter side
 // chain, where a recent block - newer than the ancient limit - was already committed
-// to disk and then sAVNead was called. In this case we expect the canonical full
-// chain to be rolled back to the committed block. Everything above the sAVNead point
+// to disk and then savnead was called. In this case we expect the canonical full
+// chain to be rolled back to the committed block. Everything above the savnead point
 // should be deleted. In between the committed block and the requested head the data
 // can remain as "fast sync" data to avoid redownloading it. The side chain is nuked
 // by the freezer.
@@ -1066,7 +1066,7 @@ func testLongOldForkedShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1076,9 +1076,9 @@ func testLongOldForkedShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter side
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter side
 // chain, where a recent block - older than the ancient limit - was already committed
-// to disk and then sAVNead was called. In this case we expect the canonical full
+// to disk and then savnead was called. In this case we expect the canonical full
 // chain to be rolled back to the committed block. Since the ancient limit was
 // underflown, everything needs to be deleted onwards to avoid creating a gap. The
 // side chain is nuked by the freezer.
@@ -1114,7 +1114,7 @@ func testLongOldForkedDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -1124,12 +1124,12 @@ func testLongOldForkedDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - newer than the ancient limit -
-// was already committed to disk and then sAVNead was called. In this test scenario
+// was already committed to disk and then savnead was called. In this test scenario
 // the side chain is below the committed block. In this case we expect the canonical
 // full chain to be rolled back to the committed block. Everything above the
-// sAVNead point should be deleted. In between the committed block and the
+// savnead point should be deleted. In between the committed block and the
 // requested head the data can remain as "fast sync" data to avoid redownloading
 // it. The side chain is nuked by the freezer.
 func TestLongOldForkedFastSyncedShallowSetHead(t *testing.T) {
@@ -1169,7 +1169,7 @@ func testLongOldForkedFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1179,9 +1179,9 @@ func testLongOldForkedFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - older than the ancient limit -
-// was already committed to disk and then sAVNead was called. In this test scenario
+// was already committed to disk and then savnead was called. In this test scenario
 // the side chain is below the committed block. In this case we expect the canonical
 // full chain to be rolled back to the committed block. Since the ancient limit was
 // underflown, everything needs to be deleted onwards to avoid creating a gap. The
@@ -1222,7 +1222,7 @@ func testLongOldForkedFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -1232,9 +1232,9 @@ func testLongOldForkedFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - newer than the ancient limit -
-// was not yet committed, but sAVNead was called. In this test scenario the side
+// was not yet committed, but savnead was called. In this test scenario the side
 // chain is below the committed block. In this case we expect the chain to detect
 // that it was fast syncing and delete everything from the new head, since we can
 // just pick up fast syncing from there. The side chain is completely nuked by the
@@ -1276,7 +1276,7 @@ func testLongOldForkedFastSyncingShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1286,9 +1286,9 @@ func testLongOldForkedFastSyncingShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - older than the ancient limit -
-// was not yet committed, but sAVNead was called. In this test scenario the side
+// was not yet committed, but savnead was called. In this test scenario the side
 // chain is below the committed block. In this case we expect the chain to detect
 // that it was fast syncing and delete everything from the new head, since we can
 // just pick up fast syncing from there. The side chain is completely nuked by the
@@ -1329,7 +1329,7 @@ func testLongOldForkedFastSyncingDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          7,
@@ -1339,9 +1339,9 @@ func testLongOldForkedFastSyncingDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where a recent block - newer than the ancient limit - was already
-// committed to disk and then sAVNead was called. In this test scenario the side
+// committed to disk and then savnead was called. In this test scenario the side
 // chain is above the committed block. In this case the freezer will delete the
 // sidechain since it's dangling, reverting to TestLongShallowSetHead.
 func TestLongNewerForkedShallowSetHead(t *testing.T) {
@@ -1381,7 +1381,7 @@ func testLongNewerForkedShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1391,9 +1391,9 @@ func testLongNewerForkedShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where a recent block - older than the ancient limit - was already
-// committed to disk and then sAVNead was called. In this test scenario the side
+// committed to disk and then savnead was called. In this test scenario the side
 // chain is above the committed block. In this case the freezer will delete the
 // sidechain since it's dangling, reverting to TestLongDeepSetHead.
 func TestLongNewerForkedDeepSetHead(t *testing.T) {
@@ -1432,7 +1432,7 @@ func testLongNewerForkedDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -1442,9 +1442,9 @@ func testLongNewerForkedDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - newer than the ancient limit -
-// was already committed to disk and then sAVNead was called. In this test scenario
+// was already committed to disk and then savnead was called. In this test scenario
 // the side chain is above the committed block. In this case the freezer will delete
 // the sidechain since it's dangling, reverting to TestLongFastSyncedShallowSetHead.
 func TestLongNewerForkedFastSyncedShallowSetHead(t *testing.T) {
@@ -1484,7 +1484,7 @@ func testLongNewerForkedFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1494,9 +1494,9 @@ func testLongNewerForkedFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - older than the ancient limit -
-// was already committed to disk and then sAVNead was called. In this test scenario
+// was already committed to disk and then savnead was called. In this test scenario
 // the side chain is above the committed block. In this case the freezer will delete
 // the sidechain since it's dangling, reverting to TestLongFastSyncedDeepSetHead.
 func TestLongNewerForkedFastSyncedDeepSetHead(t *testing.T) {
@@ -1535,7 +1535,7 @@ func testLongNewerForkedFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -1545,9 +1545,9 @@ func testLongNewerForkedFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - newer than the ancient limit -
-// was not yet committed, but sAVNead was called. In this test scenario the side
+// was not yet committed, but savnead was called. In this test scenario the side
 // chain is above the committed block. In this case the freezer will delete the
 // sidechain since it's dangling, reverting to TestLongFastSyncinghallowSetHead.
 func TestLongNewerForkedFastSyncingShallowSetHead(t *testing.T) {
@@ -1587,7 +1587,7 @@ func testLongNewerForkedFastSyncingShallowSetHead(t *testing.T, snapshots bool) 
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1597,9 +1597,9 @@ func testLongNewerForkedFastSyncingShallowSetHead(t *testing.T, snapshots bool) 
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a shorter
+// Tests a savnead for a long canonical chain with frozen blocks and a shorter
 // side chain, where the fast sync pivot point - older than the ancient limit -
-// was not yet committed, but sAVNead was called. In this test scenario the side
+// was not yet committed, but savnead was called. In this test scenario the side
 // chain is above the committed block. In this case the freezer will delete the
 // sidechain since it's dangling, reverting to TestLongFastSyncingDeepSetHead.
 func TestLongNewerForkedFastSyncingDeepSetHead(t *testing.T) {
@@ -1638,7 +1638,7 @@ func testLongNewerForkedFastSyncingDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          7,
@@ -1648,9 +1648,9 @@ func testLongNewerForkedFastSyncingDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a longer side
+// Tests a savnead for a long canonical chain with frozen blocks and a longer side
 // chain, where a recent block - newer than the ancient limit - was already committed
-// to disk and then sAVNead was called. In this case the freezer will delete the
+// to disk and then savnead was called. In this case the freezer will delete the
 // sidechain since it's dangling, reverting to TestLongShallowSetHead.
 func TestLongReorgedShallowSetHead(t *testing.T)              { testLongReorgedShallowSetHead(t, false) }
 func TestLongReorgedShallowSetHeadWithSnapshots(t *testing.T) { testLongReorgedShallowSetHead(t, true) }
@@ -1685,7 +1685,7 @@ func testLongReorgedShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1695,9 +1695,9 @@ func testLongReorgedShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a longer side
+// Tests a savnead for a long canonical chain with frozen blocks and a longer side
 // chain, where a recent block - older than the ancient limit - was already committed
-// to disk and then sAVNead was called. In this case the freezer will delete the
+// to disk and then savnead was called. In this case the freezer will delete the
 // sidechain since it's dangling, reverting to TestLongDeepSetHead.
 func TestLongReorgedDeepSetHead(t *testing.T)              { testLongReorgedDeepSetHead(t, false) }
 func TestLongReorgedDeepSetHeadWithSnapshots(t *testing.T) { testLongReorgedDeepSetHead(t, true) }
@@ -1731,7 +1731,7 @@ func testLongReorgedDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         nil,
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -1741,9 +1741,9 @@ func testLongReorgedDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a longer
+// Tests a savnead for a long canonical chain with frozen blocks and a longer
 // side chain, where the fast sync pivot point - newer than the ancient limit -
-// was already committed to disk and then sAVNead was called. In this case the
+// was already committed to disk and then savnead was called. In this case the
 // freezer will delete the sidechain since it's dangling, reverting to
 // TestLongFastSyncedShallowSetHead.
 func TestLongReorgedFastSyncedShallowSetHead(t *testing.T) {
@@ -1783,7 +1783,7 @@ func testLongReorgedFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1793,9 +1793,9 @@ func testLongReorgedFastSyncedShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a longer
+// Tests a savnead for a long canonical chain with frozen blocks and a longer
 // side chain, where the fast sync pivot point - older than the ancient limit -
-// was already committed to disk and then sAVNead was called. In this case the
+// was already committed to disk and then savnead was called. In this case the
 // freezer will delete the sidechain since it's dangling, reverting to
 // TestLongFastSyncedDeepSetHead.
 func TestLongReorgedFastSyncedDeepSetHead(t *testing.T) {
@@ -1834,7 +1834,7 @@ func testLongReorgedFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        4,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 4,
 		expSidechainBlocks: 0,
 		expFrozen:          5,
@@ -1844,9 +1844,9 @@ func testLongReorgedFastSyncedDeepSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a longer
+// Tests a savnead for a long canonical chain with frozen blocks and a longer
 // side chain, where the fast sync pivot point - newer than the ancient limit -
-// was not yet committed, but sAVNead was called. In this case we expect the
+// was not yet committed, but savnead was called. In this case we expect the
 // chain to detect that it was fast syncing and delete everything from the new
 // head, since we can just pick up fast syncing from there. The side chain is
 // completely nuked by the freezer.
@@ -1887,7 +1887,7 @@ func testLongReorgedFastSyncingShallowSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          3,
@@ -1897,9 +1897,9 @@ func testLongReorgedFastSyncingShallowSetHead(t *testing.T, snapshots bool) {
 	}, snapshots)
 }
 
-// Tests a sAVNead for a long canonical chain with frozen blocks and a longer
+// Tests a savnead for a long canonical chain with frozen blocks and a longer
 // side chain, where the fast sync pivot point - older than the ancient limit -
-// was not yet committed, but sAVNead was called. In this case we expect the
+// was not yet committed, but savnead was called. In this case we expect the
 // chain to detect that it was fast syncing and delete everything from the new
 // head, since we can just pick up fast syncing from there. The side chain is
 // completely nuked by the freezer.
@@ -1939,7 +1939,7 @@ func testLongReorgedFastSyncingDeepSetHead(t *testing.T, snapshots bool) {
 		freezeThreshold:    16,
 		commitBlock:        0,
 		pivotBlock:         uint64ptr(4),
-		sAVNeadBlock:       6,
+		savneadBlock:       6,
 		expCanonicalBlocks: 6,
 		expSidechainBlocks: 0,
 		expFrozen:          7,
@@ -1970,7 +1970,7 @@ func testSetHead(t *testing.T, tt *rewindTest, snapshots bool) {
 	// Initialize a fresh chain
 	var (
 		genesis = (&Genesis{BaseFee: big.NewInt(params.InitialBaseFee)}).MustCommit(db)
-		engine  = AVNash.NewFullFaker()
+		engine  = avnash.NewFullFaker()
 		config  = &CacheConfig{
 			TrieCleanLimit: 256,
 			TrieDirtyLimit: 256,
@@ -2033,7 +2033,7 @@ func testSetHead(t *testing.T, tt *rewindTest, snapshots bool) {
 		rawdb.WriteLastPivotNumber(db, *tt.pivotBlock)
 	}
 	// Set the head of the chain back to the requested number
-	chain.SetHead(tt.sAVNeadBlock)
+	chain.SetHead(tt.savneadBlock)
 
 	// Iterate over all the remaining blocks and ensure there are no gaps
 	verifyNoGaps(t, chain, true, canonblocks)

@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -23,12 +23,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/les/flowcontrol"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/les/flowcontrol"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
 )
 
 const makeCostStats = false // make request cost statistics during operation
@@ -115,7 +115,7 @@ const (
 // changes in the cost factor can be applied immediately without always notifying
 // the clients about the changed cost tables.
 type costTracker struct {
-	db     AVNdb.Database
+	db     avndb.Database
 	stopCh chan chan struct{}
 
 	inSizeFactor  float64
@@ -137,7 +137,7 @@ type costTracker struct {
 
 // newCostTracker creates a cost tracker and loads the cost factor statistics from the database.
 // It also returns the minimum capacity that can be assigned to any peer.
-func newCostTracker(db AVNdb.Database, config *AVNconfig.Config) (*costTracker, uint64) {
+func newCostTracker(db avndb.Database, config *avnconfig.Config) (*costTracker, uint64) {
 	utilTarget := float64(config.LightServ) * flowcontrol.FixedPointMultiplier / 100
 	ct := &costTracker{
 		db:         db,

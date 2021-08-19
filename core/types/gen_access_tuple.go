@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/avalanria/go-avalanria/common"
 )
 
 // MarshalJSON marshals as JSON.

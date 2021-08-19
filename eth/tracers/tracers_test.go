@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package tracers
 
@@ -27,29 +27,29 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/tests"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/tests"
 )
 
-// To generate a new callTracer test, copy paste the makeTest mAVNod below into
-// a GAVN console and call it with a transaction hash you which to export.
+// To generate a new callTracer test, copy paste the makeTest mavnod below into
+// a Gavn console and call it with a transaction hash you which to export.
 
 /*
 // makeTest generates a callTracer test by running a prestate reassembled and a
 // call trace run, assembling all the gathered information into a test case.
 var makeTest = function(tx, rewind) {
   // Generate the genesis block from the block, transaction and prestate data
-  var block   = AVN.getBlock(AVN.getTransaction(tx).blockHash);
-  var genesis = AVN.getBlock(block.parentHash);
+  var block   = avn.getBlock(avn.getTransaction(tx).blockHash);
+  var genesis = avn.getBlock(block.parentHash);
 
   delete genesis.gasUsed;
   delete genesis.logsBloom;
@@ -69,7 +69,7 @@ var makeTest = function(tx, rewind) {
   for (var key in genesis.alloc) {
     genesis.alloc[key].nonce = genesis.alloc[key].nonce.toString();
   }
-  genesis.config = admin.nodeInfo.protocols.AVN.config;
+  genesis.config = admin.nodeInfo.protocols.avn.config;
 
   // Generate the call trace and produce the test input
   var result = debug.traceTransaction(tx, {tracer: "callTracer", rewind: rewind});
@@ -84,7 +84,7 @@ var makeTest = function(tx, rewind) {
       gasLimit:   block.gasLimit.toString(),
       miner:      block.miner,
     },
-    input:  AVN.getRawTransaction(tx),
+    input:  avn.getRawTransaction(tx),
     result: result,
   }, null, 2));
 }

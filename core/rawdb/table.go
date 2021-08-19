@@ -1,34 +1,34 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rawdb
 
 import (
-	"github.com/AVNereum/go-AVNereum/AVNdb"
+	"github.com/avalanria/go-avalanria/avndb"
 )
 
 // table is a wrapper around a database that prefixes each key access with a pre-
 // configured string.
 type table struct {
-	db     AVNdb.Database
+	db     avndb.Database
 	prefix string
 }
 
 // NewTable returns a database object that prefixes all keys with a given string.
-func NewTable(db AVNdb.Database, prefix string) AVNdb.Database {
+func NewTable(db avndb.Database, prefix string) avndb.Database {
 	return &table{
 		db:     db,
 		prefix: prefix,
@@ -106,7 +106,7 @@ func (t *table) Delete(key []byte) error {
 // NewIterator creates a binary-alphabetical iterator over a subset
 // of database content with a particular key prefix, starting at a particular
 // initial key (or after, if it does not exist).
-func (t *table) NewIterator(prefix []byte, start []byte) AVNdb.Iterator {
+func (t *table) NewIterator(prefix []byte, start []byte) avndb.Iterator {
 	innerPrefix := append([]byte(t.prefix), prefix...)
 	iter := t.db.NewIterator(innerPrefix, start)
 	return &tableIterator{
@@ -159,14 +159,14 @@ func (t *table) Compact(start []byte, limit []byte) error {
 // NewBatch creates a write-only database that buffers changes to its host db
 // until a final write is called, each operation prefixing all keys with the
 // pre-configured string.
-func (t *table) NewBatch() AVNdb.Batch {
+func (t *table) NewBatch() avndb.Batch {
 	return &tableBatch{t.db.NewBatch(), t.prefix}
 }
 
 // tableBatch is a wrapper around a database batch that prefixes each key access
 // with a pre-configured string.
 type tableBatch struct {
-	batch  AVNdb.Batch
+	batch  avndb.Batch
 	prefix string
 }
 
@@ -198,7 +198,7 @@ func (b *tableBatch) Reset() {
 // tableReplayer is a wrapper around a batch replayer which truncates
 // the added prefix.
 type tableReplayer struct {
-	w      AVNdb.KeyValueWriter
+	w      avndb.KeyValueWriter
 	prefix string
 }
 
@@ -215,18 +215,18 @@ func (r *tableReplayer) Delete(key []byte) error {
 }
 
 // Replay replays the batch contents.
-func (b *tableBatch) Replay(w AVNdb.KeyValueWriter) error {
+func (b *tableBatch) Replay(w avndb.KeyValueWriter) error {
 	return b.batch.Replay(&tableReplayer{w: w, prefix: b.prefix})
 }
 
 // tableIterator is a wrapper around a database iterator that prefixes each key access
 // with a pre-configured string.
 type tableIterator struct {
-	iter   AVNdb.Iterator
+	iter   avndb.Iterator
 	prefix string
 }
 
-// Next moves the iterator to the next key/value pair. It returns whAVNer the
+// Next moves the iterator to the next key/value pair. It returns whavner the
 // iterator is exhausted.
 func (iter *tableIterator) Next() bool {
 	return iter.iter.Next()

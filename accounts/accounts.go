@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package accounts implements high level Avalanria account management.
 package accounts
@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/event"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/event"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -60,7 +60,7 @@ type Wallet interface {
 	// wallets and/or to access derivation seeds.
 	//
 	// The passphrase parameter may or may not be used by the implementation of a
-	// particular wallet instance. The reason there is no passwordless open mAVNod
+	// particular wallet instance. The reason there is no passwordless open mavnod
 	// is to strive towards a uniform wallet handling, oblivious to the different
 	// backend providers.
 	//
@@ -76,7 +76,7 @@ type Wallet interface {
 	// rather only contain the accounts explicitly pinned during account derivation.
 	Accounts() []Account
 
-	// Contains returns whAVNer an account is part of this particular wallet or not.
+	// Contains returns whavner an account is part of this particular wallet or not.
 	Contains(account Account) bool
 
 	// Derive attempts to explicitly derive a hierarchical deterministic account at
@@ -93,12 +93,12 @@ type Wallet interface {
 	// from non zero components.
 	//
 	// Some hardware wallets switched derivation paths through their evolution, so
-	// this mAVNod supports providing multiple bases to discover old user accounts
+	// this mavnod supports providing multiple bases to discover old user accounts
 	// too. Only the last base will be used to derive the next empty account.
 	//
 	// You can disable automatic account discovery by calling SelfDerive with a nil
 	// chain state reader.
-	SelfDerive(bases []DerivationPath, chain AVNereum.ChainStateReader)
+	SelfDerive(bases []DerivationPath, chain avalanria.ChainStateReader)
 
 	// SignData requests the wallet to sign the hash of the given data
 	// It looks up the account specified either solely via its address contained within,
@@ -130,7 +130,7 @@ type Wallet interface {
 	// the needed details via SignTextWithPassphrase, or by other means (e.g. unlock
 	// the account in a keystore).
 	//
-	// This mAVNod should return the signature in 'canonical' format, with v 0 or 1
+	// This mavnod should return the signature in 'canonical' format, with v 0 or 1
 	SignText(account Account, text []byte) ([]byte, error)
 
 	// SignTextWithPassphrase is identical to Signtext, but also takes a password

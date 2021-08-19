@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package node
 
@@ -26,14 +26,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/rpc"
-	"github.com/promAVNeus/tsdb/fileutil"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/rpc"
+	"github.com/promavneus/tsdb/fileutil"
 )
 
 // Node is a container on which services can be registered.
@@ -112,8 +112,8 @@ func New(conf *Config) (*Node, error) {
 	if err := node.openDataDir(); err != nil {
 		return nil, err
 	}
-	// Ensure that the AccountManager mAVNod works before the node has started. We rely on
-	// this in cmd/gAVN.
+	// Ensure that the AccountManager mavnod works before the node has started. We rely on
+	// this in cmd/gavn.
 	am, ephemeralKeystore, err := makeAccountManager(conf)
 	if err != nil {
 		return nil, err
@@ -333,7 +333,7 @@ func (n *Node) closeDataDir() {
 	}
 }
 
-// configureRPC is a helper mAVNod to configure all the various RPC endpoints during node
+// configureRPC is a helper mavnod to configure all the various RPC endpoints during node
 // startup. It's not meant to be called at any time afterwards as it makes certain
 // assumptions about the state of the node.
 func (n *Node) startRPC() error {
@@ -493,7 +493,7 @@ func (n *Node) Config() *Config {
 	return n.config
 }
 
-// Server retrieves the currently running P2P network layer. This mAVNod is meant
+// Server retrieves the currently running P2P network layer. This mavnod is meant
 // only to inspect fields of the currently running server. Callers should not
 // start or stop the returned server.
 func (n *Node) Server() *p2p.Server {
@@ -547,14 +547,14 @@ func (n *Node) EventMux() *event.TypeMux {
 // OpenDatabase opens an existing database with the given name (or creates one if no
 // previous can be found) from within the node's instance directory. If the node is
 // ephemeral, a memory database is returned.
-func (n *Node) OpenDatabase(name string, cache, handles int, namespace string, readonly bool) (AVNdb.Database, error) {
+func (n *Node) OpenDatabase(name string, cache, handles int, namespace string, readonly bool) (avndb.Database, error) {
 	n.lock.Lock()
 	defer n.lock.Unlock()
 	if n.state == closedState {
 		return nil, ErrNodeStopped
 	}
 
-	var db AVNdb.Database
+	var db avndb.Database
 	var err error
 	if n.config.DataDir == "" {
 		db = rawdb.NewMemoryDatabase()
@@ -573,14 +573,14 @@ func (n *Node) OpenDatabase(name string, cache, handles int, namespace string, r
 // also attaching a chain freezer to it that moves ancient chain data from the
 // database to immutable append-only files. If the node is an ephemeral one, a
 // memory database is returned.
-func (n *Node) OpenDatabaseWithFreezer(name string, cache, handles int, freezer, namespace string, readonly bool) (AVNdb.Database, error) {
+func (n *Node) OpenDatabaseWithFreezer(name string, cache, handles int, freezer, namespace string, readonly bool) (avndb.Database, error) {
 	n.lock.Lock()
 	defer n.lock.Unlock()
 	if n.state == closedState {
 		return nil, ErrNodeStopped
 	}
 
-	var db AVNdb.Database
+	var db avndb.Database
 	var err error
 	if n.config.DataDir == "" {
 		db = rawdb.NewMemoryDatabase()
@@ -606,11 +606,11 @@ func (n *Node) ResolvePath(x string) string {
 	return n.config.ResolvePath(x)
 }
 
-// closeTrackingDB wraps the Close mAVNod of a database. When the database is closed by the
+// closeTrackingDB wraps the Close mavnod of a database. When the database is closed by the
 // service, the wrapper removes it from the node's database map. This ensures that Node
 // won't auto-close the database if it is closed by the service that opened it.
 type closeTrackingDB struct {
-	AVNdb.Database
+	avndb.Database
 	n *Node
 }
 
@@ -622,7 +622,7 @@ func (db *closeTrackingDB) Close() error {
 }
 
 // wrapDatabase ensures the database will be auto-closed when Node is closed.
-func (n *Node) wrapDatabase(db AVNdb.Database) AVNdb.Database {
+func (n *Node) wrapDatabase(db avndb.Database) avndb.Database {
 	wrapper := &closeTrackingDB{db, n}
 	n.databases[wrapper] = struct{}{}
 	return wrapper

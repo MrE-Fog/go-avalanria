@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package node
 
@@ -24,8 +24,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/p2p"
 )
 
 // Tests that datadirs can be successfully created, be them manually configured
@@ -85,15 +85,15 @@ func TestIPCPathResolution(t *testing.T) {
 	}{
 		{"", "", false, ""},
 		{"data", "", false, ""},
-		{"", "gAVN.ipc", false, filepath.Join(os.TempDir(), "gAVN.ipc")},
-		{"data", "gAVN.ipc", false, "data/gAVN.ipc"},
-		{"data", "./gAVN.ipc", false, "./gAVN.ipc"},
-		{"data", "/gAVN.ipc", false, "/gAVN.ipc"},
+		{"", "gavn.ipc", false, filepath.Join(os.TempDir(), "gavn.ipc")},
+		{"data", "gavn.ipc", false, "data/gavn.ipc"},
+		{"data", "./gavn.ipc", false, "./gavn.ipc"},
+		{"data", "/gavn.ipc", false, "/gavn.ipc"},
 		{"", "", true, ``},
 		{"data", "", true, ``},
-		{"", "gAVN.ipc", true, `\\.\pipe\gAVN.ipc`},
-		{"data", "gAVN.ipc", true, `\\.\pipe\gAVN.ipc`},
-		{"data", `\\.\pipe\gAVN.ipc`, true, `\\.\pipe\gAVN.ipc`},
+		{"", "gavn.ipc", true, `\\.\pipe\gavn.ipc`},
+		{"data", "gavn.ipc", true, `\\.\pipe\gavn.ipc`},
+		{"data", `\\.\pipe\gavn.ipc`, true, `\\.\pipe\gavn.ipc`},
 	}
 	for i, test := range tests {
 		// Only run when platform/test match

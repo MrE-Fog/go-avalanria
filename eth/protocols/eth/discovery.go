@@ -1,29 +1,29 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/forkid"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/forkid"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
-// enrEntry is the ENR entry which advertises `AVN` protocol on the discovery.
+// enrEntry is the ENR entry which advertises `avn` protocol on the discovery.
 type enrEntry struct {
 	ForkID forkid.ID // Fork identifier per EIP-2124
 
@@ -33,10 +33,10 @@ type enrEntry struct {
 
 // ENRKey implements enr.Entry.
 func (e enrEntry) ENRKey() string {
-	return "AVN"
+	return "avn"
 }
 
-// StartENRUpdater starts the `AVN` ENR updater loop, which listens for chain
+// StartENRUpdater starts the `avn` ENR updater loop, which listens for chain
 // head events and updates the requested node record whenever a fork is passed.
 func StartENRUpdater(chain *core.BlockChain, ln *enode.LocalNode) {
 	var newHead = make(chan core.ChainHeadEvent, 10)
@@ -57,7 +57,7 @@ func StartENRUpdater(chain *core.BlockChain, ln *enode.LocalNode) {
 	}()
 }
 
-// currentENREntry constructs an `AVN` ENR entry based on the current state of the chain.
+// currentENREntry constructs an `avn` ENR entry based on the current state of the chain.
 func currentENREntry(chain *core.BlockChain) *enrEntry {
 	return &enrEntry{
 		ForkID: forkid.NewID(chain.Config(), chain.Genesis().Hash(), chain.CurrentHeader().Number.Uint64()),

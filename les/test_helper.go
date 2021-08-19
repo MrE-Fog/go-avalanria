@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // This file contains some shares testing functionality, common to multiple
 // different files and modules being tested. Client based network and Server
@@ -29,27 +29,27 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind/backends"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/contracts/checkpointoracle/contract"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/forkid"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/les/checkpointoracle"
-	"github.com/AVNereum/go-AVNereum/les/flowcontrol"
-	vfs "github.com/AVNereum/go-AVNereum/les/vflux/server"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind/backends"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/contracts/checkpointoracle/contract"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/forkid"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/les/checkpointoracle"
+	"github.com/avalanria/go-avalanria/les/flowcontrol"
+	vfs "github.com/avalanria/go-avalanria/les/vflux/server"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 var (
@@ -121,7 +121,7 @@ func prepare(n int, backend *backends.SimulatedBackend) {
 			auth, _ := bind.NewKeyedTransactorWithChainID(bankKey, big.NewInt(1337))
 			oracleAddr, _, _, _ = contract.DeployCheckpointOracle(auth, backend, []common.Address{signerAddr}, sectionSize, processConfirms, big.NewInt(1))
 
-			// bankUser transfers some AVNer to user1
+			// bankUser transfers some avner to user1
 			nonce, _ := backend.PendingNonceAt(ctx, bankAddr)
 			tx, _ := types.SignTx(types.NewTransaction(nonce, userAddr1, big.NewInt(10_000_000_000_000_000), params.TxGas, big.NewInt(params.InitialBaseFee), nil), signer, bankKey)
 			backend.SendTransaction(ctx, tx)
@@ -133,11 +133,11 @@ func prepare(n int, backend *backends.SimulatedBackend) {
 			bankNonce, _ := backend.PendingNonceAt(ctx, bankAddr)
 			userNonce1, _ := backend.PendingNonceAt(ctx, userAddr1)
 
-			// bankUser transfers more AVNer to user1
+			// bankUser transfers more avner to user1
 			tx1, _ := types.SignTx(types.NewTransaction(bankNonce, userAddr1, big.NewInt(1_000_000_000_000_000), params.TxGas, big.NewInt(params.InitialBaseFee), nil), signer, bankKey)
 			backend.SendTransaction(ctx, tx1)
 
-			// user1 relays AVNer to user2
+			// user1 relays avner to user2
 			tx2, _ := types.SignTx(types.NewTransaction(userNonce1, userAddr2, big.NewInt(1_000_000_000_000_000), params.TxGas, big.NewInt(params.InitialBaseFee), nil), signer, userKey1)
 			backend.SendTransaction(ctx, tx2)
 
@@ -154,7 +154,7 @@ func prepare(n int, backend *backends.SimulatedBackend) {
 			//    number: 3
 			//    txs:    2
 
-			// bankUser transfer some AVNer to signer
+			// bankUser transfer some avner to signer
 			bankNonce, _ := backend.PendingNonceAt(ctx, bankAddr)
 			tx1, _ := types.SignTx(types.NewTransaction(bankNonce, signerAddr, big.NewInt(1000000000), params.TxGas, big.NewInt(params.InitialBaseFee), nil), signer, bankKey)
 			backend.SendTransaction(ctx, tx1)
@@ -179,7 +179,7 @@ func prepare(n int, backend *backends.SimulatedBackend) {
 }
 
 // testIndexers creates a set of indexers with specified params for testing purpose.
-func testIndexers(db AVNdb.Database, odr light.OdrBackend, config *light.IndexerConfig, disablePruning bool) []*core.ChainIndexer {
+func testIndexers(db avndb.Database, odr light.OdrBackend, config *light.IndexerConfig, disablePruning bool) []*core.ChainIndexer {
 	var indexers [3]*core.ChainIndexer
 	indexers[0] = light.NewChtIndexer(db, odr, config.ChtSize, config.ChtConfirms, disablePruning)
 	indexers[1] = core.NewBloomIndexer(db, config.BloomSize, config.BloomConfirms)
@@ -189,10 +189,10 @@ func testIndexers(db AVNdb.Database, odr light.OdrBackend, config *light.Indexer
 	return indexers[:]
 }
 
-func newTestClientHandler(backend *backends.SimulatedBackend, odr *LesOdr, indexers []*core.ChainIndexer, db AVNdb.Database, peers *serverPeerSet, ulcServers []string, ulcFraction int) (*clientHandler, func()) {
+func newTestClientHandler(backend *backends.SimulatedBackend, odr *LesOdr, indexers []*core.ChainIndexer, db avndb.Database, peers *serverPeerSet, ulcServers []string, ulcFraction int) (*clientHandler, func()) {
 	var (
 		evmux  = new(event.TypeMux)
-		engine = AVNash.NewFaker()
+		engine = avnash.NewFaker()
 		gspec  = core.Genesis{
 			Config:   params.AllEthashProtocolChanges,
 			Alloc:    core.GenesisAlloc{bankAddr: {Balance: bankFunds}},
@@ -224,7 +224,7 @@ func newTestClientHandler(backend *backends.SimulatedBackend, odr *LesOdr, index
 	client := &LightAvalanria{
 		lesCommons: lesCommons{
 			genesis:     genesis.Hash(),
-			config:      &AVNconfig.Config{LightPeers: 100, NetworkId: NetworkId},
+			config:      &avnconfig.Config{LightPeers: 100, NetworkId: NetworkId},
 			chainConfig: params.AllEthashProtocolChanges,
 			iConfig:     light.TestClientIndexerConfig,
 			chainDb:     db,
@@ -251,7 +251,7 @@ func newTestClientHandler(backend *backends.SimulatedBackend, odr *LesOdr, index
 	}
 }
 
-func newTestServerHandler(blocks int, indexers []*core.ChainIndexer, db AVNdb.Database, clock mclock.Clock) (*serverHandler, *backends.SimulatedBackend, func()) {
+func newTestServerHandler(blocks int, indexers []*core.ChainIndexer, db avndb.Database, clock mclock.Clock) (*serverHandler, *backends.SimulatedBackend, func()) {
 	var (
 		gspec = core.Genesis{
 			Config:   params.AllEthashProtocolChanges,
@@ -291,7 +291,7 @@ func newTestServerHandler(blocks int, indexers []*core.ChainIndexer, db AVNdb.Da
 	server := &LesServer{
 		lesCommons: lesCommons{
 			genesis:     genesis.Hash(),
-			config:      &AVNconfig.Config{LightPeers: 100, NetworkId: NetworkId},
+			config:      &avnconfig.Config{LightPeers: 100, NetworkId: NetworkId},
 			chainConfig: params.AllEthashProtocolChanges,
 			iConfig:     light.TestServerIndexerConfig,
 			chainDb:     db,
@@ -448,7 +448,7 @@ type indexerCallback func(*core.ChainIndexer, *core.ChainIndexer, *core.ChainInd
 // testClient represents a client object for testing with necessary auxiliary fields.
 type testClient struct {
 	clock   mclock.Clock
-	db      AVNdb.Database
+	db      avndb.Database
 	peer    *testPeer
 	handler *clientHandler
 
@@ -512,7 +512,7 @@ func (client *testClient) newRawPeer(t *testing.T, name string, version int, rec
 type testServer struct {
 	clock   mclock.Clock
 	backend *backends.SimulatedBackend
-	db      AVNdb.Database
+	db      avndb.Database
 	peer    *testPeer
 	handler *serverHandler
 

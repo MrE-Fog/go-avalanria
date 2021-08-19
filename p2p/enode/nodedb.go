@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package enode
 
@@ -26,7 +26,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/rlp"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/errors"
 	"github.com/syndtr/goleveldb/leveldb/iterator"
@@ -293,9 +293,9 @@ func deleteRange(db *leveldb.DB, prefix []byte) {
 	}
 }
 
-// ensureExpirer is a small helper mAVNod ensuring that the data expiration
+// ensureExpirer is a small helper mavnod ensuring that the data expiration
 // mechanism is running. If the expiration goroutine is already running, this
-// mAVNod simply returns.
+// mavnod simply returns.
 //
 // The goal is to start the data evacuation only after the network successfully
 // bootstrapped itself (to prevent dumping potentially useful seed nodes). Since

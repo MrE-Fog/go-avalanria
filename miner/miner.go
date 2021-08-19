@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package miner implements Avalanria block creation and mining.
 package miner
@@ -22,19 +22,19 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
 )
 
-// Backend wraps all mAVNods required for mining.
+// Backend wraps all mavnods required for mining.
 type Backend interface {
 	BlockChain() *core.BlockChain
 	TxPool() *core.TxPool
@@ -43,14 +43,14 @@ type Backend interface {
 // Config is the configuration parameters of mining.
 type Config struct {
 	Etherbase  common.Address `toml:",omitempty"` // Public address for block mining rewards (default = first account)
-	Notify     []string       `toml:",omitempty"` // HTTP URL list to be notified of new work packages (only useful in AVNash).
+	Notify     []string       `toml:",omitempty"` // HTTP URL list to be notified of new work packages (only useful in avnash).
 	NotifyFull bool           `toml:",omitempty"` // Notify with pending block headers instead of work packages
 	ExtraData  hexutil.Bytes  `toml:",omitempty"` // Block extra data set by the miner
 	GasFloor   uint64         // Target gas floor for mined blocks.
 	GasCeil    uint64         // Target gas ceiling for mined blocks.
 	GasPrice   *big.Int       // Minimum gas price for mining a transaction
 	Recommit   time.Duration  // The time interval for miner to re-create mining work.
-	Noverify   bool           // Disable remote mining solution verification(only useful in AVNash).
+	Noverify   bool           // Disable remote mining solution verification(only useful in avnash).
 }
 
 // Miner creates blocks and searches for proof-of-work values.
@@ -58,22 +58,22 @@ type Miner struct {
 	mux      *event.TypeMux
 	worker   *worker
 	coinbase common.Address
-	AVN      Backend
+	avn      Backend
 	engine   consensus.Engine
 	exitCh   chan struct{}
 	startCh  chan common.Address
 	stopCh   chan struct{}
 }
 
-func New(AVN Backend, config *Config, chainConfig *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine, isLocalBlock func(block *types.Block) bool) *Miner {
+func New(avn Backend, config *Config, chainConfig *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine, isLocalBlock func(block *types.Block) bool) *Miner {
 	miner := &Miner{
-		AVN:     AVN,
+		avn:     avn,
 		mux:     mux,
 		engine:  engine,
 		exitCh:  make(chan struct{}),
 		startCh: make(chan common.Address),
 		stopCh:  make(chan struct{}),
-		worker:  newWorker(config, chainConfig, engine, AVN, mux, isLocalBlock, true),
+		worker:  newWorker(config, chainConfig, engine, avn, mux, isLocalBlock, true),
 	}
 	go miner.update()
 
@@ -189,7 +189,7 @@ func (miner *Miner) Pending() (*types.Block, *state.StateDB) {
 //
 // Note, to access both the pending block and the pending state
 // simultaneously, please use Pending(), as the pending state can
-// change between multiple mAVNod calls
+// change between multiple mavnod calls
 func (miner *Miner) PendingBlock() *types.Block {
 	return miner.worker.pendingBlock()
 }

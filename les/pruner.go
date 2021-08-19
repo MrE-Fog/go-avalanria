@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -20,22 +20,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // pruner is responsible for pruning historical light chain data.
 type pruner struct {
-	db       AVNdb.Database
+	db       avndb.Database
 	indexers []*core.ChainIndexer
 	closeCh  chan struct{}
 	wg       sync.WaitGroup
 }
 
 // newPruner returns a light chain pruner instance.
-func newPruner(db AVNdb.Database, indexers ...*core.ChainIndexer) *pruner {
+func newPruner(db avndb.Database, indexers ...*core.ChainIndexer) *pruner {
 	pruner := &pruner{
 		db:       db,
 		indexers: indexers,
@@ -53,7 +53,7 @@ func (p *pruner) close() {
 }
 
 // loop periodically queries the status of chain indexers and prunes useless
-// historical chain data. Notably, whenever GAVN restarts, it will iterate
+// historical chain data. Notably, whenever Gavn restarts, it will iterate
 // all historical sections even they don't exist at all(below checkpoint) so
 // that light client can prune cached chain data that was ODRed after pruning
 // that section.
@@ -65,7 +65,7 @@ func (p *pruner) loop() {
 
 	// pruning finds the sections that have been processed by all indexers
 	// and deletes all historical chain data.
-	// Note, if some indexers don't support pruning(e.g. AVN.BloomIndexer),
+	// Note, if some indexers don't support pruning(e.g. avn.BloomIndexer),
 	// pruning operations can be silently ignored.
 	pruning := func() {
 		min := uint64(math.MaxUint64)

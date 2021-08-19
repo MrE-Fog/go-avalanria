@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package console
 
@@ -29,11 +29,11 @@ import (
 	"syscall"
 
 	"github.com/dop251/goja"
-	"github.com/AVNereum/go-AVNereum/console/prompt"
-	"github.com/AVNereum/go-AVNereum/internal/jsre"
-	"github.com/AVNereum/go-AVNereum/internal/jsre/deps"
-	"github.com/AVNereum/go-AVNereum/internal/web3ext"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/console/prompt"
+	"github.com/avalanria/go-avalanria/internal/jsre"
+	"github.com/avalanria/go-avalanria/internal/jsre/deps"
+	"github.com/avalanria/go-avalanria/internal/web3ext"
+	"github.com/avalanria/go-avalanria/rpc"
 	"github.com/mattn/go-colorable"
 	"github.com/peterh/liner"
 )
@@ -191,7 +191,7 @@ func (c *Console) initExtensions() error {
 	if err != nil {
 		return fmt.Errorf("api modules: %v", err)
 	}
-	aliases := map[string]struct{}{"AVN": {}, "personal": {}}
+	aliases := map[string]struct{}{"avn": {}, "personal": {}}
 	for api := range apis {
 		if api == "web3" {
 			continue
@@ -225,23 +225,23 @@ func (c *Console) initAdmin(vm *goja.Runtime, bridge *bridge) {
 	}
 }
 
-// initPersonal redirects account-related API mAVNods through the bridge.
+// initPersonal redirects account-related API mavnods through the bridge.
 //
 // If the console is in interactive mode and the 'personal' API is available, override
-// the openWallet, unlockAccount, newAccount and sign mAVNods since these require user
-// interaction. The original web3 callbacks are stored in 'jAVN'. These will be called
+// the openWallet, unlockAccount, newAccount and sign mavnods since these require user
+// interaction. The original web3 callbacks are stored in 'javn'. These will be called
 // by the bridge after the prompt and send the original web3 request to the backend.
 func (c *Console) initPersonal(vm *goja.Runtime, bridge *bridge) {
 	personal := getObject(vm, "personal")
 	if personal == nil || c.prompter == nil {
 		return
 	}
-	jAVN := vm.NewObject()
-	vm.Set("jAVN", jAVN)
-	jAVN.Set("openWallet", personal.Get("openWallet"))
-	jAVN.Set("unlockAccount", personal.Get("unlockAccount"))
-	jAVN.Set("newAccount", personal.Get("newAccount"))
-	jAVN.Set("sign", personal.Get("sign"))
+	javn := vm.NewObject()
+	vm.Set("javn", javn)
+	javn.Set("openWallet", personal.Get("openWallet"))
+	javn.Set("unlockAccount", personal.Get("unlockAccount"))
+	javn.Set("newAccount", personal.Get("newAccount"))
+	javn.Set("sign", personal.Get("sign"))
 	personal.Set("openWallet", jsre.MakeCallback(vm, bridge.OpenWallet))
 	personal.Set("unlockAccount", jsre.MakeCallback(vm, bridge.UnlockAccount))
 	personal.Set("newAccount", jsre.MakeCallback(vm, bridge.NewAccount))
@@ -258,7 +258,7 @@ func (c *Console) clearHistory() {
 	}
 }
 
-// consoleOutput is an override for the console.log and console.error mAVNods to
+// consoleOutput is an override for the console.log and console.error mavnods to
 // stream the output into the configured output stream instead of stdout.
 func (c *Console) consoleOutput(call goja.FunctionCall) goja.Value {
 	var output []string
@@ -270,17 +270,17 @@ func (c *Console) consoleOutput(call goja.FunctionCall) goja.Value {
 }
 
 // AutoCompleteInput is a pre-assembled word completer to be used by the user
-// input prompter to provide hints to the user about the mAVNods available.
+// input prompter to provide hints to the user about the mavnods available.
 func (c *Console) AutoCompleteInput(line string, pos int) (string, []string, string) {
 	// No completions can be provided for empty inputs
 	if len(line) == 0 || pos == 0 {
 		return "", nil, ""
 	}
 	// Chunck data to relevant part for autocompletion
-	// E.g. in case of nested lines AVN.getBalance(AVN.coinb<tab><tab>
+	// E.g. in case of nested lines avn.getBalance(avn.coinb<tab><tab>
 	start := pos - 1
 	for ; start > 0; start-- {
-		// Skip all mAVNods and namespaces (i.e. including the dot)
+		// Skip all mavnods and namespaces (i.e. including the dot)
 		if line[start] == '.' || (line[start] >= 'a' && line[start] <= 'z') || (line[start] >= 'A' && line[start] <= 'Z') {
 			continue
 		}
@@ -296,18 +296,18 @@ func (c *Console) AutoCompleteInput(line string, pos int) (string, []string, str
 	return line[:start], c.jsre.CompleteKeywords(line[start:pos]), line[pos:]
 }
 
-// Welcome show summary of current GAVN instance and some metadata about the
+// Welcome show summary of current Gavn instance and some metadata about the
 // console's available modules.
 func (c *Console) Welcome() {
-	message := "Welcome to the GAVN JavaScript console!\n\n"
+	message := "Welcome to the Gavn JavaScript console!\n\n"
 
-	// Print some generic GAVN metadata
+	// Print some generic Gavn metadata
 	if res, err := c.jsre.Run(`
 		var message = "instance: " + web3.version.node + "\n";
 		try {
-			message += "coinbase: " + AVN.coinbase + "\n";
+			message += "coinbase: " + avn.coinbase + "\n";
 		} catch (err) {}
-		message += "at block: " + AVN.blockNumber + " (" + new Date(1000 * AVN.getBlock(AVN.blockNumber).timestamp) + ")\n";
+		message += "at block: " + avn.blockNumber + " (" + new Date(1000 * avn.getBlock(avn.blockNumber).timestamp) + ")\n";
 		try {
 			message += " datadir: " + admin.datadir + "\n";
 		} catch (err) {}

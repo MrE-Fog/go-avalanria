@@ -1,20 +1,20 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNash
+package avnash
 
 import (
 	"io/ioutil"
@@ -25,20 +25,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
 )
 
-// Tests that AVNash works correctly in test mode.
+// Tests that avnash works correctly in test mode.
 func TestTestMode(t *testing.T) {
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 
-	AVNash := NewTester(nil, false)
-	defer AVNash.Close()
+	avnash := NewTester(nil, false)
+	defer avnash.Close()
 
 	results := make(chan *types.Block)
-	err := AVNash.Seal(nil, types.NewBlockWithHeader(header), results, nil)
+	err := avnash.Seal(nil, types.NewBlockWithHeader(header), results, nil)
 	if err != nil {
 		t.Fatalf("failed to seal block: %v", err)
 	}
@@ -46,7 +46,7 @@ func TestTestMode(t *testing.T) {
 	case block := <-results:
 		header.Nonce = types.EncodeNonce(block.Nonce())
 		header.MixDigest = block.MixDigest()
-		if err := AVNash.verifySeal(nil, header, false); err != nil {
+		if err := avnash.verifySeal(nil, header, false); err != nil {
 			t.Fatalf("unexpected verification error: %v", err)
 		}
 	case <-time.NewTimer(4 * time.Second).C:
@@ -55,9 +55,9 @@ func TestTestMode(t *testing.T) {
 }
 
 // This test checks that cache lru logic doesn't crash under load.
-// It reproduces https://github.com/AVNereum/go-AVNereum/issues/14943
+// It reproduces https://github.com/avalanria/go-avalanria/issues/14943
 func TestCacheFileEvict(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "AVNash-test")
+	tmpdir, err := ioutil.TempDir("", "avnash-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,20 +98,20 @@ func verifyTest(wg *sync.WaitGroup, e *Ethash, workerIndex, epochs int) {
 }
 
 func TestRemoteSealer(t *testing.T) {
-	AVNash := NewTester(nil, false)
-	defer AVNash.Close()
+	avnash := NewTester(nil, false)
+	defer avnash.Close()
 
-	api := &API{AVNash}
+	api := &API{avnash}
 	if _, err := api.GetWork(); err != errNoMiningWork {
 		t.Error("expect to return an error indicate there is no mining work")
 	}
 	header := &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(100)}
 	block := types.NewBlockWithHeader(header)
-	sealhash := AVNash.SealHash(header)
+	sealhash := avnash.SealHash(header)
 
 	// Push new work.
 	results := make(chan *types.Block)
-	AVNash.Seal(nil, block, results, nil)
+	avnash.Seal(nil, block, results, nil)
 
 	var (
 		work [4]string
@@ -127,8 +127,8 @@ func TestRemoteSealer(t *testing.T) {
 	// Push new block with same block number to replace the original one.
 	header = &types.Header{Number: big.NewInt(1), Difficulty: big.NewInt(1000)}
 	block = types.NewBlockWithHeader(header)
-	sealhash = AVNash.SealHash(header)
-	AVNash.Seal(nil, block, results, nil)
+	sealhash = avnash.SealHash(header)
+	avnash.Seal(nil, block, results, nil)
 
 	if work, err = api.GetWork(); err != nil || work[0] != sealhash.Hex() {
 		t.Error("expect to return the latest pushed work")
@@ -141,36 +141,36 @@ func TestHashrate(t *testing.T) {
 		expect   uint64
 		ids      = []common.Hash{common.HexToHash("a"), common.HexToHash("b"), common.HexToHash("c")}
 	)
-	AVNash := NewTester(nil, false)
-	defer AVNash.Close()
+	avnash := NewTester(nil, false)
+	defer avnash.Close()
 
-	if tot := AVNash.Hashrate(); tot != 0 {
+	if tot := avnash.Hashrate(); tot != 0 {
 		t.Error("expect the result should be zero")
 	}
 
-	api := &API{AVNash}
+	api := &API{avnash}
 	for i := 0; i < len(hashrate); i += 1 {
 		if res := api.SubmitHashrate(hashrate[i], ids[i]); !res {
 			t.Error("remote miner submit hashrate failed")
 		}
 		expect += uint64(hashrate[i])
 	}
-	if tot := AVNash.Hashrate(); tot != float64(expect) {
+	if tot := avnash.Hashrate(); tot != float64(expect) {
 		t.Error("expect total hashrate should be same")
 	}
 }
 
 func TestClosedRemoteSealer(t *testing.T) {
-	AVNash := NewTester(nil, false)
+	avnash := NewTester(nil, false)
 	time.Sleep(1 * time.Second) // ensure exit channel is listening
-	AVNash.Close()
+	avnash.Close()
 
-	api := &API{AVNash}
+	api := &API{avnash}
 	if _, err := api.GetWork(); err != errEthashStopped {
-		t.Error("expect to return an error to indicate AVNash is stopped")
+		t.Error("expect to return an error to indicate avnash is stopped")
 	}
 
 	if res := api.SubmitHashrate(hexutil.Uint64(100), common.HexToHash("a")); res {
-		t.Error("expect to return false when submit hashrate to a stopped AVNash")
+		t.Error("expect to return false when submit hashrate to a stopped avnash")
 	}
 }

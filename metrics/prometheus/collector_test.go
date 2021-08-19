@@ -1,11 +1,11 @@
-package promAVNeus
+package promavneus
 
 import (
 	"os"
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/metrics"
+	"github.com/avalanria/go-avalanria/metrics"
 )
 
 func TestMain(m *testing.M) {

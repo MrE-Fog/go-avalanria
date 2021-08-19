@@ -1,20 +1,20 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"math/big"
@@ -22,13 +22,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/enode"
 )
 
 const (
@@ -41,12 +41,12 @@ const (
 )
 
 type txsync struct {
-	p   *AVN.Peer
+	p   *avn.Peer
 	txs []*types.Transaction
 }
 
 // syncTransactions starts sending all currently pending transactions to the given peer.
-func (h *handler) syncTransactions(p *AVN.Peer) {
+func (h *handler) syncTransactions(p *avn.Peer) {
 	// Assemble the set of transaction to broadcast or announce to the remote
 	// peer. Fun fact, this is quite an expensive operation as it needs to sort
 	// the transactions if the sorting is not cached yet. However, with a random
@@ -61,10 +61,10 @@ func (h *handler) syncTransactions(p *AVN.Peer) {
 	if len(txs) == 0 {
 		return
 	}
-	// The AVN/65 protocol introduces proper transaction announcements, so instead
+	// The avn/65 protocol introduces proper transaction announcements, so instead
 	// of dripping transactions across multiple peers, just send the entire list as
 	// an announcement and let the remote side decide what they need (likely nothing).
-	if p.Version() >= AVN.AVN65 {
+	if p.Version() >= avn.AVN65 {
 		hashes := make([]common.Hash, len(txs))
 		for i, tx := range txs {
 			hashes[i] = tx.Hash()
@@ -88,15 +88,15 @@ func (h *handler) txsyncLoop64() {
 
 	var (
 		pending = make(map[enode.ID]*txsync)
-		sending = false               // whAVNer a send is active
+		sending = false               // whavner a send is active
 		pack    = new(txsync)         // the pack that is being sent
 		done    = make(chan error, 1) // result of the send
 	)
 
 	// send starts a sending a pack of transactions from the sync.
 	send := func(s *txsync) {
-		if s.p.Version() >= AVN.AVN65 {
-			panic("initial transaction syncer running on AVN/65+")
+		if s.p.Version() >= avn.AVN65 {
+			panic("initial transaction syncer running on avn/65+")
 		}
 		// Fill pack with transactions up to the target size.
 		size := common.StorageSize(0)
@@ -166,7 +166,7 @@ type chainSyncer struct {
 // chainSyncOp is a scheduled sync operation.
 type chainSyncOp struct {
 	mode downloader.SyncMode
-	peer *AVN.Peer
+	peer *avn.Peer
 	td   *big.Int
 	head common.Hash
 }
@@ -182,7 +182,7 @@ func newChainSyncer(handler *handler) *chainSyncer {
 // handlePeerEvent notifies the syncer about a change in the peer set.
 // This is called for new peers and every time a peer announces a new
 // chain head.
-func (cs *chainSyncer) handlePeerEvent(peer *AVN.Peer) bool {
+func (cs *chainSyncer) handlePeerEvent(peer *avn.Peer) bool {
 	select {
 	case cs.peerEventCh <- struct{}{}:
 		return true
@@ -234,7 +234,7 @@ func (cs *chainSyncer) loop() {
 	}
 }
 
-// nextSyncOp determines whAVNer sync is required at this time.
+// nextSyncOp determines whavner sync is required at this time.
 func (cs *chainSyncer) nextSyncOp() *chainSyncOp {
 	if cs.doneCh != nil {
 		return nil // Sync already running.
@@ -267,7 +267,7 @@ func (cs *chainSyncer) nextSyncOp() *chainSyncOp {
 	return op
 }
 
-func peerToSyncOp(mode downloader.SyncMode, p *AVN.Peer) *chainSyncOp {
+func peerToSyncOp(mode downloader.SyncMode, p *avn.Peer) *chainSyncOp {
 	peerHead, peerTD := p.Head()
 	return &chainSyncOp{mode: mode, peer: p, td: peerTD, head: peerHead}
 }
@@ -305,12 +305,12 @@ func (h *handler) doSync(op *chainSyncOp) error {
 	if op.mode == downloader.FastSync || op.mode == downloader.SnapSync {
 		// Before launch the fast sync, we have to ensure user uses the same
 		// txlookup limit.
-		// The main concern here is: during the fast sync GAVN won't index the
+		// The main concern here is: during the fast sync Gavn won't index the
 		// block(generate tx indices) before the HEAD-limit. But if user changes
-		// the limit in the next fast sync(e.g. user kill GAVN manually and
-		// restart) then it will be hard for GAVN to figure out the oldest block
+		// the limit in the next fast sync(e.g. user kill Gavn manually and
+		// restart) then it will be hard for Gavn to figure out the oldest block
 		// has been indexed. So here for the user-experience wise, it's non-optimal
-		// that user can't change limit during the fast sync. If changed, GAVN
+		// that user can't change limit during the fast sync. If changed, Gavn
 		// will just blindly use the original one.
 		limit := h.chain.TxLookupLimit()
 		if stored := rawdb.ReadFastTxLookupLimit(h.database); stored == nil {

@@ -1,41 +1,41 @@
-Name "gAVN ${MAJORVERSION}.${MINORVERSION}.${BUILDVERSION}" # VERSION variables set through command line arguments
+Name "gavn ${MAJORVERSION}.${MINORVERSION}.${BUILDVERSION}" # VERSION variables set through command line arguments
 InstallDir "$InstDir"
 OutFile "${OUTPUTFILE}" # set through command line arguments
 
 # Links for "Add/Remove Programs"
-!define HELPURL "https://github.com/AVNereum/go-AVNereum/issues"
-!define UPDATEURL "https://github.com/AVNereum/go-AVNereum/releases"
-!define ABOUTURL "https://github.com/AVNereum/go-AVNereum#AVNereum-go"
+!define HELPURL "https://github.com/avalanria/go-avalanria/issues"
+!define UPDATEURL "https://github.com/avalanria/go-avalanria/releases"
+!define ABOUTURL "https://github.com/avalanria/go-avalanria#avalanria-go"
 !define /date NOW "%Y%m%d"
 
 PageEx license
   LicenseData {{.License}}
 PageExEnd
 
-# Install gAVN binary
-Section "GAVN" GAVN_IDX
+# Install gavn binary
+Section "Gavn" GAVN_IDX
   SetOutPath $INSTDIR
-  file {{.GAVN}}
+  file {{.Gavn}}
 
   # Create start menu launcher
   createDirectory "$SMPROGRAMS\${APPNAME}"
-  createShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\gAVN.exe"
-  createShortCut "$SMPROGRAMS\${APPNAME}\Attach.lnk" "$INSTDIR\gAVN.exe" "attach"
+  createShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\gavn.exe"
+  createShortCut "$SMPROGRAMS\${APPNAME}\Attach.lnk" "$INSTDIR\gavn.exe" "attach"
   createShortCut "$SMPROGRAMS\${APPNAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
   # Firewall - remove rules (if exists)
-  SimpleFC::AdvRemoveRule "GAVN incoming peers (TCP:30303)"
-  SimpleFC::AdvRemoveRule "GAVN outgoing peers (TCP:30303)"
-  SimpleFC::AdvRemoveRule "GAVN UDP discovery (UDP:30303)"
+  SimpleFC::AdvRemoveRule "Gavn incoming peers (TCP:30303)"
+  SimpleFC::AdvRemoveRule "Gavn outgoing peers (TCP:30303)"
+  SimpleFC::AdvRemoveRule "Gavn UDP discovery (UDP:30303)"
 
   # Firewall - add rules
-  SimpleFC::AdvAddRule "GAVN incoming peers (TCP:30303)" ""  6 1 1 2147483647 1 "$INSTDIR\gAVN.exe" "" "" "Avalanria" 30303 "" "" ""
-  SimpleFC::AdvAddRule "GAVN outgoing peers (TCP:30303)" ""  6 2 1 2147483647 1 "$INSTDIR\gAVN.exe" "" "" "Avalanria" "" 30303 "" ""
-  SimpleFC::AdvAddRule "GAVN UDP discovery (UDP:30303)" "" 17 2 1 2147483647 1 "$INSTDIR\gAVN.exe" "" "" "Avalanria" "" 30303 "" ""
+  SimpleFC::AdvAddRule "Gavn incoming peers (TCP:30303)" ""  6 1 1 2147483647 1 "$INSTDIR\gavn.exe" "" "" "Avalanria" 30303 "" "" ""
+  SimpleFC::AdvAddRule "Gavn outgoing peers (TCP:30303)" ""  6 2 1 2147483647 1 "$INSTDIR\gavn.exe" "" "" "Avalanria" "" 30303 "" ""
+  SimpleFC::AdvAddRule "Gavn UDP discovery (UDP:30303)" "" 17 2 1 2147483647 1 "$INSTDIR\gavn.exe" "" "" "Avalanria" "" 30303 "" ""
 
-  # Set default IPC endpoint (https://github.com/AVNereum/EIPs/issues/147)
-  ${EnvVarUpdate} $0 "AVNEREUM_SOCKET" "R" "HKLM" "\\.\pipe\gAVN.ipc"
-  ${EnvVarUpdate} $0 "AVNEREUM_SOCKET" "A" "HKLM" "\\.\pipe\gAVN.ipc"
+  # Set default IPC endpoint (https://github.com/avalanria/EIPs/issues/147)
+  ${EnvVarUpdate} $0 "AVNEREUM_SOCKET" "R" "HKLM" "\\.\pipe\gavn.ipc"
+  ${EnvVarUpdate} $0 "AVNEREUM_SOCKET" "A" "HKLM" "\\.\pipe\gavn.ipc"
 
   # Add instdir to PATH
   Push "$INSTDIR"

@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rlp
 
@@ -34,7 +34,7 @@ type typeinfo struct {
 
 // tags represents struct tags.
 type tags struct {
-	// rlp:"nil" controls whAVNer empty input results in a nil pointer.
+	// rlp:"nil" controls whavner empty input results in a nil pointer.
 	// nilKind is the kind of empty value allowed for the field.
 	nilKind Kind
 	nilOK   bool
@@ -43,7 +43,7 @@ type tags struct {
 	// If this is set, all subsequent fields must also be optional.
 	optional bool
 
-	// rlp:"tail" controls whAVNer this field swallows additional list elements. It can
+	// rlp:"tail" controls whavner this field swallows additional list elements. It can
 	// only be set for the last field, which must be of slice type.
 	tail bool
 
@@ -260,7 +260,7 @@ func (i *typeinfo) generate(typ reflect.Type, tags tags) {
 	i.writer, i.writerErr = makeWriter(typ, tags)
 }
 
-// defaultNilKind determines whAVNer a nil pointer to typ encodes/decodes
+// defaultNilKind determines whavner a nil pointer to typ encodes/decodes
 // as an empty string or empty list.
 func defaultNilKind(typ reflect.Type) Kind {
 	k := typ.Kind()

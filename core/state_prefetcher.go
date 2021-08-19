@@ -1,29 +1,29 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
 import (
 	"sync/atomic"
 
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 // statePrefetcher is a basic Prefetcher, which blindly executes a block on top
@@ -69,7 +69,7 @@ func (p *statePrefetcher) Prefetch(block *types.Block, statedb *state.StateDB, c
 		}
 		statedb.Prepare(tx.Hash(), i)
 		if err := precacheTransaction(msg, p.config, gaspool, statedb, header, evm); err != nil {
-			return // Ugh, somAVNing went horribly wrong, bail out
+			return // Ugh, somavning went horribly wrong, bail out
 		}
 		// If we're pre-byzantium, pre-load trie nodes for the intermediate root
 		if !byzantium {

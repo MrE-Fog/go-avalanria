@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -20,11 +20,11 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/signer/core/apitypes"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/signer/core/apitypes"
 )
 
 type AuditLogger struct {
@@ -44,16 +44,16 @@ func (l *AuditLogger) New(ctx context.Context) (common.Address, error) {
 	return l.api.New(ctx)
 }
 
-func (l *AuditLogger) SignTransaction(ctx context.Context, args apitypes.SendTxArgs, mAVNodSelector *string) (*AVNapi.SignTransactionResult, error) {
+func (l *AuditLogger) SignTransaction(ctx context.Context, args apitypes.SendTxArgs, mavnodSelector *string) (*avnapi.SignTransactionResult, error) {
 	sel := "<nil>"
-	if mAVNodSelector != nil {
-		sel = *mAVNodSelector
+	if mavnodSelector != nil {
+		sel = *mavnodSelector
 	}
 	l.log.Info("SignTransaction", "type", "request", "metadata", MetadataFromContext(ctx).String(),
 		"tx", args.String(),
-		"mAVNodSelector", sel)
+		"mavnodSelector", sel)
 
-	res, e := l.api.SignTransaction(ctx, args, mAVNodSelector)
+	res, e := l.api.SignTransaction(ctx, args, mavnodSelector)
 	if res != nil {
 		l.log.Info("SignTransaction", "type", "response", "data", common.Bytes2Hex(res.Raw), "error", e)
 	} else {
@@ -71,15 +71,15 @@ func (l *AuditLogger) SignData(ctx context.Context, contentType string, addr com
 	return b, e
 }
 
-func (l *AuditLogger) SignGnosisSafeTx(ctx context.Context, addr common.MixedcaseAddress, gnosisTx GnosisSafeTx, mAVNodSelector *string) (*GnosisSafeTx, error) {
+func (l *AuditLogger) SignGnosisSafeTx(ctx context.Context, addr common.MixedcaseAddress, gnosisTx GnosisSafeTx, mavnodSelector *string) (*GnosisSafeTx, error) {
 	sel := "<nil>"
-	if mAVNodSelector != nil {
-		sel = *mAVNodSelector
+	if mavnodSelector != nil {
+		sel = *mavnodSelector
 	}
 	data, _ := json.Marshal(gnosisTx) // can ignore error, marshalling what we just unmarshalled
 	l.log.Info("SignGnosisSafeTx", "type", "request", "metadata", MetadataFromContext(ctx).String(),
 		"addr", addr.String(), "data", string(data), "selector", sel)
-	res, e := l.api.SignGnosisSafeTx(ctx, addr, gnosisTx, mAVNodSelector)
+	res, e := l.api.SignGnosisSafeTx(ctx, addr, gnosisTx, mavnodSelector)
 	if res != nil {
 		data, _ := json.Marshal(res) // can ignore error, marshalling what we just unmarshalled
 		l.log.Info("SignGnosisSafeTx", "type", "response", "data", string(data), "error", e)

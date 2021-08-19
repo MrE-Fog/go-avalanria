@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package filters
 
@@ -26,17 +26,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/bloombits"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/bloombits"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 var (
@@ -45,7 +45,7 @@ var (
 
 type testBackend struct {
 	mux             *event.TypeMux
-	db              AVNdb.Database
+	db              avndb.Database
 	sections        uint64
 	txFeed          event.Feed
 	logsFeed        event.Feed
@@ -54,7 +54,7 @@ type testBackend struct {
 	chainFeed       event.Feed
 }
 
-func (b *testBackend) ChainDb() AVNdb.Database {
+func (b *testBackend) ChainDb() avndb.Database {
 	return b.db
 }
 
@@ -170,7 +170,7 @@ func TestBlockSubscription(t *testing.T) {
 		backend     = &testBackend{db: db}
 		api         = NewPublicFilterAPI(backend, false, deadline)
 		genesis     = (&core.Genesis{BaseFee: big.NewInt(params.InitialBaseFee)}).MustCommit(db)
-		chain, _    = core.GenerateChain(params.TestChainConfig, genesis, AVNash.NewFaker(), db, 10, func(i int, gen *core.BlockGen) {})
+		chain, _    = core.GenerateChain(params.TestChainConfig, genesis, avnash.NewFaker(), db, 10, func(i int, gen *core.BlockGen) {})
 		chainEvents = []core.ChainEvent{}
 	)
 
@@ -213,7 +213,7 @@ func TestBlockSubscription(t *testing.T) {
 	<-sub1.Err()
 }
 
-// TestPendingTxFilter tests whAVNer pending tx filters retrieve all pending transactions that are posted to the event mux.
+// TestPendingTxFilter tests whavner pending tx filters retrieve all pending transactions that are posted to the event mux.
 func TestPendingTxFilter(t *testing.T) {
 	t.Parallel()
 
@@ -269,7 +269,7 @@ func TestPendingTxFilter(t *testing.T) {
 	}
 }
 
-// TestLogFilterCreation test whAVNer a given filter criteria makes sense.
+// TestLogFilterCreation test whavner a given filter criteria makes sense.
 // If not it must return an error.
 func TestLogFilterCreation(t *testing.T) {
 	var (
@@ -311,7 +311,7 @@ func TestLogFilterCreation(t *testing.T) {
 	}
 }
 
-// TestInvalidLogFilterCreation tests whAVNer invalid filter log criteria results in an error
+// TestInvalidLogFilterCreation tests whavner invalid filter log criteria results in an error
 // when the filter is created.
 func TestInvalidLogFilterCreation(t *testing.T) {
 	t.Parallel()
@@ -359,7 +359,7 @@ func TestInvalidGetLogsRequest(t *testing.T) {
 	}
 }
 
-// TestLogFilter tests whAVNer log filters match the correct logs that are posted to the event feed.
+// TestLogFilter tests whavner log filters match the correct logs that are posted to the event feed.
 func TestLogFilter(t *testing.T) {
 	t.Parallel()
 
@@ -507,55 +507,55 @@ func TestPendingLogsSubscription(t *testing.T) {
 		}
 
 		testCases = []struct {
-			crit     AVNereum.FilterQuery
+			crit     avalanria.FilterQuery
 			expected []*types.Log
 			c        chan []*types.Log
 			sub      *Subscription
 		}{
 			// match all
 			{
-				AVNereum.FilterQuery{}, flattenLogs(allLogs),
+				avalanria.FilterQuery{}, flattenLogs(allLogs),
 				nil, nil,
 			},
 			// match none due to no matching addresses
 			{
-				AVNereum.FilterQuery{Addresses: []common.Address{{}, notUsedAddress}, Topics: [][]common.Hash{nil}},
+				avalanria.FilterQuery{Addresses: []common.Address{{}, notUsedAddress}, Topics: [][]common.Hash{nil}},
 				nil,
 				nil, nil,
 			},
 			// match logs based on addresses, ignore topics
 			{
-				AVNereum.FilterQuery{Addresses: []common.Address{firstAddr}},
+				avalanria.FilterQuery{Addresses: []common.Address{firstAddr}},
 				append(flattenLogs(allLogs[:2]), allLogs[5][3]),
 				nil, nil,
 			},
 			// match none due to no matching topics (match with address)
 			{
-				AVNereum.FilterQuery{Addresses: []common.Address{secondAddr}, Topics: [][]common.Hash{{notUsedTopic}}},
+				avalanria.FilterQuery{Addresses: []common.Address{secondAddr}, Topics: [][]common.Hash{{notUsedTopic}}},
 				nil, nil, nil,
 			},
 			// match logs based on addresses and topics
 			{
-				AVNereum.FilterQuery{Addresses: []common.Address{thirdAddress}, Topics: [][]common.Hash{{firstTopic, secondTopic}}},
+				avalanria.FilterQuery{Addresses: []common.Address{thirdAddress}, Topics: [][]common.Hash{{firstTopic, secondTopic}}},
 				append(flattenLogs(allLogs[3:5]), allLogs[5][0]),
 				nil, nil,
 			},
 			// match logs based on multiple addresses and "or" topics
 			{
-				AVNereum.FilterQuery{Addresses: []common.Address{secondAddr, thirdAddress}, Topics: [][]common.Hash{{firstTopic, secondTopic}}},
+				avalanria.FilterQuery{Addresses: []common.Address{secondAddr, thirdAddress}, Topics: [][]common.Hash{{firstTopic, secondTopic}}},
 				append(flattenLogs(allLogs[2:5]), allLogs[5][0]),
 				nil,
 				nil,
 			},
 			// block numbers are ignored for filters created with New***Filter, these return all logs that match the given criteria when the state changes
 			{
-				AVNereum.FilterQuery{Addresses: []common.Address{firstAddr}, FromBlock: big.NewInt(2), ToBlock: big.NewInt(3)},
+				avalanria.FilterQuery{Addresses: []common.Address{firstAddr}, FromBlock: big.NewInt(2), ToBlock: big.NewInt(3)},
 				append(flattenLogs(allLogs[:2]), allLogs[5][3]),
 				nil, nil,
 			},
 			// multiple pending logs, should match only 2 topics from the logs in block 5
 			{
-				AVNereum.FilterQuery{Addresses: []common.Address{thirdAddress}, Topics: [][]common.Hash{{firstTopic, fourthTopic}}},
+				avalanria.FilterQuery{Addresses: []common.Address{thirdAddress}, Topics: [][]common.Hash{{firstTopic, fourthTopic}}},
 				[]*types.Log{allLogs[5][0], allLogs[5][2]},
 				nil, nil,
 			},

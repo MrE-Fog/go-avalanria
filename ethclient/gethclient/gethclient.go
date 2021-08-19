@@ -1,21 +1,21 @@
-// Copyright 2021 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2021 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package gAVNclient provides an RPC client for gAVN-specific APIs.
-package gAVNclient
+// Package gavnclient provides an RPC client for gavn-specific APIs.
+package gavnclient
 
 import (
 	"context"
@@ -23,17 +23,17 @@ import (
 	"runtime"
 	"runtime/debug"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
-// Client is a wrapper around rpc.Client that implements gAVN-specific functionality.
+// Client is a wrapper around rpc.Client that implements gavn-specific functionality.
 //
-// If you want to use the standardized Avalanria RPC functionality, use AVNclient.Client instead.
+// If you want to use the standardized Avalanria RPC functionality, use avnclient.Client instead.
 type Client struct {
 	c *rpc.Client
 }
@@ -45,14 +45,14 @@ func New(c *rpc.Client) *Client {
 
 // CreateAccessList tries to create an access list for a specific transaction based on the
 // current pending state of the blockchain.
-func (ec *Client) CreateAccessList(ctx context.Context, msg AVNereum.CallMsg) (*types.AccessList, uint64, string, error) {
+func (ec *Client) CreateAccessList(ctx context.Context, msg avalanria.CallMsg) (*types.AccessList, uint64, string, error) {
 	type accessListResult struct {
 		Accesslist *types.AccessList `json:"accessList"`
 		Error      string            `json:"error,omitempty"`
 		GasUsed    hexutil.Uint64    `json:"gasUsed"`
 	}
 	var result accessListResult
-	if err := ec.c.CallContext(ctx, &result, "AVN_createAccessList", toCallArg(msg)); err != nil {
+	if err := ec.c.CallContext(ctx, &result, "avn_createAccessList", toCallArg(msg)); err != nil {
 		return nil, 0, "", err
 	}
 	return result.Accesslist, uint64(result.GasUsed), result.Error, nil
@@ -97,7 +97,7 @@ func (ec *Client) GetProof(ctx context.Context, account common.Address, keys []s
 	}
 
 	var res accountResult
-	err := ec.c.CallContext(ctx, &res, "AVN_getProof", account, keys, toBlockNumArg(blockNumber))
+	err := ec.c.CallContext(ctx, &res, "avn_getProof", account, keys, toBlockNumArg(blockNumber))
 	// Turn hexutils back to normal datatypes
 	storageResults := make([]StorageResult, 0, len(res.StorageProof))
 	for _, st := range res.StorageProof {
@@ -136,24 +136,24 @@ type OverrideAccount struct {
 //
 // overrides specifies a map of contract states that should be overwritten before executing
 // the message call.
-// Please use AVNclient.CallContract instead if you don't need the override functionality.
-func (ec *Client) CallContract(ctx context.Context, msg AVNereum.CallMsg, blockNumber *big.Int, overrides *map[common.Address]OverrideAccount) ([]byte, error) {
+// Please use avnclient.CallContract instead if you don't need the override functionality.
+func (ec *Client) CallContract(ctx context.Context, msg avalanria.CallMsg, blockNumber *big.Int, overrides *map[common.Address]OverrideAccount) ([]byte, error) {
 	var hex hexutil.Bytes
 	err := ec.c.CallContext(
-		ctx, &hex, "AVN_call", toCallArg(msg),
+		ctx, &hex, "avn_call", toCallArg(msg),
 		toBlockNumArg(blockNumber), toOverrideMap(overrides),
 	)
 	return hex, err
 }
 
-// GCStats retrieves the current garbage collection stats from a gAVN node.
+// GCStats retrieves the current garbage collection stats from a gavn node.
 func (ec *Client) GCStats(ctx context.Context) (*debug.GCStats, error) {
 	var result debug.GCStats
 	err := ec.c.CallContext(ctx, &result, "debug_gcStats")
 	return &result, err
 }
 
-// MemStats retrieves the current memory stats from a gAVN node.
+// MemStats retrieves the current memory stats from a gavn node.
 func (ec *Client) MemStats(ctx context.Context) (*runtime.MemStats, error) {
 	var result runtime.MemStats
 	err := ec.c.CallContext(ctx, &result, "debug_memStats")
@@ -167,7 +167,7 @@ func (ec *Client) SetHead(ctx context.Context, number *big.Int) error {
 	return ec.c.CallContext(ctx, nil, "debug_setHead", toBlockNumArg(number))
 }
 
-// GetNodeInfo retrieves the node info of a gAVN node.
+// GetNodeInfo retrieves the node info of a gavn node.
 func (ec *Client) GetNodeInfo(ctx context.Context) (*p2p.NodeInfo, error) {
 	var result p2p.NodeInfo
 	err := ec.c.CallContext(ctx, &result, "admin_nodeInfo")
@@ -190,7 +190,7 @@ func toBlockNumArg(number *big.Int) string {
 	return hexutil.EncodeBig(number)
 }
 
-func toCallArg(msg AVNereum.CallMsg) interface{} {
+func toCallArg(msg avalanria.CallMsg) interface{} {
 	arg := map[string]interface{}{
 		"from": msg.From,
 		"to":   msg.To,

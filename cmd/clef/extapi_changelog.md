@@ -12,13 +12,13 @@ Additional labels for pre-release and build metadata are available as extensions
 
 ### 6.1.0
 
-The API-mAVNod `account_signGnosisSafeTx` was added. This mAVNod takes two parameters, 
+The API-mavnod `account_signGnosisSafeTx` was added. This mavnod takes two parameters, 
 `[address, safeTx]`. The latter, `safeTx`, can be copy-pasted from the gnosis relay. For example: 
 
 ```
 {
   "jsonrpc": "2.0",
-  "mAVNod": "account_signGnosisSafeTx",
+  "mavnod": "account_signGnosisSafeTx",
   "params": ["0xfd1c4226bfD1c436672092F4eCbfC270145b7256",
     {
       "safe": "0x25a6c4BBd32B2424A9c99aEB0584Ad12045382B3",
@@ -41,7 +41,7 @@ The API-mAVNod `account_signGnosisSafeTx` was added. This mAVNod takes two param
       "executor": null,
       "isExecuted": false,
       "isSuccessful": null,
-      "AVNGasPrice": null,
+      "avnGasPrice": null,
       "gasUsed": null,
       "fee": null,
       "origin": null,
@@ -64,7 +64,7 @@ The API-mAVNod `account_signGnosisSafeTx` was added. This mAVNod takes two param
 }
 ```
 
-Not all fields are required, though. This mAVNod is really just a UX helper, which massages the 
+Not all fields are required, though. This mavnod is really just a UX helper, which massages the 
 input to conform to the `EIP-712` [specification](https://docs.gnosis.io/safe/docs/contracts_tx_execution/#transaction-hash) 
 for the Gnosis Safe, and making the output be directly importable to by a relay service. 
 
@@ -76,27 +76,27 @@ for the Gnosis Safe, and making the output be directly importable to by a relay 
 
 #### 5.0.0
 
-* The external `account_EcRecover`-mAVNod was reimplemented.
-* The external mAVNod `account_sign(address, data)` was replaced with `account_signData(contentType, address, data)`.
-The addition of `contentType` makes it possible to use the mAVNod for different types of objects, such as:
+* The external `account_EcRecover`-mavnod was reimplemented.
+* The external mavnod `account_sign(address, data)` was replaced with `account_signData(contentType, address, data)`.
+The addition of `contentType` makes it possible to use the mavnod for different types of objects, such as:
   * signing data with an intended validator (not yet implemented)
   * signing clique headers,
   * signing plain personal messages,
-* The external mAVNod `account_signTypedData` implements [EIP-712](https://github.com/AVNereum/EIPs/blob/master/EIPS/eip-712.md) and makes it possible to sign typed data.
+* The external mavnod `account_signTypedData` implements [EIP-712](https://github.com/avalanria/EIPs/blob/master/EIPS/eip-712.md) and makes it possible to sign typed data.
 
 #### 4.0.0
 
-* The external `account_Ecrecover`-mAVNod was removed.
-* The external `account_Import`-mAVNod was removed.
+* The external `account_Ecrecover`-mavnod was removed.
+* The external `account_Import`-mavnod was removed.
 
 #### 3.0.0
 
-* The external `account_List`-mAVNod was changed to not expose `url`, which contained info about the local filesystem. It now returns only a list of addresses.
+* The external `account_List`-mavnod was changed to not expose `url`, which contained info about the local filesystem. It now returns only a list of addresses.
 
 #### 2.0.0
 
 * Commit `73abaf04b1372fa4c43201fb1b8019fe6b0a6f8d`, move `from` into `transaction` object in `signTransaction`. This
-makes the `accounts_signTransaction` identical to the old `AVN_signTransaction`.
+makes the `accounts_signTransaction` identical to the old `avn_signTransaction`.
 
 
 #### 1.0.0

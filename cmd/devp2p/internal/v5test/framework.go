@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package v5test
 
@@ -24,11 +24,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/p2p/discover/v5wire"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/enr"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/p2p/discover/v5wire"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/enr"
 )
 
 // readError represents an error during packet reading.

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // This file contains the implementation for interacting with the Trezor hardware
 // wallets. The wire protocol spec can be found on the SatoshiLabs website:
@@ -27,12 +27,12 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/accounts/usbwallet/trezor"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/accounts/usbwallet/trezor"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/log"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -54,8 +54,8 @@ type trezorDriver struct {
 	device         io.ReadWriter // USB device connection to communicate through
 	version        [3]uint32     // Current version of the Trezor firmware
 	label          string        // Current textual label of the Trezor device
-	pinwait        bool          // Flags whAVNer the device is waiting for PIN entry
-	passphrasewait bool          // Flags whAVNer the device is waiting for passphrase entry
+	pinwait        bool          // Flags whavner the device is waiting for PIN entry
+	passphrasewait bool          // Flags whavner the device is waiting for passphrase entry
 	failure        error         // Any failure that would make the device unusable
 	log            log.Logger    // Contextual logger to tag the trezor with its id
 }
@@ -67,8 +67,8 @@ func newTrezorDriver(logger log.Logger) driver {
 	}
 }
 
-// Status implements accounts.Wallet, always whAVNer the Trezor is opened, closed
-// or whAVNer the Avalanria app was not started on it.
+// Status implements accounts.Wallet, always whavner the Trezor is opened, closed
+// or whavner the Avalanria app was not started on it.
 func (w *trezorDriver) Status() (string, error) {
 	if w.failure != nil {
 		return fmt.Sprintf("Failed: %v", w.failure), w.failure
@@ -278,7 +278,7 @@ func (w *trezorDriver) trezorSign(derivationPath []uint32, tx *types.Transaction
 
 // trezorExchange performs a data exchange with the Trezor wallet, sending it a
 // message and retrieving the response. If multiple responses are possible, the
-// mAVNod will also return the index of the destination object used.
+// mavnod will also return the index of the destination object used.
 func (w *trezorDriver) trezorExchange(req proto.Message, results ...proto.Message) (int, error) {
 	// Construct the original message payload to chunk up
 	data, err := proto.Marshal(req)

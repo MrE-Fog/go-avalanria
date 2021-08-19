@@ -11,35 +11,35 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
-type gAVNrpc struct {
+type gavnrpc struct {
 	name     string
 	rpc      *rpc.Client
-	gAVN     *testgAVN
+	gavn     *testgavn
 	nodeInfo *p2p.NodeInfo
 }
 
-func (g *gAVNrpc) killAndWait() {
-	g.gAVN.Kill()
-	g.gAVN.WaitExit()
+func (g *gavnrpc) killAndWait() {
+	g.gavn.Kill()
+	g.gavn.WaitExit()
 }
 
-func (g *gAVNrpc) callRPC(result interface{}, mAVNod string, args ...interface{}) {
-	if err := g.rpc.Call(&result, mAVNod, args...); err != nil {
-		g.gAVN.Fatalf("callRPC %v: %v", mAVNod, err)
+func (g *gavnrpc) callRPC(result interface{}, mavnod string, args ...interface{}) {
+	if err := g.rpc.Call(&result, mavnod, args...); err != nil {
+		g.gavn.Fatalf("callRPC %v: %v", mavnod, err)
 	}
 }
 
-func (g *gAVNrpc) addPeer(peer *gAVNrpc) {
-	g.gAVN.Logf("%v.addPeer(%v)", g.name, peer.name)
+func (g *gavnrpc) addPeer(peer *gavnrpc) {
+	g.gavn.Logf("%v.addPeer(%v)", g.name, peer.name)
 	enode := peer.getNodeInfo().Enode
 	peerCh := make(chan *p2p.PeerEvent)
 	sub, err := g.rpc.Subscribe(context.Background(), "admin", peerCh, "peerEvents")
 	if err != nil {
-		g.gAVN.Fatalf("subscribe %v: %v", g.name, err)
+		g.gavn.Fatalf("subscribe %v: %v", g.name, err)
 	}
 	defer sub.Unsubscribe()
 	g.callRPC(nil, "admin_addPeer", enode)
@@ -47,16 +47,16 @@ func (g *gAVNrpc) addPeer(peer *gAVNrpc) {
 	timeout := time.After(dur)
 	select {
 	case ev := <-peerCh:
-		g.gAVN.Logf("%v received event: type=%v, peer=%v", g.name, ev.Type, ev.Peer)
+		g.gavn.Logf("%v received event: type=%v, peer=%v", g.name, ev.Type, ev.Peer)
 	case err := <-sub.Err():
-		g.gAVN.Fatalf("%v sub error: %v", g.name, err)
+		g.gavn.Fatalf("%v sub error: %v", g.name, err)
 	case <-timeout:
-		g.gAVN.Error("timeout adding peer after", dur)
+		g.gavn.Error("timeout adding peer after", dur)
 	}
 }
 
 // Use this function instead of `g.nodeInfo` directly
-func (g *gAVNrpc) getNodeInfo() *p2p.NodeInfo {
+func (g *gavnrpc) getNodeInfo() *p2p.NodeInfo {
 	if g.nodeInfo != nil {
 		return g.nodeInfo
 	}
@@ -65,37 +65,37 @@ func (g *gAVNrpc) getNodeInfo() *p2p.NodeInfo {
 	return g.nodeInfo
 }
 
-func (g *gAVNrpc) waitSynced() {
+func (g *gavnrpc) waitSynced() {
 	// Check if it's synced now
 	var result interface{}
-	g.callRPC(&result, "AVN_syncing")
+	g.callRPC(&result, "avn_syncing")
 	syncing, ok := result.(bool)
 	if ok && !syncing {
-		g.gAVN.Logf("%v already synced", g.name)
+		g.gavn.Logf("%v already synced", g.name)
 		return
 	}
 
 	// Actually wait, subscribe to the event
 	ch := make(chan interface{})
-	sub, err := g.rpc.Subscribe(context.Background(), "AVN", ch, "syncing")
+	sub, err := g.rpc.Subscribe(context.Background(), "avn", ch, "syncing")
 	if err != nil {
-		g.gAVN.Fatalf("%v syncing: %v", g.name, err)
+		g.gavn.Fatalf("%v syncing: %v", g.name, err)
 	}
 	defer sub.Unsubscribe()
 	timeout := time.After(4 * time.Second)
 	select {
 	case ev := <-ch:
-		g.gAVN.Log("'syncing' event", ev)
+		g.gavn.Log("'syncing' event", ev)
 		syncing, ok := ev.(bool)
 		if ok && !syncing {
 			break
 		}
-		g.gAVN.Log("Other 'syncing' event", ev)
+		g.gavn.Log("Other 'syncing' event", ev)
 	case err := <-sub.Err():
-		g.gAVN.Fatalf("%v notification: %v", g.name, err)
+		g.gavn.Fatalf("%v notification: %v", g.name, err)
 		break
 	case <-timeout:
-		g.gAVN.Fatalf("%v timeout syncing", g.name)
+		g.gavn.Fatalf("%v timeout syncing", g.name)
 		break
 	}
 }
@@ -128,17 +128,17 @@ func ipcEndpoint(ipcPath, datadir string) string {
 // the pipe filename instead of folder.
 var nextIPC = uint32(0)
 
-func startGAVNWithIpc(t *testing.T, name string, args ...string) *gAVNrpc {
-	ipcName := fmt.Sprintf("gAVN-%d.ipc", atomic.AddUint32(&nextIPC, 1))
+func startGavnWithIpc(t *testing.T, name string, args ...string) *gavnrpc {
+	ipcName := fmt.Sprintf("gavn-%d.ipc", atomic.AddUint32(&nextIPC, 1))
 	args = append([]string{"--networkid=42", "--port=0", "--ipcpath", ipcName}, args...)
 	t.Logf("Starting %v with rpc: %v", name, args)
 
-	g := &gAVNrpc{
+	g := &gavnrpc{
 		name: name,
-		gAVN: runGAVN(t, args...),
+		gavn: runGavn(t, args...),
 	}
-	ipcpath := ipcEndpoint(ipcName, g.gAVN.Datadir)
-	// We can't know exactly how long gAVN will take to start, so we try 10
+	ipcpath := ipcEndpoint(ipcName, g.gavn.Datadir)
+	// We can't know exactly how long gavn will take to start, so we try 10
 	// times over a 5 second period.
 	var err error
 	for i := 0; i < 10; i++ {
@@ -151,27 +151,27 @@ func startGAVNWithIpc(t *testing.T, name string, args ...string) *gAVNrpc {
 	return nil
 }
 
-func initGAVN(t *testing.T) string {
+func initGavn(t *testing.T) string {
 	args := []string{"--networkid=42", "init", "./testdata/clique.json"}
-	t.Logf("Initializing gAVN: %v ", args)
-	g := runGAVN(t, args...)
+	t.Logf("Initializing gavn: %v ", args)
+	g := runGavn(t, args...)
 	datadir := g.Datadir
 	g.WaitExit()
 	return datadir
 }
 
-func startLightServer(t *testing.T) *gAVNrpc {
-	datadir := initGAVN(t)
-	t.Logf("Importing keys to gAVN")
-	runGAVN(t, "--datadir", datadir, "--password", "./testdata/password.txt", "account", "import", "./testdata/key.prv", "--lightkdf").WaitExit()
+func startLightServer(t *testing.T) *gavnrpc {
+	datadir := initGavn(t)
+	t.Logf("Importing keys to gavn")
+	runGavn(t, "--datadir", datadir, "--password", "./testdata/password.txt", "account", "import", "./testdata/key.prv", "--lightkdf").WaitExit()
 	account := "0x02f0d131f1f97aef08aec6e3291b957d9efe7105"
-	server := startGAVNWithIpc(t, "lightserver", "--allow-insecure-unlock", "--datadir", datadir, "--password", "./testdata/password.txt", "--unlock", account, "--mine", "--light.serve=100", "--light.maxpeers=1", "--nodiscover", "--nat=extip:127.0.0.1", "--verbosity=4")
+	server := startGavnWithIpc(t, "lightserver", "--allow-insecure-unlock", "--datadir", datadir, "--password", "./testdata/password.txt", "--unlock", account, "--mine", "--light.serve=100", "--light.maxpeers=1", "--nodiscover", "--nat=extip:127.0.0.1", "--verbosity=4")
 	return server
 }
 
-func startClient(t *testing.T, name string) *gAVNrpc {
-	datadir := initGAVN(t)
-	return startGAVNWithIpc(t, name, "--datadir", datadir, "--nodiscover", "--syncmode=light", "--nat=extip:127.0.0.1", "--verbosity=4")
+func startClient(t *testing.T, name string) *gavnrpc {
+	datadir := initGavn(t)
+	return startGavnWithIpc(t, name, "--datadir", datadir, "--nodiscover", "--syncmode=light", "--nat=extip:127.0.0.1", "--verbosity=4")
 }
 
 func TestPriorityClient(t *testing.T) {
@@ -204,7 +204,7 @@ func TestPriorityClient(t *testing.T) {
 		t.Errorf("Expected: # of prio peers == 1, actual: %v", len(peers))
 	}
 
-	nodes := map[string]*gAVNrpc{
+	nodes := map[string]*gavnrpc{
 		lightServer.getNodeInfo().ID: lightServer,
 		freeCli.getNodeInfo().ID:     freeCli,
 		prioCli.getNodeInfo().ID:     prioCli,

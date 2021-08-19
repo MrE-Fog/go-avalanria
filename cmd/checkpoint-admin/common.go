@@ -1,39 +1,39 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
 import (
 	"strconv"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/accounts/external"
-	"github.com/AVNereum/go-AVNereum/cmd/utils"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/contracts/checkpointoracle"
-	"github.com/AVNereum/go-AVNereum/AVNclient"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/accounts/external"
+	"github.com/avalanria/go-avalanria/cmd/utils"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/contracts/checkpointoracle"
+	"github.com/avalanria/go-avalanria/avnclient"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 
 // newClient creates a client with specified remote URL.
-func newClient(ctx *cli.Context) *AVNclient.Client {
-	client, err := AVNclient.Dial(ctx.GlobalString(nodeURLFlag.Name))
+func newClient(ctx *cli.Context) *avnclient.Client {
+	client, err := avnclient.Dial(ctx.GlobalString(nodeURLFlag.Name))
 	if err != nil {
 		utils.Fatalf("Failed to connect to Avalanria node: %v", err)
 	}
@@ -103,7 +103,7 @@ func newContract(client *rpc.Client) (common.Address, *checkpointoracle.Checkpoi
 	if addr == (common.Address{}) {
 		utils.Fatalf("No specified registrar contract address")
 	}
-	contract, err := checkpointoracle.NewCheckpointOracle(addr, AVNclient.NewClient(client))
+	contract, err := checkpointoracle.NewCheckpointOracle(addr, avnclient.NewClient(client))
 	if err != nil {
 		utils.Fatalf("Failed to setup registrar contract %s: %v", addr, err)
 	}

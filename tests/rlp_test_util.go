@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package tests
 
@@ -24,13 +24,13 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 // RLPTest is the JSON structure of a single RLP test.
 type RLPTest struct {
 	// If the value of In is "INVALID" or "VALID", the test
-	// checks whAVNer Out can be decoded into a value of
+	// checks whavner Out can be decoded into a value of
 	// type interface{}.
 	//
 	// For other JSON values, In is treated as a driver for
@@ -67,7 +67,7 @@ func (t *RLPTest) Run() error {
 		return checkDecodeInterface(outb, t.In == "VALID")
 	}
 
-	// Check whAVNer encoding the value produces the same bytes.
+	// Check whavner encoding the value produces the same bytes.
 	in := translateJSON(t.In)
 	b, err := rlp.EncodeToBytes(in)
 	if err != nil {

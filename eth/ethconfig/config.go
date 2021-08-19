@@ -1,21 +1,21 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package AVNconfig contains the configuration of the AVN and LES protocols.
-package AVNconfig
+// Package avnconfig contains the configuration of the AVN and LES protocols.
+package avnconfig
 
 import (
 	"math/big"
@@ -25,18 +25,18 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/consensus/clique"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/gasprice"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/miner"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/consensus/clique"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/gasprice"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/miner"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 // FullNodeGPO contains default gasprice oracle settings for full node.
@@ -62,8 +62,8 @@ var LightClientGPO = gasprice.Config{
 // Defaults contains default settings for use on the Avalanria main net.
 var Defaults = Config{
 	SyncMode: downloader.SnapSync,
-	Ethash: AVNash.Config{
-		CacheDir:         "AVNash",
+	Ethash: avnash.Config{
+		CacheDir:         "avnash",
 		CachesInMem:      2,
 		CachesOnDisk:     3,
 		CachesLockMmap:   false,
@@ -90,7 +90,7 @@ var Defaults = Config{
 	TxPool:      core.DefaultTxPoolConfig,
 	RPCGasCap:   50000000,
 	GPO:         FullNodeGPO,
-	RPCTxFeeCap: 1, // 1 AVNer
+	RPCTxFeeCap: 1, // 1 avner
 }
 
 func init() {
@@ -110,7 +110,7 @@ func init() {
 			Defaults.Ethash.DatasetDir = filepath.Join(home, "AppData", "Local", "Ethash")
 		}
 	} else {
-		Defaults.Ethash.DatasetDir = filepath.Join(home, ".AVNash")
+		Defaults.Ethash.DatasetDir = filepath.Join(home, ".avnash")
 	}
 }
 
@@ -131,8 +131,8 @@ type Config struct {
 	EthDiscoveryURLs  []string
 	SnapDiscoveryURLs []string
 
-	NoPruning  bool // WhAVNer to disable pruning and flush everything to disk
-	NoPrefetch bool // WhAVNer to disable prefetching and only load state on demand
+	NoPruning  bool // Whavner to disable pruning and flush everything to disk
+	NoPrefetch bool // Whavner to disable prefetching and only load state on demand
 
 	TxLookupLimit uint64 `toml:",omitempty"` // The maximum number of blocks from head whose tx indices are reserved.
 
@@ -144,14 +144,14 @@ type Config struct {
 	LightIngress       int  `toml:",omitempty"` // Incoming bandwidth limit for light servers
 	LightEgress        int  `toml:",omitempty"` // Outgoing bandwidth limit for light servers
 	LightPeers         int  `toml:",omitempty"` // Maximum number of LES client peers
-	LightNoPrune       bool `toml:",omitempty"` // WhAVNer to disable light chain pruning
-	LightNoSyncServe   bool `toml:",omitempty"` // WhAVNer to serve light clients before syncing
-	SyncFromCheckpoint bool `toml:",omitempty"` // WhAVNer to sync the header chain from the configured checkpoint
+	LightNoPrune       bool `toml:",omitempty"` // Whavner to disable light chain pruning
+	LightNoSyncServe   bool `toml:",omitempty"` // Whavner to serve light clients before syncing
+	SyncFromCheckpoint bool `toml:",omitempty"` // Whavner to sync the header chain from the configured checkpoint
 
 	// Ultra Light client options
 	UltraLightServers      []string `toml:",omitempty"` // List of trusted ultra light servers
 	UltraLightFraction     int      `toml:",omitempty"` // Percentage of trusted servers to accept an announcement
-	UltraLightOnlyAnnounce bool     `toml:",omitempty"` // WhAVNer to only announce headers, or also serve them
+	UltraLightOnlyAnnounce bool     `toml:",omitempty"` // Whavner to only announce headers, or also serve them
 
 	// Database options
 	SkipBcVersionCheck bool `toml:"-"`
@@ -171,7 +171,7 @@ type Config struct {
 	Miner miner.Config
 
 	// Ethash options
-	Ethash AVNash.Config
+	Ethash avnash.Config
 
 	// Transaction pool options
 	TxPool core.TxPoolConfig
@@ -185,11 +185,11 @@ type Config struct {
 	// Miscellaneous options
 	DocRoot string `toml:"-"`
 
-	// RPCGasCap is the global gas cap for AVN-call variants.
+	// RPCGasCap is the global gas cap for avn-call variants.
 	RPCGasCap uint64
 
 	// RPCTxFeeCap is the global transaction fee(price * gaslimit) cap for
-	// send-transction variants. The unit is AVNer.
+	// send-transction variants. The unit is avner.
 	RPCTxFeeCap float64
 
 	// Checkpoint is a hardcoded checkpoint which can be nil.
@@ -203,21 +203,21 @@ type Config struct {
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain configuration.
-func CreateConsensusEngine(stack *node.Node, chainConfig *params.ChainConfig, config *AVNash.Config, notify []string, noverify bool, db AVNdb.Database) consensus.Engine {
+func CreateConsensusEngine(stack *node.Node, chainConfig *params.ChainConfig, config *avnash.Config, notify []string, noverify bool, db avndb.Database) consensus.Engine {
 	// If proof-of-authority is requested, set it up
 	if chainConfig.Clique != nil {
 		return clique.New(chainConfig.Clique, db)
 	}
 	// Otherwise assume proof-of-work
 	switch config.PowMode {
-	case AVNash.ModeFake:
+	case avnash.ModeFake:
 		log.Warn("Ethash used in fake mode")
-	case AVNash.ModeTest:
+	case avnash.ModeTest:
 		log.Warn("Ethash used in test mode")
-	case AVNash.ModeShared:
+	case avnash.ModeShared:
 		log.Warn("Ethash used in shared mode")
 	}
-	engine := AVNash.New(AVNash.Config{
+	engine := avnash.New(avnash.Config{
 		PowMode:          config.PowMode,
 		CacheDir:         stack.ResolvePath(config.CacheDir),
 		CachesInMem:      config.CachesInMem,

@@ -1,32 +1,32 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Contains all the wrappers from the accounts package to support client side key
 // management on mobile platforms.
 
-package gAVN
+package gavn
 
 import (
 	"errors"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/accounts/keystore"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/accounts/keystore"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/crypto"
 )
 
 const (
@@ -93,7 +93,7 @@ func NewKeyStore(keydir string, scryptN, scryptP int) *KeyStore {
 	return &KeyStore{keystore: keystore.NewKeyStore(keydir, scryptN, scryptP)}
 }
 
-// HasAddress reports whAVNer a key with the given address is present.
+// HasAddress reports whavner a key with the given address is present.
 func (ks *KeyStore) HasAddress(address *Address) bool {
 	return ks.keystore.HasAddress(address.address)
 }

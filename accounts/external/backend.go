@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package external
 
@@ -21,15 +21,15 @@ import (
 	"math/big"
 	"sync"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/rpc"
-	"github.com/AVNereum/go-AVNereum/signer/core/apitypes"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/rpc"
+	"github.com/avalanria/go-avalanria/signer/core/apitypes"
 )
 
 type ExternalBackend struct {
@@ -148,7 +148,7 @@ func (api *ExternalSigner) Derive(path accounts.DerivationPath, pin bool) (accou
 	return accounts.Account{}, fmt.Errorf("operation not supported on external signers")
 }
 
-func (api *ExternalSigner) SelfDerive(bases []accounts.DerivationPath, chain AVNereum.ChainStateReader) {
+func (api *ExternalSigner) SelfDerive(bases []accounts.DerivationPath, chain avalanria.ChainStateReader) {
 	log.Error("operation SelfDerive not supported on external signers")
 }
 
@@ -184,7 +184,7 @@ func (api *ExternalSigner) SignText(account accounts.Account, text []byte) ([]by
 	}
 	if signature[64] == 27 || signature[64] == 28 {
 		// If clef is used as a backend, it may already have transformed
-		// the signature to AVNereum-type signature.
+		// the signature to avalanria-type signature.
 		signature[64] -= 27 // Transform V from Avalanria-legacy to 0/1
 	}
 	return signature, nil

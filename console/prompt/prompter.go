@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package prompt
 
@@ -27,7 +27,7 @@ import (
 // Only this reader may be used for input because it keeps an internal buffer.
 var Stdin = newTerminalPrompter()
 
-// UserPrompter defines the mAVNods needed by the console to prompt the user for
+// UserPrompter defines the mavnods needed by the console to prompt the user for
 // various types of inputs.
 type UserPrompter interface {
 	// PromptInput displays the given prompt to the user and requests some textual
@@ -36,7 +36,7 @@ type UserPrompter interface {
 
 	// PromptPassword displays the given prompt to the user and requests some textual
 	// data to be entered, but one which must not be echoed out into the terminal.
-	// The mAVNod returns the input provided by the user.
+	// The mavnod returns the input provided by the user.
 	PromptPassword(prompt string) (string, error)
 
 	// PromptConfirm displays the given prompt to the user and requests a boolean
@@ -121,7 +121,7 @@ func (p *terminalPrompter) PromptInput(prompt string) (string, error) {
 
 // PromptPassword displays the given prompt to the user and requests some textual
 // data to be entered, but one which must not be echoed out into the terminal.
-// The mAVNod returns the input provided by the user.
+// The mavnod returns the input provided by the user.
 func (p *terminalPrompter) PromptPassword(prompt string) (passwd string, err error) {
 	if p.supported {
 		p.rawMode.ApplyMode()

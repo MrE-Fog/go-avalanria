@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // This file contains the implementation for interacting with the Trezor hardware
 // wallets. The wire protocol spec can be found on the SatoshiLabs website:
@@ -42,7 +42,7 @@
 //   - Grab the latest Go plugin `go get -u github.com/golang/protobuf/protoc-gen-go`
 //   - Vendor in the latest Go plugin `govendor fetch github.com/golang/protobuf/...`
 
-//go:generate protoc -I/usr/local/include:. --go_out=import_path=trezor:. messages.proto messages-common.proto messages-management.proto messages-AVNereum.proto
+//go:generate protoc -I/usr/local/include:. --go_out=import_path=trezor:. messages.proto messages-common.proto messages-management.proto messages-avalanria.proto
 
 // Package trezor contains the wire protocol.
 package trezor
@@ -54,7 +54,7 @@ import (
 )
 
 // Type returns the protocol buffer type number of a specific message. If the
-// message is nil, this mAVNod panics!
+// message is nil, this mavnod panics!
 func Type(msg proto.Message) uint16 {
 	return uint16(MessageType_value["MessageType_"+reflect.TypeOf(msg).Elem().Name()])
 }

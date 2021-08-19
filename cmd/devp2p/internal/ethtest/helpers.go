@@ -1,20 +1,20 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNtest
+package avntest
 
 import (
 	"fmt"
@@ -24,13 +24,13 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/internal/utesting"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/rlpx"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/internal/utesting"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/rlpx"
 )
 
 var (
@@ -43,7 +43,7 @@ var (
 	timeout = 20 * time.Second
 )
 
-// Is_66 checks if the node supports the AVN66 protocol version,
+// Is_66 checks if the node supports the avn66 protocol version,
 // and if not, exists the test suite
 func (s *Suite) Is_66(t *utesting.T) {
 	conn, err := s.dial66()
@@ -76,22 +76,22 @@ func (s *Suite) dial() (*Conn, error) {
 	}
 	// set default p2p capabilities
 	conn.caps = []p2p.Cap{
-		{Name: "AVN", Version: 64},
-		{Name: "AVN", Version: 65},
+		{Name: "avn", Version: 64},
+		{Name: "avn", Version: 65},
 	}
 	conn.ourHighestProtoVersion = 65
 	return &conn, nil
 }
 
 // dial66 attempts to dial the given node and perform a handshake,
-// returning the created Conn with additional AVN66 capabilities if
+// returning the created Conn with additional avn66 capabilities if
 // successful
 func (s *Suite) dial66() (*Conn, error) {
 	conn, err := s.dial()
 	if err != nil {
 		return nil, fmt.Errorf("dial failed: %v", err)
 	}
-	conn.caps = append(conn.caps, p2p.Cap{Name: "AVN", Version: 66})
+	conn.caps = append(conn.caps, p2p.Cap{Name: "avn", Version: 66})
 	conn.ourHighestProtoVersion = 66
 	return conn, nil
 }
@@ -131,7 +131,7 @@ func (c *Conn) handshake() error {
 		}
 		c.negotiateEthProtocol(msg.Caps)
 		if c.negotiatedProtoVersion == 0 {
-			return fmt.Errorf("unexpected AVN protocol version")
+			return fmt.Errorf("unexpected avn protocol version")
 		}
 		return nil
 	default:
@@ -139,12 +139,12 @@ func (c *Conn) handshake() error {
 	}
 }
 
-// negotiateEthProtocol sets the Conn's AVN protocol version to highest
+// negotiateEthProtocol sets the Conn's avn protocol version to highest
 // advertised capability from peer.
 func (c *Conn) negotiateEthProtocol(caps []p2p.Cap) {
 	var highestEthVersion uint
 	for _, capability := range caps {
-		if capability.Name != "AVN" {
+		if capability.Name != "avn" {
 			continue
 		}
 		if capability.Version > highestEthVersion && capability.Version <= c.ourHighestProtoVersion {
@@ -189,9 +189,9 @@ loop:
 			return nil, fmt.Errorf("bad status message: %s", pretty.Sdump(msg))
 		}
 	}
-	// make sure AVN protocol version is set for negotiation
+	// make sure avn protocol version is set for negotiation
 	if c.negotiatedProtoVersion == 0 {
-		return nil, fmt.Errorf("AVN protocol version must be set in Conn")
+		return nil, fmt.Errorf("avn protocol version must be set in Conn")
 	}
 	if status == nil {
 		// default status message
@@ -267,7 +267,7 @@ func (c *Conn) readAndServe(chain *Chain, timeout time.Duration) Message {
 	return errorf("no message received within %v", timeout)
 }
 
-// readAndServe66 serves AVN66 GetBlockHeaders requests while waiting
+// readAndServe66 serves avn66 GetBlockHeaders requests while waiting
 // on another message from the node.
 func (c *Conn) readAndServe66(chain *Chain, timeout time.Duration) (uint64, Message) {
 	start := time.Now()
@@ -284,9 +284,9 @@ func (c *Conn) readAndServe66(chain *Chain, timeout time.Duration) (uint64, Mess
 			if err != nil {
 				return 0, errorf("could not get headers for inbound header request: %v", err)
 			}
-			resp := &AVN.BlockHeadersPacket66{
+			resp := &avn.BlockHeadersPacket66{
 				RequestId:          reqID,
-				BlockHeadersPacket: AVN.BlockHeadersPacket(headers),
+				BlockHeadersPacket: avn.BlockHeadersPacket(headers),
 			}
 			if err := c.Write66(resp, BlockHeaders{}.Code()); err != nil {
 				return 0, errorf("could not write to connection: %v", err)
@@ -302,7 +302,7 @@ func (c *Conn) readAndServe66(chain *Chain, timeout time.Duration) (uint64, Mess
 func (c *Conn) headersRequest(request *GetBlockHeaders, chain *Chain, isEth66 bool, reqID uint64) (BlockHeaders, error) {
 	defer c.SetReadDeadline(time.Time{})
 	c.SetReadDeadline(time.Now().Add(20 * time.Second))
-	// if on AVN66 connection, perform AVN66 GetBlockHeaders request
+	// if on avn66 connection, perform avn66 GetBlockHeaders request
 	if isEth66 {
 		return getBlockHeaders66(chain, c, request, reqID)
 	}
@@ -317,11 +317,11 @@ func (c *Conn) headersRequest(request *GetBlockHeaders, chain *Chain, isEth66 bo
 	}
 }
 
-// getBlockHeaders66 executes the given `GetBlockHeaders` request over the AVN66 protocol.
+// getBlockHeaders66 executes the given `GetBlockHeaders` request over the avn66 protocol.
 func getBlockHeaders66(chain *Chain, conn *Conn, request *GetBlockHeaders, id uint64) (BlockHeaders, error) {
 	// write request
-	packet := AVN.GetBlockHeadersPacket(*request)
-	req := &AVN.GetBlockHeadersPacket66{
+	packet := avn.GetBlockHeadersPacket(*request)
+	req := &avn.GetBlockHeadersPacket66{
 		RequestId:             id,
 		GetBlockHeadersPacket: &packet,
 	}
@@ -337,7 +337,7 @@ func getBlockHeaders66(chain *Chain, conn *Conn, request *GetBlockHeaders, id ui
 	return headers, nil
 }
 
-// headersMatch returns whAVNer the received headers match the given request
+// headersMatch returns whavner the received headers match the given request
 func headersMatch(expected BlockHeaders, headers BlockHeaders) bool {
 	return reflect.DeepEqual(expected, headers)
 }
@@ -430,7 +430,7 @@ func (s *Suite) waitForBlockImport(conn *Conn, block *types.Block, isEth66 bool)
 	conn.SetReadDeadline(time.Now().Add(20 * time.Second))
 	// create request
 	req := &GetBlockHeaders{
-		Origin: AVN.HashOrNumber{
+		Origin: avn.HashOrNumber{
 			Hash: block.Hash(),
 		},
 		Amount: 1,
@@ -444,9 +444,9 @@ func (s *Suite) waitForBlockImport(conn *Conn, block *types.Block, isEth66 bool)
 		)
 		if isEth66 {
 			requestID := uint64(54)
-			headers, err = conn.headersRequest(req, s.chain, AVN66, requestID)
+			headers, err = conn.headersRequest(req, s.chain, avn66, requestID)
 		} else {
-			headers, err = conn.headersRequest(req, s.chain, AVN65, 0)
+			headers, err = conn.headersRequest(req, s.chain, avn65, 0)
 		}
 		if err != nil {
 			return fmt.Errorf("GetBlockHeader request failed: %v", err)
@@ -540,24 +540,24 @@ func (s *Suite) maliciousHandshakes(t *utesting.T, isEth66 bool) error {
 		{
 			Version: 5,
 			Caps: []p2p.Cap{
-				{Name: "AVN", Version: 64},
-				{Name: "AVN", Version: 65},
+				{Name: "avn", Version: 64},
+				{Name: "avn", Version: 65},
 			},
 			ID: append(pub0, byte(0)),
 		},
 		{
 			Version: 5,
 			Caps: []p2p.Cap{
-				{Name: "AVN", Version: 64},
-				{Name: "AVN", Version: 65},
+				{Name: "avn", Version: 64},
+				{Name: "avn", Version: 65},
 			},
 			ID: append(pub0, pub0...),
 		},
 		{
 			Version: 5,
 			Caps: []p2p.Cap{
-				{Name: "AVN", Version: 64},
-				{Name: "AVN", Version: 65},
+				{Name: "avn", Version: 64},
+				{Name: "avn", Version: 65},
 			},
 			ID: largeBuffer(2),
 		},
@@ -682,9 +682,9 @@ func (s *Suite) hashAnnounce(isEth66 bool) error {
 				pretty.Sdump(announcement),
 				pretty.Sdump(blockHeaderReq))
 		}
-		if err := sendConn.Write66(&AVN.BlockHeadersPacket66{
+		if err := sendConn.Write66(&avn.BlockHeadersPacket66{
 			RequestId: id,
-			BlockHeadersPacket: AVN.BlockHeadersPacket{
+			BlockHeadersPacket: avn.BlockHeadersPacket{
 				nextBlock.Header(),
 			},
 		}, BlockHeaders{}.Code()); err != nil {

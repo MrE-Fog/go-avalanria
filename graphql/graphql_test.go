@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package graphql
 
@@ -25,16 +25,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/params"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -236,14 +236,14 @@ func createNode(t *testing.T, gqlEnabled bool, txEnabled bool) *node.Node {
 
 func createGQLService(t *testing.T, stack *node.Node) {
 	// create backend
-	AVNConf := &AVNconfig.Config{
+	avnConf := &avnconfig.Config{
 		Genesis: &core.Genesis{
 			Config:     params.AllEthashProtocolChanges,
 			GasLimit:   11500000,
 			Difficulty: big.NewInt(1048576),
 		},
-		Ethash: AVNash.Config{
-			PowMode: AVNash.ModeFake,
+		Ethash: avnash.Config{
+			PowMode: avnash.ModeFake,
 		},
 		NetworkId:               1337,
 		TrieCleanCache:          5,
@@ -253,19 +253,19 @@ func createGQLService(t *testing.T, stack *node.Node) {
 		TrieTimeout:             60 * time.Minute,
 		SnapshotCache:           5,
 	}
-	AVNBackend, err := AVN.New(stack, AVNConf)
+	avnBackend, err := avn.New(stack, avnConf)
 	if err != nil {
-		t.Fatalf("could not create AVN backend: %v", err)
+		t.Fatalf("could not create avn backend: %v", err)
 	}
 	// Create some blocks and import them
-	chain, _ := core.GenerateChain(params.AllEthashProtocolChanges, AVNBackend.BlockChain().Genesis(),
-		AVNash.NewFaker(), AVNBackend.ChainDb(), 10, func(i int, gen *core.BlockGen) {})
-	_, err = AVNBackend.BlockChain().InsertChain(chain)
+	chain, _ := core.GenerateChain(params.AllEthashProtocolChanges, avnBackend.BlockChain().Genesis(),
+		avnash.NewFaker(), avnBackend.ChainDb(), 10, func(i int, gen *core.BlockGen) {})
+	_, err = avnBackend.BlockChain().InsertChain(chain)
 	if err != nil {
 		t.Fatalf("could not create import blocks: %v", err)
 	}
 	// create gql service
-	err = New(stack, AVNBackend.APIBackend, []string{}, []string{})
+	err = New(stack, avnBackend.APIBackend, []string{}, []string{})
 	if err != nil {
 		t.Fatalf("could not create graphql service: %v", err)
 	}
@@ -278,7 +278,7 @@ func createGQLServiceWithTransactions(t *testing.T, stack *node.Node) {
 	funds := big.NewInt(1000000000000000)
 	dad := common.HexToAddress("0x0000000000000000000000000000000000000dad")
 
-	AVNConf := &AVNconfig.Config{
+	avnConf := &avnconfig.Config{
 		Genesis: &core.Genesis{
 			Config:     params.AllEthashProtocolChanges,
 			GasLimit:   11500000,
@@ -299,8 +299,8 @@ func createGQLServiceWithTransactions(t *testing.T, stack *node.Node) {
 			},
 			BaseFee: big.NewInt(params.InitialBaseFee),
 		},
-		Ethash: AVNash.Config{
-			PowMode: AVNash.ModeFake,
+		Ethash: avnash.Config{
+			PowMode: avnash.ModeFake,
 		},
 		NetworkId:               1337,
 		TrieCleanCache:          5,
@@ -311,11 +311,11 @@ func createGQLServiceWithTransactions(t *testing.T, stack *node.Node) {
 		SnapshotCache:           5,
 	}
 
-	AVNBackend, err := AVN.New(stack, AVNConf)
+	avnBackend, err := avn.New(stack, avnConf)
 	if err != nil {
-		t.Fatalf("could not create AVN backend: %v", err)
+		t.Fatalf("could not create avn backend: %v", err)
 	}
-	signer := types.LatestSigner(AVNConf.Genesis.Config)
+	signer := types.LatestSigner(avnConf.Genesis.Config)
 
 	legacyTx, _ := types.SignNewTx(key, signer, &types.LegacyTx{
 		Nonce:    uint64(0),
@@ -325,7 +325,7 @@ func createGQLServiceWithTransactions(t *testing.T, stack *node.Node) {
 		GasPrice: big.NewInt(params.InitialBaseFee),
 	})
 	envelopTx, _ := types.SignNewTx(key, signer, &types.AccessListTx{
-		ChainID:  AVNConf.Genesis.Config.ChainID,
+		ChainID:  avnConf.Genesis.Config.ChainID,
 		Nonce:    uint64(1),
 		To:       &dad,
 		Gas:      30000,
@@ -338,19 +338,19 @@ func createGQLServiceWithTransactions(t *testing.T, stack *node.Node) {
 	})
 
 	// Create some blocks and import them
-	chain, _ := core.GenerateChain(params.AllEthashProtocolChanges, AVNBackend.BlockChain().Genesis(),
-		AVNash.NewFaker(), AVNBackend.ChainDb(), 1, func(i int, b *core.BlockGen) {
+	chain, _ := core.GenerateChain(params.AllEthashProtocolChanges, avnBackend.BlockChain().Genesis(),
+		avnash.NewFaker(), avnBackend.ChainDb(), 1, func(i int, b *core.BlockGen) {
 			b.SetCoinbase(common.Address{1})
 			b.AddTx(legacyTx)
 			b.AddTx(envelopTx)
 		})
 
-	_, err = AVNBackend.BlockChain().InsertChain(chain)
+	_, err = avnBackend.BlockChain().InsertChain(chain)
 	if err != nil {
 		t.Fatalf("could not create import blocks: %v", err)
 	}
 	// create gql service
-	err = New(stack, AVNBackend.APIBackend, []string{}, []string{})
+	err = New(stack, avnBackend.APIBackend, []string{}, []string{})
 	if err != nil {
 		t.Fatalf("could not create graphql service: %v", err)
 	}

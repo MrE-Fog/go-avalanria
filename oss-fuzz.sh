@@ -27,7 +27,7 @@
 # $LIB_FUZZING_ENGINE   C++ compiler argument to link fuzz target against the prebuilt engine library (e.g. libFuzzer).
 
 # This sets the -coverpgk for the coverage report when the corpus is executed through go test
-coverpkg="github.com/AVNereum/go-AVNereum/..."
+coverpkg="github.com/avalanria/go-avalanria/..."
 
 function coverbuild {
   path=$1
@@ -61,11 +61,11 @@ DOG
 
 function compile_fuzzer {
   # Inputs:
-  # $1: The package to fuzz, within go-AVNereum
+  # $1: The package to fuzz, within go-avalanria
   # $2: The name of the fuzzing function
   # $3: The name to give to the final fuzzing-binary
 
-  path=$GOPATH/src/github.com/AVNereum/go-AVNereum/$1
+  path=$GOPATH/src/github.com/avalanria/go-avalanria/$1
   func=$2
   fuzzer=$3
 

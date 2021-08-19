@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 // p2psim provides a command-line client for a simulation HTTP API.
 //
@@ -45,12 +45,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/simulations"
-	"github.com/AVNereum/go-AVNereum/p2p/simulations/adapters"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/simulations"
+	"github.com/avalanria/go-avalanria/p2p/simulations/adapters"
+	"github.com/avalanria/go-avalanria/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -167,13 +167,13 @@ func main() {
 				},
 				{
 					Name:      "rpc",
-					ArgsUsage: "<node> <mAVNod> [<args>]",
-					Usage:     "call a node RPC mAVNod",
+					ArgsUsage: "<node> <mavnod> [<args>]",
+					Usage:     "call a node RPC mavnod",
 					Action:    rpcNode,
 					Flags: []cli.Flag{
 						cli.BoolFlag{
 							Name:  "subscribe",
-							Usage: "mAVNod is a subscription",
+							Usage: "mavnod is a subscription",
 						},
 					},
 				},
@@ -384,32 +384,32 @@ func rpcNode(ctx *cli.Context) error {
 		return cli.ShowCommandHelp(ctx, ctx.Command.Name)
 	}
 	nodeName := args[0]
-	mAVNod := args[1]
+	mavnod := args[1]
 	rpcClient, err := client.RPCClient(context.Background(), nodeName)
 	if err != nil {
 		return err
 	}
 	if ctx.Bool("subscribe") {
-		return rpcSubscribe(rpcClient, ctx.App.Writer, mAVNod, args[3:]...)
+		return rpcSubscribe(rpcClient, ctx.App.Writer, mavnod, args[3:]...)
 	}
 	var result interface{}
 	params := make([]interface{}, len(args[3:]))
 	for i, v := range args[3:] {
 		params[i] = v
 	}
-	if err := rpcClient.Call(&result, mAVNod, params...); err != nil {
+	if err := rpcClient.Call(&result, mavnod, params...); err != nil {
 		return err
 	}
 	return json.NewEncoder(ctx.App.Writer).Encode(result)
 }
 
-func rpcSubscribe(client *rpc.Client, out io.Writer, mAVNod string, args ...string) error {
-	parts := strings.SplitN(mAVNod, "_", 2)
+func rpcSubscribe(client *rpc.Client, out io.Writer, mavnod string, args ...string) error {
+	parts := strings.SplitN(mavnod, "_", 2)
 	namespace := parts[0]
-	mAVNod = parts[1]
+	mavnod = parts[1]
 	ch := make(chan interface{})
 	subArgs := make([]interface{}, len(args)+1)
-	subArgs[0] = mAVNod
+	subArgs[0] = mavnod
 	for i, v := range args {
 		subArgs[i+1] = v
 	}

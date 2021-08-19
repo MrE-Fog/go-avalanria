@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package rlpx implements the RLPx transport protocol.
 package rlpx
@@ -34,9 +34,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/crypto/ecies"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/crypto/ecies"
+	"github.com/avalanria/go-avalanria/rlp"
 	"github.com/golang/snappy"
 	"golang.org/x/crypto/sha3"
 )
@@ -44,7 +44,7 @@ import (
 // Conn is an RLPx network connection. It wraps a low-level network connection. The
 // underlying connection should not be used for other activity when it is wrapped by Conn.
 //
-// Before sending messages, a handshake must be performed by calling the Handshake mAVNod.
+// Before sending messages, a handshake must be performed by calling the Handshake mavnod.
 // This type is not generally safe for concurrent use, but reading and writing of messages
 // may happen concurrently after the handshake.
 type Conn struct {
@@ -207,7 +207,7 @@ func (h *sessionState) readFrame(conn io.Reader) ([]byte, error) {
 // Write writes a message to the connection.
 //
 // Write returns the written size of the message data. This may be less than or equal to
-// len(data) depending on whAVNer snappy compression is enabled.
+// len(data) depending on whavner snappy compression is enabled.
 func (c *Conn) Write(code uint64, data []byte) (uint32, error) {
 	if c.session == nil {
 		panic("can't WriteMsg before handshake")

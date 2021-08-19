@@ -1,18 +1,18 @@
-// Copyright 2021 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2021 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package tracers
 
@@ -28,20 +28,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 const (
@@ -66,7 +66,7 @@ type Backend interface {
 	RPCGasCap() uint64
 	ChainConfig() *params.ChainConfig
 	Engine() consensus.Engine
-	ChainDb() AVNdb.Database
+	ChainDb() avndb.Database
 	StateAtBlock(ctx context.Context, block *types.Block, reexec uint64, base *state.StateDB, checkLive bool) (*state.StateDB, error)
 	StateAtTransaction(ctx context.Context, block *types.Block, txIndex int, reexec uint64) (core.Message, vm.BlockContext, *state.StateDB, error)
 }
@@ -76,7 +76,7 @@ type API struct {
 	backend Backend
 }
 
-// NewAPI creates a new API definition for the tracing mAVNods of the Avalanria service.
+// NewAPI creates a new API definition for the tracing mavnods of the Avalanria service.
 func NewAPI(backend Backend) *API {
 	return &API{backend: backend}
 }
@@ -168,7 +168,7 @@ type TraceCallConfig struct {
 	Tracer         *string
 	Timeout        *string
 	Reexec         *uint64
-	StateOverrides *AVNapi.StateOverride
+	StateOverrides *avnapi.StateOverride
 }
 
 // StdTraceConfig holds extra parameters to standard-json trace functions.
@@ -677,7 +677,7 @@ func (api *API) standardTraceBlockToFile(ctx context.Context, block *types.Block
 	return dumps, nil
 }
 
-// containsTx reports whAVNer the transaction with a certain hash
+// containsTx reports whavner the transaction with a certain hash
 // is contained within the specified block.
 func containsTx(block *types.Block, hash common.Hash) bool {
 	for _, tx := range block.Transactions() {
@@ -719,11 +719,11 @@ func (api *API) TraceTransaction(ctx context.Context, hash common.Hash, config *
 	return api.traceTx(ctx, msg, txctx, vmctx, statedb, config)
 }
 
-// TraceCall lets you trace a given AVN_call. It collects the structured logs
+// TraceCall lets you trace a given avn_call. It collects the structured logs
 // created during the execution of EVM if the given transaction was added on
 // top of the provided block and returns them as a JSON object.
 // You can provide -2 as a block number to trace on top of the pending block.
-func (api *API) TraceCall(ctx context.Context, args AVNapi.TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, config *TraceCallConfig) (interface{}, error) {
+func (api *API) TraceCall(ctx context.Context, args avnapi.TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, config *TraceCallConfig) (interface{}, error) {
 	// Try to retrieve the specified block
 	var (
 		err   error
@@ -831,11 +831,11 @@ func (api *API) traceTx(ctx context.Context, message core.Message, txctx *Contex
 		if len(result.Revert()) > 0 {
 			returnVal = fmt.Sprintf("%x", result.Revert())
 		}
-		return &AVNapi.ExecutionResult{
+		return &avnapi.ExecutionResult{
 			Gas:         result.UsedGas,
 			Failed:      result.Failed(),
 			ReturnValue: returnVal,
-			StructLogs:  AVNapi.FormatLogs(tracer.StructLogs()),
+			StructLogs:  avnapi.FormatLogs(tracer.StructLogs()),
 		}, nil
 
 	case *Tracer:

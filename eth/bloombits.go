@@ -1,26 +1,26 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/bitutil"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
+	"github.com/avalanria/go-avalanria/common/bitutil"
+	"github.com/avalanria/go-avalanria/core/rawdb"
 )
 
 const (
@@ -43,20 +43,20 @@ const (
 
 // startBloomHandlers starts a batch of goroutines to accept bloom bit database
 // retrievals from possibly a range of filters and serving the data to satisfy.
-func (AVN *Avalanria) startBloomHandlers(sectionSize uint64) {
+func (avn *Avalanria) startBloomHandlers(sectionSize uint64) {
 	for i := 0; i < bloomServiceThreads; i++ {
 		go func() {
 			for {
 				select {
-				case <-AVN.closeBloomHandler:
+				case <-avn.closeBloomHandler:
 					return
 
-				case request := <-AVN.bloomRequests:
+				case request := <-avn.bloomRequests:
 					task := <-request
 					task.Bitsets = make([][]byte, len(task.Sections))
 					for i, section := range task.Sections {
-						head := rawdb.ReadCanonicalHash(AVN.chainDb, (section+1)*sectionSize-1)
-						if compVector, err := rawdb.ReadBloomBits(AVN.chainDb, task.Bit, section, head); err == nil {
+						head := rawdb.ReadCanonicalHash(avn.chainDb, (section+1)*sectionSize-1)
+						if compVector, err := rawdb.ReadBloomBits(avn.chainDb, task.Bit, section, head); err == nil {
 							if blob, err := bitutil.DecompressBytes(compVector, int(sectionSize/8)); err == nil {
 								task.Bitsets[i] = blob
 							} else {

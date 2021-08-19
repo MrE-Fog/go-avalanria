@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -27,14 +27,14 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/AVNereum/go-AVNereum/cmd/utils"
-	"github.com/AVNereum/go-AVNereum/AVN/catalyst"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/cmd/utils"
+	"github.com/avalanria/go-avalanria/avn/catalyst"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/params"
 	"github.com/naoina/toml"
 )
 
@@ -77,18 +77,18 @@ var tomlSettings = toml.Config{
 	},
 }
 
-type AVNstatsConfig struct {
+type avnstatsConfig struct {
 	URL string `toml:",omitempty"`
 }
 
-type gAVNConfig struct {
-	Eth      AVNconfig.Config
+type gavnConfig struct {
+	Eth      avnconfig.Config
 	Node     node.Config
-	Ethstats AVNstatsConfig
+	Ethstats avnstatsConfig
 	Metrics  metrics.Config
 }
 
-func loadConfig(file string, cfg *gAVNConfig) error {
+func loadConfig(file string, cfg *gavnConfig) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return err
@@ -107,17 +107,17 @@ func defaultNodeConfig() node.Config {
 	cfg := node.DefaultConfig
 	cfg.Name = clientIdentifier
 	cfg.Version = params.VersionWithCommit(gitCommit, gitDate)
-	cfg.HTTPModules = append(cfg.HTTPModules, "AVN")
-	cfg.WSModules = append(cfg.WSModules, "AVN")
-	cfg.IPCPath = "gAVN.ipc"
+	cfg.HTTPModules = append(cfg.HTTPModules, "avn")
+	cfg.WSModules = append(cfg.WSModules, "avn")
+	cfg.IPCPath = "gavn.ipc"
 	return cfg
 }
 
-// makeConfigNode loads gAVN configuration and creates a blank node instance.
-func makeConfigNode(ctx *cli.Context) (*node.Node, gAVNConfig) {
+// makeConfigNode loads gavn configuration and creates a blank node instance.
+func makeConfigNode(ctx *cli.Context) (*node.Node, gavnConfig) {
 	// Load defaults.
-	cfg := gAVNConfig{
-		Eth:     AVNconfig.Defaults,
+	cfg := gavnConfig{
+		Eth:     avnconfig.Defaults,
 		Node:    defaultNodeConfig(),
 		Metrics: metrics.DefaultConfig,
 	}
@@ -144,20 +144,20 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gAVNConfig) {
 	return stack, cfg
 }
 
-// makeFullNode loads gAVN configuration and creates the Avalanria backend.
-func makeFullNode(ctx *cli.Context) (*node.Node, AVNapi.Backend) {
+// makeFullNode loads gavn configuration and creates the Avalanria backend.
+func makeFullNode(ctx *cli.Context) (*node.Node, avnapi.Backend) {
 	stack, cfg := makeConfigNode(ctx)
 	if ctx.GlobalIsSet(utils.OverrideLondonFlag.Name) {
 		cfg.Eth.OverrideLondon = new(big.Int).SetUint64(ctx.GlobalUint64(utils.OverrideLondonFlag.Name))
 	}
-	backend, AVN := utils.RegisterEthService(stack, &cfg.Eth)
+	backend, avn := utils.RegisterEthService(stack, &cfg.Eth)
 
 	// Configure catalyst.
 	if ctx.GlobalBool(utils.CatalystFlag.Name) {
-		if AVN == nil {
+		if avn == nil {
 			utils.Fatalf("Catalyst does not work in light client mode.")
 		}
-		if err := catalyst.Register(stack, AVN); err != nil {
+		if err := catalyst.Register(stack, avn); err != nil {
 			utils.Fatalf("%v", err)
 		}
 	}
@@ -202,7 +202,7 @@ func dumpConfig(ctx *cli.Context) error {
 	return nil
 }
 
-func applyMetricConfig(ctx *cli.Context, cfg *gAVNConfig) {
+func applyMetricConfig(ctx *cli.Context, cfg *gavnConfig) {
 	if ctx.GlobalIsSet(utils.MetricsEnabledFlag.Name) {
 		cfg.Metrics.Enabled = ctx.GlobalBool(utils.MetricsEnabledFlag.Name)
 	}
@@ -237,9 +237,9 @@ func applyMetricConfig(ctx *cli.Context, cfg *gAVNConfig) {
 
 func deprecated(field string) bool {
 	switch field {
-	case "AVNconfig.Config.EVMInterpreter":
+	case "avnconfig.Config.EVMInterpreter":
 		return true
-	case "AVNconfig.Config.EWASMInterpreter":
+	case "avnconfig.Config.EWASMInterpreter":
 		return true
 	default:
 		return false

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // manageServers displays a list of servers the user can disconnect from, and an
@@ -76,7 +76,7 @@ func (w *wizard) makeServer() string {
 
 	client, err := dial(input, nil)
 	if err != nil {
-		log.Error("Server not ready for puppAVN", "err", err)
+		log.Error("Server not ready for puppavn", "err", err)
 		return ""
 	}
 	// All checks passed, start tracking the server
@@ -192,6 +192,6 @@ func (w *wizard) deployComponent() {
 	case "6":
 		w.deployDashboard()
 	default:
-		log.Error("That's not somAVNing I can do")
+		log.Error("That's not somavning I can do")
 	}
 }

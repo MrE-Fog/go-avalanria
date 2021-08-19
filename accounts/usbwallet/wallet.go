@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package usbwallet implements support for USB hardware wallets.
 package usbwallet
@@ -25,12 +25,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/log"
 	"github.com/karalabe/usb"
 )
 
@@ -87,7 +87,7 @@ type wallet struct {
 
 	deriveNextPaths []accounts.DerivationPath // Next derivation paths for account auto-discovery (multiple bases supported)
 	deriveNextAddrs []common.Address          // Next derived account addresses for auto-discovery (multiple bases supported)
-	deriveChain     AVNereum.ChainStateReader // Blockchain state reader to discover used account with
+	deriveChain     avalanria.ChainStateReader // Blockchain state reader to discover used account with
 	deriveReq       chan chan struct{}        // Channel to request a self-derivation on
 	deriveQuit      chan chan error           // Channel to terminate the self-deriver with
 
@@ -177,7 +177,7 @@ func (w *wallet) Open(passphrase string) error {
 }
 
 // heartbeat is a health check loop for the USB wallets to periodically verify
-// whAVNer they are still present or if they malfunctioned.
+// whavner they are still present or if they malfunctioned.
 func (w *wallet) heartbeat() {
 	w.log.Debug("USB wallet health-check started")
 	defer w.log.Debug("USB wallet health-check stopped")
@@ -440,7 +440,7 @@ func (w *wallet) selfDerive() {
 	errc <- err
 }
 
-// Contains implements accounts.Wallet, returning whAVNer a particular account is
+// Contains implements accounts.Wallet, returning whavner a particular account is
 // or is not pinned into this wallet instance. Although we could attempt to resolve
 // unpinned accounts, that would be an non-negligible hardware operation.
 func (w *wallet) Contains(account accounts.Account) bool {
@@ -500,12 +500,12 @@ func (w *wallet) Derive(path accounts.DerivationPath, pin bool) (accounts.Accoun
 // from non zero components.
 //
 // Some hardware wallets switched derivation paths through their evolution, so
-// this mAVNod supports providing multiple bases to discover old user accounts
+// this mavnod supports providing multiple bases to discover old user accounts
 // too. Only the last base will be used to derive the next empty account.
 //
 // You can disable automatic account discovery by calling SelfDerive with a nil
 // chain state reader.
-func (w *wallet) SelfDerive(bases []accounts.DerivationPath, chain AVNereum.ChainStateReader) {
+func (w *wallet) SelfDerive(bases []accounts.DerivationPath, chain avalanria.ChainStateReader) {
 	w.stateLock.Lock()
 	defer w.stateLock.Unlock()
 
@@ -519,7 +519,7 @@ func (w *wallet) SelfDerive(bases []accounts.DerivationPath, chain AVNereum.Chai
 }
 
 // signHash implements accounts.Wallet, however signing arbitrary data is not
-// supported for hardware wallets, so this mAVNod will always return an error.
+// supported for hardware wallets, so this mavnod will always return an error.
 func (w *wallet) signHash(account accounts.Account, hash []byte) ([]byte, error) {
 	return nil, accounts.ErrNotSupported
 }
@@ -584,7 +584,7 @@ func (w *wallet) SignText(account accounts.Account, text []byte) ([]byte, error)
 // transaction or a failure if the user denied the transaction.
 //
 // Note, if the version of the Avalanria application running on the Ledger wallet is
-// too old to sign EIP-155 transactions, but such is requested nonAVNeless, an error
+// too old to sign EIP-155 transactions, but such is requested nonavneless, an error
 // will be returned opposed to silently signing in Homestead mode.
 func (w *wallet) SignTx(account accounts.Account, tx *types.Transaction, chainID *big.Int) (*types.Transaction, error) {
 	w.stateLock.RLock() // Comms have own mutex, this is for the state fields
@@ -626,7 +626,7 @@ func (w *wallet) SignTx(account accounts.Account, tx *types.Transaction, chainID
 }
 
 // SignHashWithPassphrase implements accounts.Wallet, however signing arbitrary
-// data is not supported for Ledger wallets, so this mAVNod will always return
+// data is not supported for Ledger wallets, so this mavnod will always return
 // an error.
 func (w *wallet) SignTextWithPassphrase(account accounts.Account, passphrase string, text []byte) ([]byte, error) {
 	return w.SignText(account, accounts.TextHash(text))

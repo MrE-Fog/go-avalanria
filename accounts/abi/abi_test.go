@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package abi
 
@@ -26,9 +26,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/crypto"
 )
 
 const jsondata = `
@@ -89,39 +89,39 @@ var (
 		{Name: "f", Type: "uint256"}})
 )
 
-var mAVNods = map[string]MAVNod{
-	"":                    NewMAVNod("", "", Function, "", false, false, nil, nil),
-	"balance":             NewMAVNod("balance", "balance", Function, "view", false, false, nil, nil),
-	"send":                NewMAVNod("send", "send", Function, "", false, false, []Argument{{"amount", Uint256, false}}, nil),
-	"test":                NewMAVNod("test", "test", Function, "", false, false, []Argument{{"number", Uint32, false}}, nil),
-	"string":              NewMAVNod("string", "string", Function, "", false, false, []Argument{{"inputs", String, false}}, nil),
-	"bool":                NewMAVNod("bool", "bool", Function, "", false, false, []Argument{{"inputs", Bool, false}}, nil),
-	"address":             NewMAVNod("address", "address", Function, "", false, false, []Argument{{"inputs", Address, false}}, nil),
-	"uint64[]":            NewMAVNod("uint64[]", "uint64[]", Function, "", false, false, []Argument{{"inputs", Uint64Arr, false}}, nil),
-	"uint64[2]":           NewMAVNod("uint64[2]", "uint64[2]", Function, "", false, false, []Argument{{"inputs", Uint64Arr2, false}}, nil),
-	"int8":                NewMAVNod("int8", "int8", Function, "", false, false, []Argument{{"inputs", Int8, false}}, nil),
-	"bytes32":             NewMAVNod("bytes32", "bytes32", Function, "", false, false, []Argument{{"inputs", Bytes32, false}}, nil),
-	"foo":                 NewMAVNod("foo", "foo", Function, "", false, false, []Argument{{"inputs", Uint32, false}}, nil),
-	"bar":                 NewMAVNod("bar", "bar", Function, "", false, false, []Argument{{"inputs", Uint32, false}, {"string", Uint16, false}}, nil),
-	"slice":               NewMAVNod("slice", "slice", Function, "", false, false, []Argument{{"inputs", Uint32Arr2, false}}, nil),
-	"slice256":            NewMAVNod("slice256", "slice256", Function, "", false, false, []Argument{{"inputs", Uint256Arr2, false}}, nil),
-	"sliceAddress":        NewMAVNod("sliceAddress", "sliceAddress", Function, "", false, false, []Argument{{"inputs", AddressArr, false}}, nil),
-	"sliceMultiAddress":   NewMAVNod("sliceMultiAddress", "sliceMultiAddress", Function, "", false, false, []Argument{{"a", AddressArr, false}, {"b", AddressArr, false}}, nil),
-	"nestedArray":         NewMAVNod("nestedArray", "nestedArray", Function, "", false, false, []Argument{{"a", Uint256ArrNested, false}, {"b", AddressArr, false}}, nil),
-	"nestedArray2":        NewMAVNod("nestedArray2", "nestedArray2", Function, "", false, false, []Argument{{"a", Uint8ArrNested, false}}, nil),
-	"nestedSlice":         NewMAVNod("nestedSlice", "nestedSlice", Function, "", false, false, []Argument{{"a", Uint8SliceNested, false}}, nil),
-	"receive":             NewMAVNod("receive", "receive", Function, "payable", false, true, []Argument{{"memo", Bytes, false}}, []Argument{}),
-	"fixedArrStr":         NewMAVNod("fixedArrStr", "fixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr", Uint256Arr2, false}}, nil),
-	"fixedArrBytes":       NewMAVNod("fixedArrBytes", "fixedArrBytes", Function, "view", false, false, []Argument{{"bytes", Bytes, false}, {"fixedArr", Uint256Arr2, false}}, nil),
-	"mixedArrStr":         NewMAVNod("mixedArrStr", "mixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr", Uint256Arr2, false}, {"dynArr", Uint256Arr, false}}, nil),
-	"doubleFixedArrStr":   NewMAVNod("doubleFixedArrStr", "doubleFixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr1", Uint256Arr2, false}, {"fixedArr2", Uint256Arr3, false}}, nil),
-	"multipleMixedArrStr": NewMAVNod("multipleMixedArrStr", "multipleMixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr1", Uint256Arr2, false}, {"dynArr", Uint256Arr, false}, {"fixedArr2", Uint256Arr3, false}}, nil),
-	"overloadedNames":     NewMAVNod("overloadedNames", "overloadedNames", Function, "view", false, false, []Argument{{"f", TupleF, false}}, nil),
+var mavnods = map[string]Mavnod{
+	"":                    NewMavnod("", "", Function, "", false, false, nil, nil),
+	"balance":             NewMavnod("balance", "balance", Function, "view", false, false, nil, nil),
+	"send":                NewMavnod("send", "send", Function, "", false, false, []Argument{{"amount", Uint256, false}}, nil),
+	"test":                NewMavnod("test", "test", Function, "", false, false, []Argument{{"number", Uint32, false}}, nil),
+	"string":              NewMavnod("string", "string", Function, "", false, false, []Argument{{"inputs", String, false}}, nil),
+	"bool":                NewMavnod("bool", "bool", Function, "", false, false, []Argument{{"inputs", Bool, false}}, nil),
+	"address":             NewMavnod("address", "address", Function, "", false, false, []Argument{{"inputs", Address, false}}, nil),
+	"uint64[]":            NewMavnod("uint64[]", "uint64[]", Function, "", false, false, []Argument{{"inputs", Uint64Arr, false}}, nil),
+	"uint64[2]":           NewMavnod("uint64[2]", "uint64[2]", Function, "", false, false, []Argument{{"inputs", Uint64Arr2, false}}, nil),
+	"int8":                NewMavnod("int8", "int8", Function, "", false, false, []Argument{{"inputs", Int8, false}}, nil),
+	"bytes32":             NewMavnod("bytes32", "bytes32", Function, "", false, false, []Argument{{"inputs", Bytes32, false}}, nil),
+	"foo":                 NewMavnod("foo", "foo", Function, "", false, false, []Argument{{"inputs", Uint32, false}}, nil),
+	"bar":                 NewMavnod("bar", "bar", Function, "", false, false, []Argument{{"inputs", Uint32, false}, {"string", Uint16, false}}, nil),
+	"slice":               NewMavnod("slice", "slice", Function, "", false, false, []Argument{{"inputs", Uint32Arr2, false}}, nil),
+	"slice256":            NewMavnod("slice256", "slice256", Function, "", false, false, []Argument{{"inputs", Uint256Arr2, false}}, nil),
+	"sliceAddress":        NewMavnod("sliceAddress", "sliceAddress", Function, "", false, false, []Argument{{"inputs", AddressArr, false}}, nil),
+	"sliceMultiAddress":   NewMavnod("sliceMultiAddress", "sliceMultiAddress", Function, "", false, false, []Argument{{"a", AddressArr, false}, {"b", AddressArr, false}}, nil),
+	"nestedArray":         NewMavnod("nestedArray", "nestedArray", Function, "", false, false, []Argument{{"a", Uint256ArrNested, false}, {"b", AddressArr, false}}, nil),
+	"nestedArray2":        NewMavnod("nestedArray2", "nestedArray2", Function, "", false, false, []Argument{{"a", Uint8ArrNested, false}}, nil),
+	"nestedSlice":         NewMavnod("nestedSlice", "nestedSlice", Function, "", false, false, []Argument{{"a", Uint8SliceNested, false}}, nil),
+	"receive":             NewMavnod("receive", "receive", Function, "payable", false, true, []Argument{{"memo", Bytes, false}}, []Argument{}),
+	"fixedArrStr":         NewMavnod("fixedArrStr", "fixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr", Uint256Arr2, false}}, nil),
+	"fixedArrBytes":       NewMavnod("fixedArrBytes", "fixedArrBytes", Function, "view", false, false, []Argument{{"bytes", Bytes, false}, {"fixedArr", Uint256Arr2, false}}, nil),
+	"mixedArrStr":         NewMavnod("mixedArrStr", "mixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr", Uint256Arr2, false}, {"dynArr", Uint256Arr, false}}, nil),
+	"doubleFixedArrStr":   NewMavnod("doubleFixedArrStr", "doubleFixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr1", Uint256Arr2, false}, {"fixedArr2", Uint256Arr3, false}}, nil),
+	"multipleMixedArrStr": NewMavnod("multipleMixedArrStr", "multipleMixedArrStr", Function, "view", false, false, []Argument{{"str", String, false}, {"fixedArr1", Uint256Arr2, false}, {"dynArr", Uint256Arr, false}, {"fixedArr2", Uint256Arr3, false}}, nil),
+	"overloadedNames":     NewMavnod("overloadedNames", "overloadedNames", Function, "view", false, false, []Argument{{"f", TupleF, false}}, nil),
 }
 
 func TestReader(t *testing.T) {
 	abi := ABI{
-		MAVNods: mAVNods,
+		Mavnods: mavnods,
 	}
 
 	exp, err := JSON(strings.NewReader(jsondata))
@@ -129,23 +129,23 @@ func TestReader(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for name, expM := range exp.MAVNods {
-		gotM, exist := abi.MAVNods[name]
+	for name, expM := range exp.Mavnods {
+		gotM, exist := abi.Mavnods[name]
 		if !exist {
-			t.Errorf("Missing expected mAVNod %v", name)
+			t.Errorf("Missing expected mavnod %v", name)
 		}
 		if !reflect.DeepEqual(gotM, expM) {
-			t.Errorf("\nGot abi mAVNod: \n%v\ndoes not match expected mAVNod\n%v", gotM, expM)
+			t.Errorf("\nGot abi mavnod: \n%v\ndoes not match expected mavnod\n%v", gotM, expM)
 		}
 	}
 
-	for name, gotM := range abi.MAVNods {
-		expM, exist := exp.MAVNods[name]
+	for name, gotM := range abi.Mavnods {
+		expM, exist := exp.Mavnods[name]
 		if !exist {
-			t.Errorf("Found extra mAVNod %v", name)
+			t.Errorf("Found extra mavnod %v", name)
 		}
 		if !reflect.DeepEqual(gotM, expM) {
-			t.Errorf("\nGot abi mAVNod: \n%v\ndoes not match expected mAVNod\n%v", gotM, expM)
+			t.Errorf("\nGot abi mavnod: \n%v\ndoes not match expected mavnod\n%v", gotM, expM)
 		}
 	}
 }
@@ -170,13 +170,13 @@ func TestInvalidABI(t *testing.T) {
 //	}
 func TestConstructor(t *testing.T) {
 	json := `[{	"inputs": [{"internalType": "uint256","name": "a","type": "uint256"	},{	"internalType": "uint256","name": "b","type": "uint256"}],"stateMutability": "nonpayable","type": "constructor"}]`
-	mAVNod := NewMAVNod("", "", Constructor, "nonpayable", false, false, []Argument{{"a", Uint256, false}, {"b", Uint256, false}}, nil)
+	mavnod := NewMavnod("", "", Constructor, "nonpayable", false, false, []Argument{{"a", Uint256, false}, {"b", Uint256, false}}, nil)
 	// Test from JSON
 	abi, err := JSON(strings.NewReader(json))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(abi.Constructor, mAVNod) {
+	if !reflect.DeepEqual(abi.Constructor, mavnod) {
 		t.Error("Missing expected constructor")
 	}
 	// Test pack/unpack
@@ -234,8 +234,8 @@ func TestTestNumbers(t *testing.T) {
 	}
 }
 
-func TestMAVNodSignature(t *testing.T) {
-	m := NewMAVNod("foo", "foo", Function, "", false, false, []Argument{{"bar", String, false}, {"baz", String, false}}, nil)
+func TestMavnodSignature(t *testing.T) {
+	m := NewMavnod("foo", "foo", Function, "", false, false, []Argument{{"bar", String, false}, {"baz", String, false}}, nil)
 	exp := "foo(string,string)"
 	if m.Sig != exp {
 		t.Error("signature mismatch", exp, "!=", m.Sig)
@@ -246,13 +246,13 @@ func TestMAVNodSignature(t *testing.T) {
 		t.Errorf("expected ids to match %x != %x", m.ID, idexp)
 	}
 
-	m = NewMAVNod("foo", "foo", Function, "", false, false, []Argument{{"bar", Uint256, false}}, nil)
+	m = NewMavnod("foo", "foo", Function, "", false, false, []Argument{{"bar", Uint256, false}}, nil)
 	exp = "foo(uint256)"
 	if m.Sig != exp {
 		t.Error("signature mismatch", exp, "!=", m.Sig)
 	}
 
-	// MAVNod with tuple arguments
+	// Mavnod with tuple arguments
 	s, _ := NewType("tuple", "", []ArgumentMarshaling{
 		{Name: "a", Type: "int256"},
 		{Name: "b", Type: "int256[]"},
@@ -265,23 +265,23 @@ func TestMAVNodSignature(t *testing.T) {
 			{Name: "y", Type: "int256"},
 		}},
 	})
-	m = NewMAVNod("foo", "foo", Function, "", false, false, []Argument{{"s", s, false}, {"bar", String, false}}, nil)
+	m = NewMavnod("foo", "foo", Function, "", false, false, []Argument{{"s", s, false}, {"bar", String, false}}, nil)
 	exp = "foo((int256,int256[],(int256,int256)[],(int256,int256)[2]),string)"
 	if m.Sig != exp {
 		t.Error("signature mismatch", exp, "!=", m.Sig)
 	}
 }
 
-func TestOverloadedMAVNodSignature(t *testing.T) {
+func TestOverloadedMavnodSignature(t *testing.T) {
 	json := `[{"constant":true,"inputs":[{"name":"i","type":"uint256"},{"name":"j","type":"uint256"}],"name":"foo","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"i","type":"uint256"}],"name":"foo","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"i","type":"uint256"}],"name":"bar","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"i","type":"uint256"},{"indexed":false,"name":"j","type":"uint256"}],"name":"bar","type":"event"}]`
 	abi, err := JSON(strings.NewReader(json))
 	if err != nil {
 		t.Fatal(err)
 	}
-	check := func(name string, expect string, mAVNod bool) {
-		if mAVNod {
-			if abi.MAVNods[name].Sig != expect {
-				t.Fatalf("The signature of overloaded mAVNod mismatch, want %s, have %s", expect, abi.MAVNods[name].Sig)
+	check := func(name string, expect string, mavnod bool) {
+		if mavnod {
+			if abi.Mavnods[name].Sig != expect {
+				t.Fatalf("The signature of overloaded mavnod mismatch, want %s, have %s", expect, abi.Mavnods[name].Sig)
 			}
 		} else {
 			if abi.Events[name].Sig != expect {
@@ -642,7 +642,7 @@ func TestDefaultFunctionParsing(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, ok := abi.MAVNods["balance"]; !ok {
+	if _, ok := abi.Mavnods["balance"]; !ok {
 		t.Error("expected 'balance' to be present")
 	}
 }
@@ -808,7 +808,7 @@ func TestUnpackEventIntoMap(t *testing.T) {
 	}
 }
 
-func TestUnpackMAVNodIntoMap(t *testing.T) {
+func TestUnpackMavnodIntoMap(t *testing.T) {
 	const abiJSON = `[{"constant":false,"inputs":[{"name":"memo","type":"bytes"}],"name":"receive","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[],"name":"send","outputs":[{"name":"amount","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"addr","type":"address"}],"name":"get","outputs":[{"name":"hash","type":"bytes"}],"payable":true,"stateMutability":"payable","type":"function"}]`
 	abi, err := JSON(strings.NewReader(abiJSON))
 	if err != nil {
@@ -823,7 +823,7 @@ func TestUnpackMAVNodIntoMap(t *testing.T) {
 		t.Errorf("len(data) is %d, want a multiple of 32", len(data))
 	}
 
-	// Tests a mAVNod with no outputs
+	// Tests a mavnod with no outputs
 	receiveMap := map[string]interface{}{}
 	if err = abi.UnpackIntoMap(receiveMap, "receive", data); err != nil {
 		t.Error(err)
@@ -832,7 +832,7 @@ func TestUnpackMAVNodIntoMap(t *testing.T) {
 		t.Error("unpacked `receive` map expected to have length 0")
 	}
 
-	// Tests a mAVNod with only outputs
+	// Tests a mavnod with only outputs
 	sendMap := map[string]interface{}{}
 	if err = abi.UnpackIntoMap(sendMap, "send", data); err != nil {
 		t.Error(err)
@@ -844,7 +844,7 @@ func TestUnpackMAVNodIntoMap(t *testing.T) {
 		t.Error("unpacked `send` map expected `amount` value of 1")
 	}
 
-	// Tests a mAVNod with outputs and inputs
+	// Tests a mavnod with outputs and inputs
 	getMap := map[string]interface{}{}
 	if err = abi.UnpackIntoMap(getMap, "get", data); err != nil {
 		t.Error(err)
@@ -859,7 +859,7 @@ func TestUnpackMAVNodIntoMap(t *testing.T) {
 }
 
 func TestUnpackIntoMapNamingConflict(t *testing.T) {
-	// Two mAVNods have the same name
+	// Two mavnods have the same name
 	var abiJSON = `[{"constant":false,"inputs":[{"name":"memo","type":"bytes"}],"name":"get","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[],"name":"send","outputs":[{"name":"amount","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"addr","type":"address"}],"name":"get","outputs":[{"name":"hash","type":"bytes"}],"payable":true,"stateMutability":"payable","type":"function"}]`
 	abi, err := JSON(strings.NewReader(abiJSON))
 	if err != nil {
@@ -875,7 +875,7 @@ func TestUnpackIntoMapNamingConflict(t *testing.T) {
 	}
 	getMap := map[string]interface{}{}
 	if err = abi.UnpackIntoMap(getMap, "get", data); err == nil {
-		t.Error("naming conflict between two mAVNods; error expected")
+		t.Error("naming conflict between two mavnods; error expected")
 	}
 
 	// Two events have the same name
@@ -897,7 +897,7 @@ func TestUnpackIntoMapNamingConflict(t *testing.T) {
 		t.Error("naming conflict between two events; no error expected")
 	}
 
-	// MAVNod and event have the same name
+	// Mavnod and event have the same name
 	abiJSON = `[{"constant":false,"inputs":[{"name":"memo","type":"bytes"}],"name":"received","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"memo","type":"bytes"}],"name":"received","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"}],"name":"receivedAddr","type":"event"}]`
 	abi, err = JSON(strings.NewReader(abiJSON))
 	if err != nil {
@@ -907,7 +907,7 @@ func TestUnpackIntoMapNamingConflict(t *testing.T) {
 		t.Errorf("len(data) is %d, want a non-multiple of 32", len(data))
 	}
 	if err = abi.UnpackIntoMap(receivedMap, "received", data); err == nil {
-		t.Error("naming conflict between an event and a mAVNod; error expected")
+		t.Error("naming conflict between an event and a mavnod; error expected")
 	}
 
 	// Conflict is case sensitive
@@ -941,34 +941,34 @@ func TestUnpackIntoMapNamingConflict(t *testing.T) {
 	}
 }
 
-func TestABI_MAVNodById(t *testing.T) {
+func TestABI_MavnodById(t *testing.T) {
 	abi, err := JSON(strings.NewReader(jsondata))
 	if err != nil {
 		t.Fatal(err)
 	}
-	for name, m := range abi.MAVNods {
+	for name, m := range abi.Mavnods {
 		a := fmt.Sprintf("%v", m)
-		m2, err := abi.MAVNodById(m.ID)
+		m2, err := abi.MavnodById(m.ID)
 		if err != nil {
-			t.Fatalf("Failed to look up ABI mAVNod: %v", err)
+			t.Fatalf("Failed to look up ABI mavnod: %v", err)
 		}
 		b := fmt.Sprintf("%v", m2)
 		if a != b {
-			t.Errorf("MAVNod %v (id %x) not 'findable' by id in ABI", name, m.ID)
+			t.Errorf("Mavnod %v (id %x) not 'findable' by id in ABI", name, m.ID)
 		}
 	}
 	// test unsuccessful lookups
-	if _, err = abi.MAVNodById(crypto.Keccak256()); err == nil {
-		t.Error("Expected error: no mAVNod with this id")
+	if _, err = abi.MavnodById(crypto.Keccak256()); err == nil {
+		t.Error("Expected error: no mavnod with this id")
 	}
 	// Also test empty
-	if _, err := abi.MAVNodById([]byte{0x00}); err == nil {
+	if _, err := abi.MavnodById([]byte{0x00}); err == nil {
 		t.Errorf("Expected error, too short to decode data")
 	}
-	if _, err := abi.MAVNodById([]byte{}); err == nil {
+	if _, err := abi.MavnodById([]byte{}); err == nil {
 		t.Errorf("Expected error, too short to decode data")
 	}
-	if _, err := abi.MAVNodById(nil); err == nil {
+	if _, err := abi.MavnodById(nil); err == nil {
 		t.Errorf("Expected error, nil is short to decode data")
 	}
 }
@@ -1020,7 +1020,7 @@ func TestABI_EventById(t *testing.T) {
 
 		event, err := abi.EventByID(topicID)
 		if err != nil {
-			t.Fatalf("Failed to look up ABI mAVNod: %v, test #%d", err, testnum)
+			t.Fatalf("Failed to look up ABI mavnod: %v, test #%d", err, testnum)
 		}
 		if event == nil {
 			t.Errorf("We should find a event for topic %s, test #%d", topicID.Hex(), testnum)
@@ -1041,25 +1041,25 @@ func TestABI_EventById(t *testing.T) {
 	}
 }
 
-// TestDoubleDuplicateMAVNodNames checks that if transfer0 already exists, there won't be a name
-// conflict and that the second transfer mAVNod will be renamed transfer1.
-func TestDoubleDuplicateMAVNodNames(t *testing.T) {
+// TestDoubleDuplicateMavnodNames checks that if transfer0 already exists, there won't be a name
+// conflict and that the second transfer mavnod will be renamed transfer1.
+func TestDoubleDuplicateMavnodNames(t *testing.T) {
 	abiJSON := `[{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"ok","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"},{"name":"data","type":"bytes"}],"name":"transfer0","outputs":[{"name":"ok","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"},{"name":"data","type":"bytes"},{"name":"customFallback","type":"string"}],"name":"transfer","outputs":[{"name":"ok","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
 	contractAbi, err := JSON(strings.NewReader(abiJSON))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, ok := contractAbi.MAVNods["transfer"]; !ok {
-		t.Fatalf("Could not find original mAVNod")
+	if _, ok := contractAbi.Mavnods["transfer"]; !ok {
+		t.Fatalf("Could not find original mavnod")
 	}
-	if _, ok := contractAbi.MAVNods["transfer0"]; !ok {
-		t.Fatalf("Could not find duplicate mAVNod")
+	if _, ok := contractAbi.Mavnods["transfer0"]; !ok {
+		t.Fatalf("Could not find duplicate mavnod")
 	}
-	if _, ok := contractAbi.MAVNods["transfer1"]; !ok {
-		t.Fatalf("Could not find duplicate mAVNod")
+	if _, ok := contractAbi.Mavnods["transfer1"]; !ok {
+		t.Fatalf("Could not find duplicate mavnod")
 	}
-	if _, ok := contractAbi.MAVNods["transfer2"]; ok {
-		t.Fatalf("Should not have found extra mAVNod")
+	if _, ok := contractAbi.Mavnods["transfer2"]; ok {
+		t.Fatalf("Should not have found extra mavnod")
 	}
 }
 

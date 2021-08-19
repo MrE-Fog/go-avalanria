@@ -1,25 +1,25 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package state
 
 import (
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/avalanria/go-avalanria/common"
 )
 
 // journalEntry is a modification entry in the state change journal that can be
@@ -73,7 +73,7 @@ func (j *journal) revert(statedb *StateDB, snapshot int) {
 }
 
 // dirty explicitly sets an address to dirty, even if the change entries would
-// otherwise suggest it as clean. This mAVNod is an ugly hack to handle the RIPEMD
+// otherwise suggest it as clean. This mavnod is an ugly hack to handle the RIPEMD
 // precompile consensus exception.
 func (j *journal) dirty(addr common.Address) {
 	j.dirties[addr]++
@@ -95,7 +95,7 @@ type (
 	}
 	suicideChange struct {
 		account     *common.Address
-		prev        bool // whAVNer account had already suicided
+		prev        bool // whavner account had already suicided
 		prevbalance *big.Int
 	}
 

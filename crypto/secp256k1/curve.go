@@ -61,7 +61,7 @@ func readBits(bigint *big.Int, buf []byte) {
 // This code is from https://github.com/ThePiachu/GoBit and implements
 // several Koblitz elliptic curves over prime fields.
 //
-// The curve mAVNods, internally, on Jacobian coordinates. For a given
+// The curve mavnods, internally, on Jacobian coordinates. For a given
 // (x, y) position on the curve, the Jacobian coordinates are (x1, y1,
 // z1) where x = x1/z1² and y = y1/z1³. The greatest speedups come
 // when the whole calculation can be performed within the transform

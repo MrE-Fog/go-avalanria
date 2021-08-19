@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
@@ -21,9 +21,9 @@ import (
 	"container/heap"
 	"errors"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 // Iterator is a key-value trie iterator that traverses a Trie.
@@ -89,17 +89,17 @@ type NodeIterator interface {
 	// Leaf returns true iff the current node is a leaf node.
 	Leaf() bool
 
-	// LeafKey returns the key of the leaf. The mAVNod panics if the iterator is not
+	// LeafKey returns the key of the leaf. The mavnod panics if the iterator is not
 	// positioned at a leaf. Callers must not retain references to the value after
 	// calling Next.
 	LeafKey() []byte
 
-	// LeafBlob returns the content of the leaf. The mAVNod panics if the iterator
+	// LeafBlob returns the content of the leaf. The mavnod panics if the iterator
 	// is not positioned at a leaf. Callers must not retain references to the value
 	// after calling Next.
 	LeafBlob() []byte
 
-	// LeafProof returns the Merkle proof of the leaf. The mAVNod panics if the
+	// LeafProof returns the Merkle proof of the leaf. The mavnod panics if the
 	// iterator is not positioned at a leaf. Callers must not retain references
 	// to the value after calling Next.
 	LeafProof() [][]byte
@@ -112,10 +112,10 @@ type NodeIterator interface {
 	// reading from disk. In those cases, this resolver allows short circuiting
 	// accesses and returning them from memory.
 	//
-	// Before adding a similar mechanism to any other place in GAVN, consider
+	// Before adding a similar mechanism to any other place in Gavn, consider
 	// making trie.Database an interface and wrapping at that level. It's a huge
 	// refactor, but it could be worth it if another occurrence arises.
-	AddResolver(AVNdb.KeyValueStore)
+	AddResolver(avndb.KeyValueStore)
 }
 
 // nodeIteratorState represents the iteration state at one particular node of the
@@ -134,7 +134,7 @@ type nodeIterator struct {
 	path  []byte               // Path to the current node
 	err   error                // Failure set in case of an internal error in the iterator
 
-	resolver AVNdb.KeyValueStore // Optional intermediate resolver above the disk layer
+	resolver avndb.KeyValueStore // Optional intermediate resolver above the disk layer
 }
 
 // errIteratorEnd is stored in nodeIterator.err when iteration is done.
@@ -159,7 +159,7 @@ func newNodeIterator(trie *Trie, start []byte) NodeIterator {
 	return it
 }
 
-func (it *nodeIterator) AddResolver(resolver AVNdb.KeyValueStore) {
+func (it *nodeIterator) AddResolver(resolver avndb.KeyValueStore) {
 	it.resolver = resolver
 }
 
@@ -234,8 +234,8 @@ func (it *nodeIterator) Error() error {
 	return it.err
 }
 
-// Next moves the iterator to the next node, returning whAVNer there are any
-// further nodes. In case of an internal error this mAVNod returns false and
+// Next moves the iterator to the next node, returning whavner there are any
+// further nodes. In case of an internal error this mavnod returns false and
 // sets the Error field to the encountered failure. If `descend` is false,
 // skips iterating over any subnodes of the current node.
 func (it *nodeIterator) Next(descend bool) bool {
@@ -549,7 +549,7 @@ func (it *differenceIterator) Path() []byte {
 	return it.b.Path()
 }
 
-func (it *differenceIterator) AddResolver(resolver AVNdb.KeyValueStore) {
+func (it *differenceIterator) AddResolver(resolver avndb.KeyValueStore) {
 	panic("not implemented")
 }
 
@@ -660,7 +660,7 @@ func (it *unionIterator) Path() []byte {
 	return (*it.items)[0].Path()
 }
 
-func (it *unionIterator) AddResolver(resolver AVNdb.KeyValueStore) {
+func (it *unionIterator) AddResolver(resolver avndb.KeyValueStore) {
 	panic("not implemented")
 }
 

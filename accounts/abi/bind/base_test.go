@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package bind_test
 
@@ -23,14 +23,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/accounts/abi"
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/accounts/abi"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 type mockCaller struct {
@@ -45,7 +45,7 @@ func (mc *mockCaller) CodeAt(ctx context.Context, contract common.Address, block
 	return []byte{1, 2, 3}, nil
 }
 
-func (mc *mockCaller) CallContract(ctx context.Context, call AVNereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
+func (mc *mockCaller) CallContract(ctx context.Context, call avalanria.CallMsg, blockNumber *big.Int) ([]byte, error) {
 	mc.callContractBlockNumber = blockNumber
 	return nil, nil
 }
@@ -55,7 +55,7 @@ func (mc *mockCaller) PendingCodeAt(ctx context.Context, contract common.Address
 	return nil, nil
 }
 
-func (mc *mockCaller) PendingCallContract(ctx context.Context, call AVNereum.CallMsg) ([]byte, error) {
+func (mc *mockCaller) PendingCallContract(ctx context.Context, call avalanria.CallMsg) ([]byte, error) {
 	mc.pendingCallContractCalled = true
 	return nil, nil
 }
@@ -64,9 +64,9 @@ func TestPassingBlockNumber(t *testing.T) {
 	mc := &mockCaller{}
 
 	bc := bind.NewBoundContract(common.HexToAddress("0x0"), abi.ABI{
-		MAVNods: map[string]abi.MAVNod{
-			"somAVNing": {
-				Name:    "somAVNing",
+		Mavnods: map[string]abi.Mavnod{
+			"somavning": {
+				Name:    "somavning",
 				Outputs: abi.Arguments{},
 			},
 		},
@@ -74,7 +74,7 @@ func TestPassingBlockNumber(t *testing.T) {
 
 	blockNumber := big.NewInt(42)
 
-	bc.Call(&bind.CallOpts{BlockNumber: blockNumber}, nil, "somAVNing")
+	bc.Call(&bind.CallOpts{BlockNumber: blockNumber}, nil, "somavning")
 
 	if mc.callContractBlockNumber != blockNumber {
 		t.Fatalf("CallContract() was not passed the block number")
@@ -84,7 +84,7 @@ func TestPassingBlockNumber(t *testing.T) {
 		t.Fatalf("CodeAt() was not passed the block number")
 	}
 
-	bc.Call(&bind.CallOpts{}, nil, "somAVNing")
+	bc.Call(&bind.CallOpts{}, nil, "somavning")
 
 	if mc.callContractBlockNumber != nil {
 		t.Fatalf("CallContract() was passed a block number when it should not have been")
@@ -94,7 +94,7 @@ func TestPassingBlockNumber(t *testing.T) {
 		t.Fatalf("CodeAt() was passed a block number when it should not have been")
 	}
 
-	bc.Call(&bind.CallOpts{BlockNumber: blockNumber, Pending: true}, nil, "somAVNing")
+	bc.Call(&bind.CallOpts{BlockNumber: blockNumber, Pending: true}, nil, "somavning")
 
 	if !mc.pendingCallContractCalled {
 		t.Fatalf("CallContract() was not passed the block number")

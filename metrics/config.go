@@ -1,18 +1,18 @@
-// Copyright 2021 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2021 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package metrics
 
@@ -30,7 +30,7 @@ type Config struct {
 	InfluxDBTags     string `toml:",omitempty"`
 }
 
-// DefaultConfig is the default config for metrics used in go-AVNereum.
+// DefaultConfig is the default config for metrics used in go-avalanria.
 var DefaultConfig = Config{
 	Enabled:          false,
 	EnabledExpensive: false,
@@ -38,7 +38,7 @@ var DefaultConfig = Config{
 	Port:             6060,
 	EnableInfluxDB:   false,
 	InfluxDBEndpoint: "http://localhost:8086",
-	InfluxDBDatabase: "gAVN",
+	InfluxDBDatabase: "gavn",
 	InfluxDBUsername: "test",
 	InfluxDBPassword: "test",
 	InfluxDBTags:     "host=localhost",

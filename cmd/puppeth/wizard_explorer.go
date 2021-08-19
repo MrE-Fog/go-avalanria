@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // deployExplorer creates a new block explorer based on some user input.
@@ -31,8 +31,8 @@ func (w *wizard) deployExplorer() {
 		log.Error("No genesis block configured")
 		return
 	}
-	if w.conf.AVNstats == "" {
-		log.Error("No AVNstats server configured")
+	if w.conf.avnstats == "" {
+		log.Error("No avnstats server configured")
 		return
 	}
 	// Select the server to interact with
@@ -61,7 +61,7 @@ func (w *wizard) deployExplorer() {
 	fmt.Printf("Which port should the explorer listen on? (default = %d)\n", infos.port)
 	infos.port = w.readDefaultInt(infos.port)
 
-	// Figure which virtual-host to deploy AVNstats on
+	// Figure which virtual-host to deploy avnstats on
 	if infos.host, err = w.ensureVirtualHost(client, infos.port, infos.host); err != nil {
 		log.Error("Failed to decide on explorer host", "err", err)
 		return
@@ -91,12 +91,12 @@ func (w *wizard) deployExplorer() {
 
 	// Set a proper name to report on the stats page
 	fmt.Println()
-	if infos.node.AVNstats == "" {
+	if infos.node.avnstats == "" {
 		fmt.Printf("What should the explorer be called on the stats page?\n")
-		infos.node.AVNstats = w.readString() + ":" + w.conf.AVNstats
+		infos.node.avnstats = w.readString() + ":" + w.conf.avnstats
 	} else {
-		fmt.Printf("What should the explorer be called on the stats page? (default = %s)\n", infos.node.AVNstats)
-		infos.node.AVNstats = w.readDefaultString(infos.node.AVNstats) + ":" + w.conf.AVNstats
+		fmt.Printf("What should the explorer be called on the stats page? (default = %s)\n", infos.node.avnstats)
+		infos.node.avnstats = w.readDefaultString(infos.node.avnstats) + ":" + w.conf.avnstats
 	}
 	// Try to deploy the explorer on the host
 	nocache := false

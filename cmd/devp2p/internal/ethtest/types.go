@@ -1,29 +1,29 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNtest
+package avntest
 
 import (
 	"crypto/ecdsa"
 	"fmt"
 
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/rlpx"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/rlpx"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 type Message interface {
@@ -72,54 +72,54 @@ type Pong struct{}
 
 func (p Pong) Code() int { return 0x03 }
 
-// Status is the network packet for the status message for AVN/64 and later.
-type Status AVN.StatusPacket
+// Status is the network packet for the status message for avn/64 and later.
+type Status avn.StatusPacket
 
 func (s Status) Code() int { return 16 }
 
 // NewBlockHashes is the network packet for the block announcements.
-type NewBlockHashes AVN.NewBlockHashesPacket
+type NewBlockHashes avn.NewBlockHashesPacket
 
 func (nbh NewBlockHashes) Code() int { return 17 }
 
-type Transactions AVN.TransactionsPacket
+type Transactions avn.TransactionsPacket
 
 func (t Transactions) Code() int { return 18 }
 
 // GetBlockHeaders represents a block header query.
-type GetBlockHeaders AVN.GetBlockHeadersPacket
+type GetBlockHeaders avn.GetBlockHeadersPacket
 
 func (g GetBlockHeaders) Code() int { return 19 }
 
-type BlockHeaders AVN.BlockHeadersPacket
+type BlockHeaders avn.BlockHeadersPacket
 
 func (bh BlockHeaders) Code() int { return 20 }
 
 // GetBlockBodies represents a GetBlockBodies request
-type GetBlockBodies AVN.GetBlockBodiesPacket
+type GetBlockBodies avn.GetBlockBodiesPacket
 
 func (gbb GetBlockBodies) Code() int { return 21 }
 
 // BlockBodies is the network packet for block content distribution.
-type BlockBodies AVN.BlockBodiesPacket
+type BlockBodies avn.BlockBodiesPacket
 
 func (bb BlockBodies) Code() int { return 22 }
 
 // NewBlock is the network packet for the block propagation message.
-type NewBlock AVN.NewBlockPacket
+type NewBlock avn.NewBlockPacket
 
 func (nb NewBlock) Code() int { return 23 }
 
 // NewPooledTransactionHashes is the network packet for the tx hash propagation message.
-type NewPooledTransactionHashes AVN.NewPooledTransactionHashesPacket
+type NewPooledTransactionHashes avn.NewPooledTransactionHashesPacket
 
 func (nb NewPooledTransactionHashes) Code() int { return 24 }
 
-type GetPooledTransactions AVN.GetPooledTransactionsPacket
+type GetPooledTransactions avn.GetPooledTransactionsPacket
 
 func (gpt GetPooledTransactions) Code() int { return 25 }
 
-type PooledTransactions AVN.PooledTransactionsPacket
+type PooledTransactions avn.PooledTransactionsPacket
 
 func (pt PooledTransactions) Code() int { return 26 }
 
@@ -132,7 +132,7 @@ type Conn struct {
 	caps                   []p2p.Cap
 }
 
-// Read reads an AVN packet from the connection.
+// Read reads an avn packet from the connection.
 func (c *Conn) Read() Message {
 	code, rawData, _, err := c.Conn.Read()
 	if err != nil {
@@ -181,7 +181,7 @@ func (c *Conn) Read() Message {
 	return msg
 }
 
-// Read66 reads an AVN66 packet from the connection.
+// Read66 reads an avn66 packet from the connection.
 func (c *Conn) Read66() (uint64, Message) {
 	code, rawData, _, err := c.Conn.Read()
 	if err != nil {
@@ -201,29 +201,29 @@ func (c *Conn) Read66() (uint64, Message) {
 	case (Status{}).Code():
 		msg = new(Status)
 	case (GetBlockHeaders{}).Code():
-		AVNMsg := new(AVN.GetBlockHeadersPacket66)
-		if err := rlp.DecodeBytes(rawData, AVNMsg); err != nil {
+		avnMsg := new(avn.GetBlockHeadersPacket66)
+		if err := rlp.DecodeBytes(rawData, avnMsg); err != nil {
 			return 0, errorf("could not rlp decode message: %v", err)
 		}
-		return AVNMsg.RequestId, GetBlockHeaders(*AVNMsg.GetBlockHeadersPacket)
+		return avnMsg.RequestId, GetBlockHeaders(*avnMsg.GetBlockHeadersPacket)
 	case (BlockHeaders{}).Code():
-		AVNMsg := new(AVN.BlockHeadersPacket66)
-		if err := rlp.DecodeBytes(rawData, AVNMsg); err != nil {
+		avnMsg := new(avn.BlockHeadersPacket66)
+		if err := rlp.DecodeBytes(rawData, avnMsg); err != nil {
 			return 0, errorf("could not rlp decode message: %v", err)
 		}
-		return AVNMsg.RequestId, BlockHeaders(AVNMsg.BlockHeadersPacket)
+		return avnMsg.RequestId, BlockHeaders(avnMsg.BlockHeadersPacket)
 	case (GetBlockBodies{}).Code():
-		AVNMsg := new(AVN.GetBlockBodiesPacket66)
-		if err := rlp.DecodeBytes(rawData, AVNMsg); err != nil {
+		avnMsg := new(avn.GetBlockBodiesPacket66)
+		if err := rlp.DecodeBytes(rawData, avnMsg); err != nil {
 			return 0, errorf("could not rlp decode message: %v", err)
 		}
-		return AVNMsg.RequestId, GetBlockBodies(AVNMsg.GetBlockBodiesPacket)
+		return avnMsg.RequestId, GetBlockBodies(avnMsg.GetBlockBodiesPacket)
 	case (BlockBodies{}).Code():
-		AVNMsg := new(AVN.BlockBodiesPacket66)
-		if err := rlp.DecodeBytes(rawData, AVNMsg); err != nil {
+		avnMsg := new(avn.BlockBodiesPacket66)
+		if err := rlp.DecodeBytes(rawData, avnMsg); err != nil {
 			return 0, errorf("could not rlp decode message: %v", err)
 		}
-		return AVNMsg.RequestId, BlockBodies(AVNMsg.BlockBodiesPacket)
+		return avnMsg.RequestId, BlockBodies(avnMsg.BlockBodiesPacket)
 	case (NewBlock{}).Code():
 		msg = new(NewBlock)
 	case (NewBlockHashes{}).Code():
@@ -233,17 +233,17 @@ func (c *Conn) Read66() (uint64, Message) {
 	case (NewPooledTransactionHashes{}).Code():
 		msg = new(NewPooledTransactionHashes)
 	case (GetPooledTransactions{}.Code()):
-		AVNMsg := new(AVN.GetPooledTransactionsPacket66)
-		if err := rlp.DecodeBytes(rawData, AVNMsg); err != nil {
+		avnMsg := new(avn.GetPooledTransactionsPacket66)
+		if err := rlp.DecodeBytes(rawData, avnMsg); err != nil {
 			return 0, errorf("could not rlp decode message: %v", err)
 		}
-		return AVNMsg.RequestId, GetPooledTransactions(AVNMsg.GetPooledTransactionsPacket)
+		return avnMsg.RequestId, GetPooledTransactions(avnMsg.GetPooledTransactionsPacket)
 	case (PooledTransactions{}.Code()):
-		AVNMsg := new(AVN.PooledTransactionsPacket66)
-		if err := rlp.DecodeBytes(rawData, AVNMsg); err != nil {
+		avnMsg := new(avn.PooledTransactionsPacket66)
+		if err := rlp.DecodeBytes(rawData, avnMsg); err != nil {
 			return 0, errorf("could not rlp decode message: %v", err)
 		}
-		return AVNMsg.RequestId, PooledTransactions(AVNMsg.PooledTransactionsPacket)
+		return avnMsg.RequestId, PooledTransactions(avnMsg.PooledTransactionsPacket)
 	default:
 		msg = errorf("invalid message code: %d", code)
 	}
@@ -257,9 +257,9 @@ func (c *Conn) Read66() (uint64, Message) {
 	return 0, errorf("invalid message: %s", string(rawData))
 }
 
-// Write writes a AVN packet to the connection.
+// Write writes a avn packet to the connection.
 func (c *Conn) Write(msg Message) error {
-	// check if message is AVN protocol message
+	// check if message is avn protocol message
 	var (
 		payload []byte
 		err     error
@@ -272,8 +272,8 @@ func (c *Conn) Write(msg Message) error {
 	return err
 }
 
-// Write66 writes an AVN66 packet to the connection.
-func (c *Conn) Write66(req AVN.Packet, code int) error {
+// Write66 writes an avn66 packet to the connection.
+func (c *Conn) Write66(req avn.Packet, code int) error {
 	payload, err := rlp.EncodeToBytes(req)
 	if err != nil {
 		return err

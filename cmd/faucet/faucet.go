@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 // faucet is an Ether faucet backed by a light client.
 package main
@@ -41,33 +41,33 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/accounts/keystore"
-	"github.com/AVNereum/go-AVNereum/cmd/utils"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVNclient"
-	"github.com/AVNereum/go-AVNereum/AVNstats"
-	"github.com/AVNereum/go-AVNereum/les"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/nat"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/accounts/keystore"
+	"github.com/avalanria/go-avalanria/cmd/utils"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avnclient"
+	"github.com/avalanria/go-avalanria/avnstats"
+	"github.com/avalanria/go-avalanria/les"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/nat"
+	"github.com/avalanria/go-avalanria/params"
 	"github.com/gorilla/websocket"
 )
 
 var (
 	genesisFlag = flag.String("genesis", "", "Genesis json file to seed the chain with")
 	apiPortFlag = flag.Int("apiport", 8080, "Listener port for the HTTP API connection")
-	AVNPortFlag = flag.Int("AVNport", 30303, "Listener port for the devp2p connection")
+	avnPortFlag = flag.Int("avnport", 30303, "Listener port for the devp2p connection")
 	bootFlag    = flag.String("bootnodes", "", "Comma separated bootnode enode URLs to seed with")
 	netFlag     = flag.Uint64("network", 0, "Network ID to use for the Avalanria protocol")
-	statsFlag   = flag.String("AVNstats", "", "Ethstats network monitoring auth string")
+	statsFlag   = flag.String("avnstats", "", "Ethstats network monitoring auth string")
 
 	netnameFlag = flag.String("faucet.name", "", "Network name to assign to the faucet")
 	payoutFlag  = flag.Int("faucet.amount", 1, "Number of Ethers to pay out per user request")
@@ -91,7 +91,7 @@ var (
 )
 
 var (
-	AVNer = new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
+	avner = new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
 )
 
 var (
@@ -179,7 +179,7 @@ func main() {
 		log.Crit("Failed to unlock faucet signer account", "err", err)
 	}
 	// Assemble and start the faucet light service
-	faucet, err := newFaucet(genesis, *AVNPortFlag, enodes, *netFlag, *statsFlag, ks, website.Bytes())
+	faucet, err := newFaucet(genesis, *avnPortFlag, enodes, *netFlag, *statsFlag, ks, website.Bytes())
 	if err != nil {
 		log.Crit("Failed to start faucet", "err", err)
 	}
@@ -202,7 +202,7 @@ type request struct {
 type faucet struct {
 	config *params.ChainConfig // Chain configurations for signing
 	stack  *node.Node          // Avalanria protocol stack
-	client *AVNclient.Client   // Client connection to the Avalanria chain
+	client *avnclient.Client   // Client connection to the Avalanria chain
 	index  []byte              // Index page to serve up on the web
 
 	keystore *keystore.KeyStore // Keystore containing the single signer
@@ -230,7 +230,7 @@ type wsConn struct {
 func newFaucet(genesis *core.Genesis, port int, enodes []*enode.Node, network uint64, stats string, ks *keystore.KeyStore, index []byte) (*faucet, error) {
 	// Assemble the raw devp2p protocol stack
 	stack, err := node.New(&node.Config{
-		Name:    "gAVN",
+		Name:    "gavn",
 		Version: params.VersionWithCommit(gitCommit, gitDate),
 		DataDir: filepath.Join(os.Getenv("HOME"), ".faucet"),
 		P2P: p2p.Config{
@@ -247,7 +247,7 @@ func newFaucet(genesis *core.Genesis, port int, enodes []*enode.Node, network ui
 	}
 
 	// Assemble the Avalanria light client protocol
-	cfg := AVNconfig.Defaults
+	cfg := avnconfig.Defaults
 	cfg.SyncMode = downloader.LightSync
 	cfg.NetworkId = network
 	cfg.Genesis = genesis
@@ -258,9 +258,9 @@ func newFaucet(genesis *core.Genesis, port int, enodes []*enode.Node, network ui
 		return nil, fmt.Errorf("Failed to register the Avalanria service: %w", err)
 	}
 
-	// Assemble the AVNstats monitoring and reporting service'
+	// Assemble the avnstats monitoring and reporting service'
 	if stats != "" {
-		if err := AVNstats.New(stack, lesBackend.ApiBackend, lesBackend.Engine(), stats); err != nil {
+		if err := avnstats.New(stack, lesBackend.ApiBackend, lesBackend.Engine(), stats); err != nil {
 			return nil, err
 		}
 	}
@@ -280,7 +280,7 @@ func newFaucet(genesis *core.Genesis, port int, enodes []*enode.Node, network ui
 		stack.Close()
 		return nil, err
 	}
-	client := AVNclient.NewClient(api)
+	client := avnclient.NewClient(api)
 
 	return &faucet{
 		config:   genesis.Config,
@@ -374,7 +374,7 @@ func (f *faucet) apiHandler(w http.ResponseWriter, r *http.Request) {
 	reqs := f.reqs
 	f.lock.RUnlock()
 	if err = send(wsconn, map[string]interface{}{
-		"funds":    new(big.Int).Div(balance, AVNer),
+		"funds":    new(big.Int).Div(balance, avner),
 		"funded":   nonce,
 		"peers":    f.stack.Server().PeerCount(),
 		"requests": reqs,
@@ -469,7 +469,7 @@ func (f *faucet) apiHandler(w http.ResponseWriter, r *http.Request) {
 			id = username
 		default:
 			//lint:ignore ST1005 This error is to be displayed in the browser
-			err = errors.New("SomAVNing funky happened, please open an issue at https://github.com/AVNereum/go-AVNereum/issues")
+			err = errors.New("Somavning funky happened, please open an issue at https://github.com/avalanria/go-avalanria/issues")
 		}
 		if err != nil {
 			if err = sendError(wsconn, err); err != nil {
@@ -488,7 +488,7 @@ func (f *faucet) apiHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		if timeout = f.timeouts[id]; time.Now().After(timeout) {
 			// User wasn't funded recently, create the funding transaction
-			amount := new(big.Int).Mul(big.NewInt(int64(*payoutFlag)), AVNer)
+			amount := new(big.Int).Mul(big.NewInt(int64(*payoutFlag)), avner)
 			amount = new(big.Int).Mul(amount, new(big.Int).Exp(big.NewInt(5), big.NewInt(int64(msg.Tier)), nil))
 			amount = new(big.Int).Div(amount, new(big.Int).Exp(big.NewInt(2), big.NewInt(int64(msg.Tier)), nil))
 
@@ -615,7 +615,7 @@ func (f *faucet) loop() {
 			f.lock.RLock()
 			log.Info("Updated faucet state", "number", head.Number, "hash", head.Hash(), "age", common.PrettyAge(timestamp), "balance", f.balance, "nonce", f.nonce, "price", f.price)
 
-			balance := new(big.Int).Div(f.balance, AVNer)
+			balance := new(big.Int).Div(f.balance, avner)
 			peers := f.stack.Server().PeerCount()
 
 			for _, conn := range f.conns {

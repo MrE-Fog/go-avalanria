@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package node
 
@@ -29,8 +29,8 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/rpc"
 	"github.com/rs/cors"
 )
 
@@ -210,7 +210,7 @@ func (h *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 }
 
-// checkPath checks whAVNer a given request URL matches a given path prefix.
+// checkPath checks whavner a given request URL matches a given path prefix.
 func checkPath(r *http.Request, path string) bool {
 	// if no prefix has been specified, request URL must be on root
 	if path == "" {
@@ -376,7 +376,7 @@ func newCorsHandler(srv http.Handler, allowedOrigins []string) http.Handler {
 	}
 	c := cors.New(cors.Options{
 		AllowedOrigins: allowedOrigins,
-		AllowedMAVNods: []string{http.MAVNodPost, http.MAVNodGet},
+		AllowedMavnods: []string{http.MavnodPost, http.MavnodGet},
 		AllowedHeaders: []string{"*"},
 		MaxAge:         600,
 	})

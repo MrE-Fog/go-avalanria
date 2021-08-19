@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -27,20 +27,20 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/forkid"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/les/flowcontrol"
-	"github.com/AVNereum/go-AVNereum/les/utils"
-	vfc "github.com/AVNereum/go-AVNereum/les/vflux/client"
-	vfs "github.com/AVNereum/go-AVNereum/les/vflux/server"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/forkid"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/les/flowcontrol"
+	"github.com/avalanria/go-avalanria/les/utils"
+	vfc "github.com/avalanria/go-avalanria/les/vflux/client"
+	vfs "github.com/avalanria/go-avalanria/les/vflux/server"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 var (
@@ -125,7 +125,7 @@ type peerCommons struct {
 	id           string    // Peer identity.
 	version      int       // Protocol version negotiated.
 	network      uint64    // Network ID being on.
-	frozen       uint32    // Flag whAVNer the peer is frozen.
+	frozen       uint32    // Flag whavner the peer is frozen.
 	announceType uint64    // New block announcement type.
 	serving      uint32    // The status indicates the peer is served.
 	headInfo     blockInfo // Last announced block information.
@@ -147,7 +147,7 @@ func (p *peerCommons) isFrozen() bool {
 	return atomic.LoadUint32(&p.frozen) != 0
 }
 
-// canQueue returns an indicator whAVNer the peer can queue an operation.
+// canQueue returns an indicator whavner the peer can queue an operation.
 func (p *peerCommons) canQueue() bool {
 	return p.sendQueue.CanQueue() && !p.isFrozen()
 }
@@ -163,7 +163,7 @@ func (p *peerCommons) String() string {
 	return fmt.Sprintf("Peer %s [%s]", p.id, fmt.Sprintf("les/%d", p.version))
 }
 
-// PeerInfo represents a short summary of the `AVN` sub-protocol metadata known
+// PeerInfo represents a short summary of the `avn` sub-protocol metadata known
 // about a connected peer.
 type PeerInfo struct {
 	Version    int      `json:"version"`    // Avalanria protocol version negotiated
@@ -273,7 +273,7 @@ func (p *peerCommons) handshake(td *big.Int, head common.Hash, headNum uint64, g
 	send = send.add("genesisHash", genesis)
 
 	// If the protocol version is beyond les4, then pass the forkID
-	// as well. Check http://eips.AVNereum.org/EIPS/eip-2124 for more
+	// as well. Check http://eips.avalanria.org/EIPS/eip-2124 for more
 	// spec detail.
 	if p.version >= lpv4 {
 		send = send.add("forkID", forkID)
@@ -339,8 +339,8 @@ type serverPeer struct {
 	peerCommons
 
 	// Status fields
-	trusted                 bool   // The flag whAVNer the server is selected as trusted server.
-	onlyAnnounce            bool   // The flag whAVNer the server sends announcement only.
+	trusted                 bool   // The flag whavner the server is selected as trusted server.
+	onlyAnnounce            bool   // The flag whavner the server sends announcement only.
 	chainSince, chainRecent uint64 // The range of chain server peer can serve.
 	stateSince, stateRecent uint64 // The range of state server peer can serve.
 	txHistory               uint64 // The length of available tx history, 0 means all, 1 means disabled
@@ -360,7 +360,7 @@ type serverPeer struct {
 	updateTime  mclock.AbsTime
 
 	// Test callback hooks
-	hasBlockHook func(common.Hash, uint64, bool) bool // Used to determine whAVNer the server has the specified block.
+	hasBlockHook func(common.Hash, uint64, bool) bool // Used to determine whavner the server has the specified block.
 }
 
 func newServerPeer(version int, network uint64, trusted bool, p *p2p.Peer, rw p2p.MsgReadWriter) *serverPeer {
@@ -1056,7 +1056,7 @@ func (p *clientPeer) Handshake(td *big.Int, head common.Hash, headNum uint64, ge
 			*lists = (*lists).add("serveChainSince", uint64(0))
 			*lists = (*lists).add("serveStateSince", uint64(0))
 
-			// If local AVNereum node is running in archive mode, advertise ourselves we have
+			// If local avalanria node is running in archive mode, advertise ourselves we have
 			// all version state data. Otherwise only recent state is available.
 			stateRecent := uint64(core.TriesInMemory - blockSafetyMargin)
 			if server.archiveMode {

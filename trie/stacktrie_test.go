@@ -5,9 +5,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNdb/memorydb"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avndb/memorydb"
 )
 
 func TestSizeBug(t *testing.T) {

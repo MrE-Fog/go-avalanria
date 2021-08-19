@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -20,20 +20,20 @@ import (
 	"crypto/ecdsa"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/les/flowcontrol"
-	vfs "github.com/AVNereum/go-AVNereum/les/vflux/server"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/enr"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/les/flowcontrol"
+	vfs "github.com/avalanria/go-avalanria/les/vflux/server"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/enr"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 var (
@@ -43,11 +43,11 @@ var (
 
 const defaultConnectedBias = time.Minute * 3
 
-type AVNBackend interface {
+type avnBackend interface {
 	ArchiveMode() bool
 	BlockChain() *core.BlockChain
 	BloomIndexer() *core.ChainIndexer
-	ChainDb() AVNdb.Database
+	ChainDb() avndb.Database
 	Synced() bool
 	TxPool() *core.TxPool
 }
@@ -55,7 +55,7 @@ type AVNBackend interface {
 type LesServer struct {
 	lesCommons
 
-	archiveMode bool // Flag whAVNer the AVNereum node runs in archive mode.
+	archiveMode bool // Flag whavner the avalanria node runs in archive mode.
 	handler     *serverHandler
 	peers       *clientPeerSet
 	serverset   *serverSet
@@ -76,8 +76,8 @@ type LesServer struct {
 	p2pSrv *p2p.Server
 }
 
-func NewLesServer(node *node.Node, e AVNBackend, config *AVNconfig.Config) (*LesServer, error) {
-	lesDb, err := node.OpenDatabase("les.server", 0, 0, "AVN/db/lesserver/", false)
+func NewLesServer(node *node.Node, e avnBackend, config *avnconfig.Config) (*LesServer, error) {
+	lesDb, err := node.OpenDatabase("les.server", 0, 0, "avn/db/lesserver/", false)
 	if err != nil {
 		return nil, err
 	}

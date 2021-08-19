@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package console
 
@@ -26,15 +26,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/console/prompt"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/internal/jsre"
-	"github.com/AVNereum/go-AVNereum/miner"
-	"github.com/AVNereum/go-AVNereum/node"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/console/prompt"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/internal/jsre"
+	"github.com/avalanria/go-avalanria/miner"
+	"github.com/avalanria/go-avalanria/node"
 )
 
 const (
@@ -78,7 +78,7 @@ func (p *hookedPrompter) SetWordCompleter(completer prompt.WordCompleter) {}
 type tester struct {
 	workspace string
 	stack     *node.Node
-	AVNereum  *AVN.Avalanria
+	avalanria  *avn.Avalanria
 	console   *Console
 	input     *hookedPrompter
 	output    *bytes.Buffer
@@ -86,7 +86,7 @@ type tester struct {
 
 // newTester creates a test environment based on which the console can operate.
 // Please ensure you call Close() on the returned tester to avoid leaks.
-func newTester(t *testing.T, confOverride func(*AVNconfig.Config)) *tester {
+func newTester(t *testing.T, confOverride func(*avnconfig.Config)) *tester {
 	// Create a temporary storage for the node keys and initialize it
 	workspace, err := ioutil.TempDir("", "console-tester-")
 	if err != nil {
@@ -98,19 +98,19 @@ func newTester(t *testing.T, confOverride func(*AVNconfig.Config)) *tester {
 	if err != nil {
 		t.Fatalf("failed to create node: %v", err)
 	}
-	AVNConf := &AVNconfig.Config{
+	avnConf := &avnconfig.Config{
 		Genesis: core.DeveloperGenesisBlock(15, common.Address{}),
 		Miner: miner.Config{
 			Etherbase: common.HexToAddress(testAddress),
 		},
-		Ethash: AVNash.Config{
-			PowMode: AVNash.ModeTest,
+		Ethash: avnash.Config{
+			PowMode: avnash.ModeTest,
 		},
 	}
 	if confOverride != nil {
-		confOverride(AVNConf)
+		confOverride(avnConf)
 	}
-	AVNBackend, err := AVN.New(stack, AVNConf)
+	avnBackend, err := avn.New(stack, avnConf)
 	if err != nil {
 		t.Fatalf("failed to register Avalanria protocol: %v", err)
 	}
@@ -140,7 +140,7 @@ func newTester(t *testing.T, confOverride func(*AVNconfig.Config)) *tester {
 	return &tester{
 		workspace: workspace,
 		stack:     stack,
-		AVNereum:  AVNBackend,
+		avalanria:  avnBackend,
 		console:   console,
 		input:     prompter,
 		output:    printer,

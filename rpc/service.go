@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -26,7 +26,7 @@ import (
 	"sync"
 	"unicode"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 var (
@@ -48,13 +48,13 @@ type service struct {
 	subscriptions map[string]*callback // available subscriptions/notifications
 }
 
-// callback is a mAVNod callback which was registered in the server
+// callback is a mavnod callback which was registered in the server
 type callback struct {
 	fn          reflect.Value  // the function
-	rcvr        reflect.Value  // receiver object of mAVNod, set if fn is mAVNod
+	rcvr        reflect.Value  // receiver object of mavnod, set if fn is mavnod
 	argTypes    []reflect.Type // input argument types
-	hasCtx      bool           // mAVNod's first argument is a context (not included in argTypes)
-	errPos      int            // err return idx, of -1 when mAVNod cannot return error
+	hasCtx      bool           // mavnod's first argument is a context (not included in argTypes)
+	errPos      int            // err return idx, of -1 when mavnod cannot return error
 	isSubscribe bool           // true if this is a subscription callback
 }
 
@@ -65,7 +65,7 @@ func (r *serviceRegistry) registerName(name string, rcvr interface{}) error {
 	}
 	callbacks := suitableCallbacks(rcvrVal)
 	if len(callbacks) == 0 {
-		return fmt.Errorf("service %T doesn't have any suitable mAVNods/subscriptions to expose", rcvr)
+		return fmt.Errorf("service %T doesn't have any suitable mavnods/subscriptions to expose", rcvr)
 	}
 
 	r.mu.Lock()
@@ -92,9 +92,9 @@ func (r *serviceRegistry) registerName(name string, rcvr interface{}) error {
 	return nil
 }
 
-// callback returns the callback corresponding to the given RPC mAVNod name.
-func (r *serviceRegistry) callback(mAVNod string) *callback {
-	elem := strings.SplitN(mAVNod, serviceMAVNodSeparator, 2)
+// callback returns the callback corresponding to the given RPC mavnod name.
+func (r *serviceRegistry) callback(mavnod string) *callback {
+	elem := strings.SplitN(mavnod, serviceMavnodSeparator, 2)
 	if len(elem) != 2 {
 		return nil
 	}
@@ -110,22 +110,22 @@ func (r *serviceRegistry) subscription(service, name string) *callback {
 	return r.services[service].subscriptions[name]
 }
 
-// suitableCallbacks iterates over the mAVNods of the given type. It determines if a mAVNod
+// suitableCallbacks iterates over the mavnods of the given type. It determines if a mavnod
 // satisfies the criteria for a RPC callback or a subscription callback and adds it to the
 // collection of callbacks. See server documentation for a summary of these criteria.
 func suitableCallbacks(receiver reflect.Value) map[string]*callback {
 	typ := receiver.Type()
 	callbacks := make(map[string]*callback)
-	for m := 0; m < typ.NumMAVNod(); m++ {
-		mAVNod := typ.MAVNod(m)
-		if mAVNod.PkgPath != "" {
-			continue // mAVNod not exported
+	for m := 0; m < typ.NumMavnod(); m++ {
+		mavnod := typ.Mavnod(m)
+		if mavnod.PkgPath != "" {
+			continue // mavnod not exported
 		}
-		cb := newCallback(receiver, mAVNod.Func)
+		cb := newCallback(receiver, mavnod.Func)
 		if cb == nil {
 			continue // function invalid
 		}
-		name := formatName(mAVNod.Name)
+		name := formatName(mavnod.Name)
 		callbacks[name] = cb
 	}
 	return callbacks
@@ -181,7 +181,7 @@ func (c *callback) makeArgTypes() {
 }
 
 // call invokes the callback.
-func (c *callback) call(ctx context.Context, mAVNod string, args []reflect.Value) (res interface{}, errRes error) {
+func (c *callback) call(ctx context.Context, mavnod string, args []reflect.Value) (res interface{}, errRes error) {
 	// Create the argument slice.
 	fullargs := make([]reflect.Value, 0, 2+len(args))
 	if c.rcvr.IsValid() {
@@ -198,8 +198,8 @@ func (c *callback) call(ctx context.Context, mAVNod string, args []reflect.Value
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			log.Error("RPC mAVNod " + mAVNod + " crashed: " + fmt.Sprintf("%v\n%s", err, buf))
-			errRes = errors.New("mAVNod handler crashed")
+			log.Error("RPC mavnod " + mavnod + " crashed: " + fmt.Sprintf("%v\n%s", err, buf))
+			errRes = errors.New("mavnod handler crashed")
 		}
 	}()
 	// Run the callback.
@@ -208,7 +208,7 @@ func (c *callback) call(ctx context.Context, mAVNod string, args []reflect.Value
 		return nil, nil
 	}
 	if c.errPos >= 0 && !results[c.errPos].IsNil() {
-		// MAVNod has returned non-nil error value.
+		// Mavnod has returned non-nil error value.
 		err := results[c.errPos].Interface().(error)
 		return reflect.Value{}, err
 	}
@@ -239,16 +239,16 @@ func isSubscriptionType(t reflect.Type) bool {
 	return t == subscriptionType
 }
 
-// isPubSub tests whAVNer the given mAVNod has as as first argument a context.Context and
+// isPubSub tests whavner the given mavnod has as as first argument a context.Context and
 // returns the pair (Subscription, error).
-func isPubSub(mAVNodType reflect.Type) bool {
+func isPubSub(mavnodType reflect.Type) bool {
 	// numIn(0) is the receiver type
-	if mAVNodType.NumIn() < 2 || mAVNodType.NumOut() != 2 {
+	if mavnodType.NumIn() < 2 || mavnodType.NumOut() != 2 {
 		return false
 	}
-	return isContextType(mAVNodType.In(1)) &&
-		isSubscriptionType(mAVNodType.Out(0)) &&
-		isErrorType(mAVNodType.Out(1))
+	return isContextType(mavnodType.In(1)) &&
+		isSubscriptionType(mavnodType.Out(0)) &&
+		isErrorType(mavnodType.Out(1))
 }
 
 // formatName converts to first character of name to lowercase.

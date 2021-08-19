@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package vm
 
@@ -22,20 +22,20 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/crypto/blake2b"
-	"github.com/AVNereum/go-AVNereum/crypto/bls12381"
-	"github.com/AVNereum/go-AVNereum/crypto/bn256"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/crypto/blake2b"
+	"github.com/avalanria/go-avalanria/crypto/bls12381"
+	"github.com/avalanria/go-avalanria/crypto/bn256"
+	"github.com/avalanria/go-avalanria/params"
 
 	//lint:ignore SA1019 Needed for precompile
 	"golang.org/x/crypto/ripemd160"
 )
 
 // PrecompiledContract is the basic interface for native Go contracts. The implementation
-// requires a deterministic gas count based on the input size of the Run mAVNod of the
+// requires a deterministic gas count based on the input size of the Run mavnod of the
 // contract.
 type PrecompiledContract interface {
 	RequiredGas(input []byte) uint64  // RequiredPrice calculates the contract gas use
@@ -200,7 +200,7 @@ type sha256hash struct{}
 
 // RequiredGas returns the gas required to execute the pre-compiled contract.
 //
-// This mAVNod does not require any overflow checking as the input size gas costs
+// This mavnod does not require any overflow checking as the input size gas costs
 // required for anything significant is so high it's impossible to pay for.
 func (c *sha256hash) RequiredGas(input []byte) uint64 {
 	return uint64(len(input)+31)/32*params.Sha256PerWordGas + params.Sha256BaseGas
@@ -215,7 +215,7 @@ type ripemd160hash struct{}
 
 // RequiredGas returns the gas required to execute the pre-compiled contract.
 //
-// This mAVNod does not require any overflow checking as the input size gas costs
+// This mavnod does not require any overflow checking as the input size gas costs
 // required for anything significant is so high it's impossible to pay for.
 func (c *ripemd160hash) RequiredGas(input []byte) uint64 {
 	return uint64(len(input)+31)/32*params.Ripemd160PerWordGas + params.Ripemd160BaseGas
@@ -231,7 +231,7 @@ type dataCopy struct{}
 
 // RequiredGas returns the gas required to execute the pre-compiled contract.
 //
-// This mAVNod does not require any overflow checking as the input size gas costs
+// This mavnod does not require any overflow checking as the input size gas costs
 // required for anything significant is so high it's impossible to pay for.
 func (c *dataCopy) RequiredGas(input []byte) uint64 {
 	return uint64(len(input)+31)/32*params.IdentityPerWordGas + params.IdentityBaseGas
@@ -330,7 +330,7 @@ func (c *bigModExp) RequiredGas(input []byte) uint64 {
 	if c.eip2565 {
 		// EIP-2565 has three changes
 		// 1. Different multComplexity (inlined here)
-		// in EIP-2565 (https://eips.AVNereum.org/EIPS/eip-2565):
+		// in EIP-2565 (https://eips.avalanria.org/EIPS/eip-2565):
 		//
 		// def mult_complexity(x):
 		//    ceiling(x/8)^2

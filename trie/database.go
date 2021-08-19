@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
@@ -26,12 +26,12 @@ import (
 	"time"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 var (
@@ -67,7 +67,7 @@ var (
 // behind this split design is to provide read access to RPC handlers and sync
 // servers even while the trie is executing expensive garbage collection.
 type Database struct {
-	diskdb AVNdb.KeyValueStore // Persistent storage for matured trie nodes
+	diskdb avndb.KeyValueStore // Persistent storage for matured trie nodes
 
 	cleans  *fastcache.Cache            // GC friendly memory cache of clean node RLPs
 	dirties map[common.Hash]*cachedNode // Data and references relationships of dirty trie nodes
@@ -276,20 +276,20 @@ func expandNode(hash hashNode, n node) node {
 type Config struct {
 	Cache     int    // Memory allowance (MB) to use for caching trie nodes in memory
 	Journal   string // Journal of clean cache to survive node restarts
-	Preimages bool   // Flag whAVNer the preimage of trie key is recorded
+	Preimages bool   // Flag whavner the preimage of trie key is recorded
 }
 
 // NewDatabase creates a new trie database to store ephemeral trie content before
 // its written out to disk or garbage collected. No read cache is created, so all
 // data retrievals will hit the underlying disk database.
-func NewDatabase(diskdb AVNdb.KeyValueStore) *Database {
+func NewDatabase(diskdb avndb.KeyValueStore) *Database {
 	return NewDatabaseWithConfig(diskdb, nil)
 }
 
 // NewDatabaseWithConfig creates a new trie database to store ephemeral trie content
 // before its written out to disk or garbage collected. It also acts as a read cache
 // for nodes loaded from disk.
-func NewDatabaseWithConfig(diskdb AVNdb.KeyValueStore, config *Config) *Database {
+func NewDatabaseWithConfig(diskdb avndb.KeyValueStore, config *Config) *Database {
 	var cleans *fastcache.Cache
 	if config != nil && config.Cache > 0 {
 		if config.Journal == "" {
@@ -312,7 +312,7 @@ func NewDatabaseWithConfig(diskdb AVNdb.KeyValueStore, config *Config) *Database
 }
 
 // DiskDB retrieves the persistent storage backing the trie database.
-func (db *Database) DiskDB() AVNdb.KeyValueStore {
+func (db *Database) DiskDB() avndb.KeyValueStore {
 	return db.diskdb
 }
 
@@ -350,10 +350,10 @@ func (db *Database) insert(hash common.Hash, size int, node node) {
 }
 
 // insertPreimage writes a new trie node pre-image to the memory database if it's
-// yet unknown. The mAVNod will NOT make a copy of the slice,
+// yet unknown. The mavnod will NOT make a copy of the slice,
 // only use if the preimage will NOT be changed later on.
 //
-// Note, this mAVNod assumes that the database's lock is held!
+// Note, this mavnod assumes that the database's lock is held!
 func (db *Database) insertPreimage(hash common.Hash, preimage []byte) {
 	// Short circuit if preimage collection is disabled
 	if db.preimages == nil {
@@ -404,7 +404,7 @@ func (db *Database) node(hash common.Hash) node {
 }
 
 // Node retrieves an encoded cached trie node from memory. If it cannot be found
-// cached, the mAVNod queries the persistent database for the content.
+// cached, the mavnod queries the persistent database for the content.
 func (db *Database) Node(hash common.Hash) ([]byte, error) {
 	// It doesn't make sense to retrieve the metaroot
 	if hash == (common.Hash{}) {
@@ -444,7 +444,7 @@ func (db *Database) Node(hash common.Hash) ([]byte, error) {
 }
 
 // preimage retrieves a cached trie node pre-image from memory. If it cannot be
-// found cached, the mAVNod queries the persistent database for the content.
+// found cached, the mavnod queries the persistent database for the content.
 func (db *Database) preimage(hash common.Hash) []byte {
 	// Short circuit if preimage collection is disabled
 	if db.preimages == nil {
@@ -462,7 +462,7 @@ func (db *Database) preimage(hash common.Hash) []byte {
 }
 
 // Nodes retrieves the hashes of all the nodes cached within the memory database.
-// This mAVNod is extremely expensive and should only be used to validate internal
+// This mavnod is extremely expensive and should only be used to validate internal
 // states in test code.
 func (db *Database) Nodes() []common.Hash {
 	db.lock.RLock()
@@ -480,7 +480,7 @@ func (db *Database) Nodes() []common.Hash {
 // Reference adds a new reference from a parent node to a child node.
 // This function is used to add reference between internal trie node
 // and external node(e.g. storage trie root), all internal trie nodes
-// are referenced togAVNer by database itself.
+// are referenced togavner by database itself.
 func (db *Database) Reference(child common.Hash, parent common.Hash) {
 	db.lock.Lock()
 	defer db.lock.Unlock()
@@ -587,7 +587,7 @@ func (db *Database) dereference(child common.Hash, parent common.Hash) {
 // Cap iteratively flushes old but still referenced trie nodes until the total
 // memory usage goes below the given threshold.
 //
-// Note, this mAVNod is a non-synchronized mutator. It is unsafe to call this
+// Note, this mavnod is a non-synchronized mutator. It is unsafe to call this
 // concurrently with other mutators.
 func (db *Database) Cap(limit common.StorageSize) error {
 	// Create a database batch to flush persistent data out. It is important that
@@ -611,7 +611,7 @@ func (db *Database) Cap(limit common.StorageSize) error {
 			log.Error("Attempted to write preimages whilst disabled")
 		} else {
 			rawdb.WritePreimages(batch, db.preimages)
-			if batch.ValueSize() > AVNdb.IdealBatchSize {
+			if batch.ValueSize() > avndb.IdealBatchSize {
 				if err := batch.Write(); err != nil {
 					return err
 				}
@@ -627,7 +627,7 @@ func (db *Database) Cap(limit common.StorageSize) error {
 		rawdb.WriteTrieNode(batch, oldest, node.rlp())
 
 		// If we exceeded the ideal batch size, commit and reset
-		if batch.ValueSize() >= AVNdb.IdealBatchSize {
+		if batch.ValueSize() >= avndb.IdealBatchSize {
 			if err := batch.Write(); err != nil {
 				log.Error("Failed to write flush list to disk", "err", err)
 				return err
@@ -690,7 +690,7 @@ func (db *Database) Cap(limit common.StorageSize) error {
 // to disk, forcefully tearing down all references in both directions. As a side
 // effect, all pre-images accumulated up to this point are also written.
 //
-// Note, this mAVNod is a non-synchronized mutator. It is unsafe to call this
+// Note, this mavnod is a non-synchronized mutator. It is unsafe to call this
 // concurrently with other mutators.
 func (db *Database) Commit(node common.Hash, report bool, callback func(common.Hash)) error {
 	// Create a database batch to flush persistent data out. It is important that
@@ -753,7 +753,7 @@ func (db *Database) Commit(node common.Hash, report bool, callback func(common.H
 }
 
 // commit is the private locked version of Commit.
-func (db *Database) commit(hash common.Hash, batch AVNdb.Batch, uncacher *cleaner, callback func(common.Hash)) error {
+func (db *Database) commit(hash common.Hash, batch avndb.Batch, uncacher *cleaner, callback func(common.Hash)) error {
 	// If the node does not exist, it's a previously committed node
 	node, ok := db.dirties[hash]
 	if !ok {
@@ -773,7 +773,7 @@ func (db *Database) commit(hash common.Hash, batch AVNdb.Batch, uncacher *cleane
 	if callback != nil {
 		callback(hash)
 	}
-	if batch.ValueSize() >= AVNdb.IdealBatchSize {
+	if batch.ValueSize() >= avndb.IdealBatchSize {
 		if err := batch.Write(); err != nil {
 			return err
 		}

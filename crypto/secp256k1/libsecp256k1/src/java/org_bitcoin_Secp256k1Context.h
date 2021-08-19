@@ -10,7 +10,7 @@ extern "C" {
 #endif
 /*
  * Class:     org_bitcoin_Secp256k1Context
- * MAVNod:    secp256k1_init_context
+ * Mavnod:    secp256k1_init_context
  * Signature: ()J
  */
 SECP256K1_API jlong JNICALL Java_org_bitcoin_Secp256k1Context_secp256k1_1init_1context

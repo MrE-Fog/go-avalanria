@@ -17,7 +17,7 @@
 package org.bitcoin;
 
 /**
- * This class holds the context reference used in native mAVNods 
+ * This class holds the context reference used in native mavnods 
  * to handle ECDSA operations.
  */
 public class Secp256k1Context {

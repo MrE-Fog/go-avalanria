@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -228,7 +228,7 @@ func (t *httpServerConn) SetWriteDeadline(time.Time) error { return nil }
 // ServeHTTP serves JSON-RPC requests over HTTP.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Permit dumb empty requests for remote health-checks (AWS)
-	if r.MAVNod == http.MAVNodGet && r.ContentLength == 0 && r.URL.RawQuery == "" {
+	if r.Mavnod == http.MavnodGet && r.ContentLength == 0 && r.URL.RawQuery == "" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
@@ -259,15 +259,15 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // validateRequest returns a non-zero response code and error message if the
 // request is invalid.
 func validateRequest(r *http.Request) (int, error) {
-	if r.MAVNod == http.MAVNodPut || r.MAVNod == http.MAVNodDelete {
-		return http.StatusMAVNodNotAllowed, errors.New("mAVNod not allowed")
+	if r.Mavnod == http.MavnodPut || r.Mavnod == http.MavnodDelete {
+		return http.StatusMavnodNotAllowed, errors.New("mavnod not allowed")
 	}
 	if r.ContentLength > maxRequestContentLength {
 		err := fmt.Errorf("content length too large (%d>%d)", r.ContentLength, maxRequestContentLength)
 		return http.StatusRequestEntityTooLarge, err
 	}
 	// Allow OPTIONS (regardless of content-type)
-	if r.MAVNod == http.MAVNodOptions {
+	if r.Mavnod == http.MavnodOptions {
 		return 0, nil
 	}
 	// Check content-type

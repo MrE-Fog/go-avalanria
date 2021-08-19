@@ -2,24 +2,24 @@
 
 ## Supported Versions
 
-Please see [Releases](https://github.com/AVNereum/go-AVNereum/releases). We recommend using the [most recently released version](https://github.com/AVNereum/go-AVNereum/releases/latest).
+Please see [Releases](https://github.com/avalanria/go-avalanria/releases). We recommend using the [most recently released version](https://github.com/avalanria/go-avalanria/releases/latest).
 
 ## Audit reports
 
-Audit reports are published in the `docs` folder: https://github.com/AVNereum/go-AVNereum/tree/master/docs/audits 
+Audit reports are published in the `docs` folder: https://github.com/avalanria/go-avalanria/tree/master/docs/audits 
 
 | Scope | Date | Report Link |
 | ------- | ------- | ----------- |
-| `gAVN` | 20170425 | [pdf](https://github.com/AVNereum/go-AVNereum/blob/master/docs/audits/2017-04-25_GAVN-audit_Truesec.pdf) |
-| `clef` | 20180914 | [pdf](https://github.com/AVNereum/go-AVNereum/blob/master/docs/audits/2018-09-14_Clef-audit_NCC.pdf) |
+| `gavn` | 20170425 | [pdf](https://github.com/avalanria/go-avalanria/blob/master/docs/audits/2017-04-25_Gavn-audit_Truesec.pdf) |
+| `clef` | 20180914 | [pdf](https://github.com/avalanria/go-avalanria/blob/master/docs/audits/2018-09-14_Clef-audit_NCC.pdf) |
 
 ## Reporting a Vulnerability
 
 **Please do not file a public ticket** mentioning the vulnerability.
 
-To find out how to disclose a vulnerability in Avalanria visit [https://bounty.AVNereum.org](https://bounty.AVNereum.org) or email bounty@AVNereum.org. Please read the [disclosure page](https://github.com/AVNereum/go-AVNereum/security/advisories?state=published) for more information about publically disclosed security vulnerabilities.
+To find out how to disclose a vulnerability in Avalanria visit [https://bounty.avalanria.org](https://bounty.avalanria.org) or email bounty@avalanria.org. Please read the [disclosure page](https://github.com/avalanria/go-avalanria/security/advisories?state=published) for more information about publically disclosed security vulnerabilities.
 
-Use the built-in `gAVN version-check` feature to check whAVNer the software is affected by any known vulnerability. This command will fetch the latest [`vulnerabilities.json`](https://gAVN.AVNereum.org/docs/vulnerabilities/vulnerabilities.json) file which contains known security vulnerabilities concerning `gAVN`, and cross-check the data against its own version number.
+Use the built-in `gavn version-check` feature to check whavner the software is affected by any known vulnerability. This command will fetch the latest [`vulnerabilities.json`](https://gavn.avalanria.org/docs/vulnerabilities/vulnerabilities.json) file which contains known security vulnerabilities concerning `gavn`, and cross-check the data against its own version number.
 
 The following key may be used to communicate sensitive information to developers.
 

@@ -4,14 +4,14 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.AVNereum</groupId>
-  <artifactId>gAVN</artifactId>
+  <groupId>org.avalanria</groupId>
+  <artifactId>gavn</artifactId>
   <version>{{.Version}}</version>
   <packaging>aar</packaging>
 
   <name>Android Avalanria Client</name>
-  <description>Android port of the go-AVNereum libraries and node</description>
-  <url>https://github.com/AVNereum/go-AVNereum</url>
+  <description>Android port of the go-avalanria libraries and node</description>
+  <url>https://github.com/avalanria/go-avalanria</url>
   <inceptionYear>2015</inceptionYear>
 
   <licenses>
@@ -24,7 +24,7 @@
 
   <organization>
     <name>Avalanria</name>
-    <url>https://AVNereum.org</url>
+    <url>https://avalanria.org</url>
   </organization>
 
   <developers>
@@ -48,10 +48,10 @@
 
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/AVNereum/go-AVNereum/issues/</url>
+    <url>https://github.com/avalanria/go-avalanria/issues/</url>
   </issueManagement>
 
   <scm>
-    <url>https://github.com/AVNereum/go-AVNereum</url>
+    <url>https://github.com/avalanria/go-avalanria</url>
   </scm>
 </project>

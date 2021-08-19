@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package filters
 
@@ -25,13 +25,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 // filter is a helper struct that holds meta information over the filter type
@@ -51,7 +51,7 @@ type PublicFilterAPI struct {
 	backend   Backend
 	mux       *event.TypeMux
 	quit      chan struct{}
-	chainDb   AVNdb.Database
+	chainDb   avndb.Database
 	events    *EventSystem
 	filtersMu sync.Mutex
 	filters   map[rpc.ID]*filter
@@ -106,9 +106,9 @@ func (api *PublicFilterAPI) timeoutLoop(timeout time.Duration) {
 // as transactions enter the pending state.
 //
 // It is part of the filter package because this filter can be used through the
-// `AVN_getFilterChanges` polling mAVNod that is also used for log filters.
+// `avn_getFilterChanges` polling mavnod that is also used for log filters.
 //
-// https://AVN.wiki/json-rpc/API#AVN_newpendingtransactionfilter
+// https://avn.wiki/json-rpc/API#avn_newpendingtransactionfilter
 func (api *PublicFilterAPI) NewPendingTransactionFilter() rpc.ID {
 	var (
 		pendingTxs   = make(chan []common.Hash)
@@ -176,9 +176,9 @@ func (api *PublicFilterAPI) NewPendingTransactions(ctx context.Context) (*rpc.Su
 }
 
 // NewBlockFilter creates a filter that fetches blocks that are imported into the chain.
-// It is part of the filter package since polling goes with AVN_getFilterChanges.
+// It is part of the filter package since polling goes with avn_getFilterChanges.
 //
-// https://AVN.wiki/json-rpc/API#AVN_newblockfilter
+// https://avn.wiki/json-rpc/API#avn_newblockfilter
 func (api *PublicFilterAPI) NewBlockFilter() rpc.ID {
 	var (
 		headers   = make(chan *types.Header)
@@ -252,7 +252,7 @@ func (api *PublicFilterAPI) Logs(ctx context.Context, crit FilterCriteria) (*rpc
 		matchedLogs = make(chan []*types.Log)
 	)
 
-	logsSub, err := api.events.SubscribeLogs(AVNereum.FilterQuery(crit), matchedLogs)
+	logsSub, err := api.events.SubscribeLogs(avalanria.FilterQuery(crit), matchedLogs)
 	if err != nil {
 		return nil, err
 	}
@@ -279,11 +279,11 @@ func (api *PublicFilterAPI) Logs(ctx context.Context, crit FilterCriteria) (*rpc
 }
 
 // FilterCriteria represents a request to create a new filter.
-// Same as AVNereum.FilterQuery but with UnmarshalJSON() mAVNod.
-type FilterCriteria AVNereum.FilterQuery
+// Same as avalanria.FilterQuery but with UnmarshalJSON() mavnod.
+type FilterCriteria avalanria.FilterQuery
 
 // NewFilter creates a new filter and returns the filter id. It can be
-// used to retrieve logs when the state changes. This mAVNod cannot be
+// used to retrieve logs when the state changes. This mavnod cannot be
 // used to fetch logs that are already stored in the state.
 //
 // Default criteria for the from and to block are "latest".
@@ -294,10 +294,10 @@ type FilterCriteria AVNereum.FilterQuery
 //
 // In case "fromBlock" > "toBlock" an error is returned.
 //
-// https://AVN.wiki/json-rpc/API#AVN_newfilter
+// https://avn.wiki/json-rpc/API#avn_newfilter
 func (api *PublicFilterAPI) NewFilter(crit FilterCriteria) (rpc.ID, error) {
 	logs := make(chan []*types.Log)
-	logsSub, err := api.events.SubscribeLogs(AVNereum.FilterQuery(crit), logs)
+	logsSub, err := api.events.SubscribeLogs(avalanria.FilterQuery(crit), logs)
 	if err != nil {
 		return "", err
 	}
@@ -329,7 +329,7 @@ func (api *PublicFilterAPI) NewFilter(crit FilterCriteria) (rpc.ID, error) {
 
 // GetLogs returns logs matching the given argument that are stored within the state.
 //
-// https://AVN.wiki/json-rpc/API#AVN_getlogs
+// https://avn.wiki/json-rpc/API#avn_getlogs
 func (api *PublicFilterAPI) GetLogs(ctx context.Context, crit FilterCriteria) ([]*types.Log, error) {
 	var filter *Filter
 	if crit.BlockHash != nil {
@@ -358,7 +358,7 @@ func (api *PublicFilterAPI) GetLogs(ctx context.Context, crit FilterCriteria) ([
 
 // UninstallFilter removes the filter with the given filter id.
 //
-// https://AVN.wiki/json-rpc/API#AVN_uninstallfilter
+// https://avn.wiki/json-rpc/API#avn_uninstallfilter
 func (api *PublicFilterAPI) UninstallFilter(id rpc.ID) bool {
 	api.filtersMu.Lock()
 	f, found := api.filters[id]
@@ -376,7 +376,7 @@ func (api *PublicFilterAPI) UninstallFilter(id rpc.ID) bool {
 // GetFilterLogs returns the logs for the filter with the given id.
 // If the filter could not be found an empty array of logs is returned.
 //
-// https://AVN.wiki/json-rpc/API#AVN_getfilterlogs
+// https://avn.wiki/json-rpc/API#avn_getfilterlogs
 func (api *PublicFilterAPI) GetFilterLogs(ctx context.Context, id rpc.ID) ([]*types.Log, error) {
 	api.filtersMu.Lock()
 	f, found := api.filters[id]
@@ -417,7 +417,7 @@ func (api *PublicFilterAPI) GetFilterLogs(ctx context.Context, id rpc.ID) ([]*ty
 // For pending transaction and block filters the result is []common.Hash.
 // (pending)Log filters return []Log.
 //
-// https://AVN.wiki/json-rpc/API#AVN_getfilterchanges
+// https://avn.wiki/json-rpc/API#avn_getfilterchanges
 func (api *PublicFilterAPI) GetFilterChanges(id rpc.ID) (interface{}, error) {
 	api.filtersMu.Lock()
 	defer api.filtersMu.Unlock()

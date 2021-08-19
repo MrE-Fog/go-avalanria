@@ -1,21 +1,21 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package AVN implements the Avalanria protocol.
-package AVN
+// Package avn implements the Avalanria protocol.
+package avn
 
 import (
 	"errors"
@@ -26,54 +26,54 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/consensus/clique"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/bloombits"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/state/pruner"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVN/filters"
-	"github.com/AVNereum/go-AVNereum/AVN/gasprice"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/snap"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/miner"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/dnsdisc"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/consensus/clique"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/bloombits"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/state/pruner"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avn/filters"
+	"github.com/avalanria/go-avalanria/avn/gasprice"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/avn/protocols/snap"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/miner"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/dnsdisc"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 // Config contains the configuration options of the AVN protocol.
-// Deprecated: use AVNconfig.Config instead.
-type Config = AVNconfig.Config
+// Deprecated: use avnconfig.Config instead.
+type Config = avnconfig.Config
 
 // Avalanria implements the Avalanria full node service.
 type Avalanria struct {
-	config *AVNconfig.Config
+	config *avnconfig.Config
 
 	// Handlers
 	txPool             *core.TxPool
 	blockchain         *core.BlockChain
 	handler            *handler
-	AVNDialCandidates  enode.Iterator
+	avnDialCandidates  enode.Iterator
 	snapDialCandidates enode.Iterator
 
 	// DB interfaces
-	chainDb AVNdb.Database // Block chain database
+	chainDb avndb.Database // Block chain database
 
 	eventMux       *event.TypeMux
 	engine         consensus.Engine
@@ -87,29 +87,29 @@ type Avalanria struct {
 
 	miner     *miner.Miner
 	gasPrice  *big.Int
-	AVNerbase common.Address
+	avnerbase common.Address
 
 	networkID     uint64
-	netRPCService *AVNapi.PublicNetAPI
+	netRPCService *avnapi.PublicNetAPI
 
 	p2pServer *p2p.Server
 
-	lock sync.RWMutex // Protects the variadic fields (e.g. gas price and AVNerbase)
+	lock sync.RWMutex // Protects the variadic fields (e.g. gas price and avnerbase)
 }
 
 // New creates a new Avalanria object (including the
 // initialisation of the common Avalanria object)
-func New(stack *node.Node, config *AVNconfig.Config) (*Avalanria, error) {
+func New(stack *node.Node, config *avnconfig.Config) (*Avalanria, error) {
 	// Ensure configuration values are compatible and sane
 	if config.SyncMode == downloader.LightSync {
-		return nil, errors.New("can't run AVN.Avalanria in light sync mode, use les.LightAvalanria")
+		return nil, errors.New("can't run avn.Avalanria in light sync mode, use les.LightAvalanria")
 	}
 	if !config.SyncMode.IsValid() {
 		return nil, fmt.Errorf("invalid sync mode %d", config.SyncMode)
 	}
 	if config.Miner.GasPrice == nil || config.Miner.GasPrice.Cmp(common.Big0) <= 0 {
-		log.Warn("Sanitizing invalid miner gas price", "provided", config.Miner.GasPrice, "updated", AVNconfig.Defaults.Miner.GasPrice)
-		config.Miner.GasPrice = new(big.Int).Set(AVNconfig.Defaults.Miner.GasPrice)
+		log.Warn("Sanitizing invalid miner gas price", "provided", config.Miner.GasPrice, "updated", avnconfig.Defaults.Miner.GasPrice)
+		config.Miner.GasPrice = new(big.Int).Set(avnconfig.Defaults.Miner.GasPrice)
 	}
 	if config.NoPruning && config.TrieDirtyCache > 0 {
 		if config.SnapshotCache > 0 {
@@ -122,12 +122,12 @@ func New(stack *node.Node, config *AVNconfig.Config) (*Avalanria, error) {
 	}
 	log.Info("Allocated trie memory caches", "clean", common.StorageSize(config.TrieCleanCache)*1024*1024, "dirty", common.StorageSize(config.TrieDirtyCache)*1024*1024)
 
-	// Transfer mining-related config to the AVNash config.
-	AVNashConfig := config.Ethash
-	AVNashConfig.NotifyFull = config.Miner.NotifyFull
+	// Transfer mining-related config to the avnash config.
+	avnashConfig := config.Ethash
+	avnashConfig.NotifyFull = config.Miner.NotifyFull
 
 	// Assemble the Avalanria object
-	chainDb, err := stack.OpenDatabaseWithFreezer("chaindata", config.DatabaseCache, config.DatabaseHandles, config.DatabaseFreezer, "AVN/db/chaindata/", false)
+	chainDb, err := stack.OpenDatabaseWithFreezer("chaindata", config.DatabaseCache, config.DatabaseHandles, config.DatabaseFreezer, "avn/db/chaindata/", false)
 	if err != nil {
 		return nil, err
 	}
@@ -140,16 +140,16 @@ func New(stack *node.Node, config *AVNconfig.Config) (*Avalanria, error) {
 	if err := pruner.RecoverPruning(stack.ResolvePath(""), chainDb, stack.ResolvePath(config.TrieCleanCacheJournal)); err != nil {
 		log.Error("Failed to recover state", "error", err)
 	}
-	AVN := &Avalanria{
+	avn := &Avalanria{
 		config:            config,
 		chainDb:           chainDb,
 		eventMux:          stack.EventMux(),
 		accountManager:    stack.AccountManager(),
-		engine:            AVNconfig.CreateConsensusEngine(stack, chainConfig, &AVNashConfig, config.Miner.Notify, config.Miner.Noverify, chainDb),
+		engine:            avnconfig.CreateConsensusEngine(stack, chainConfig, &avnashConfig, config.Miner.Notify, config.Miner.Noverify, chainDb),
 		closeBloomHandler: make(chan struct{}),
 		networkID:         config.NetworkId,
 		gasPrice:          config.Miner.GasPrice,
-		AVNerbase:         config.Miner.Etherbase,
+		avnerbase:         config.Miner.Etherbase,
 		bloomRequests:     make(chan chan *bloombits.Retrieval),
 		bloomIndexer:      core.NewBloomIndexer(chainDb, params.BloomBitsBlocks, params.BloomConfirms),
 		p2pServer:         stack.Server(),
@@ -164,7 +164,7 @@ func New(stack *node.Node, config *AVNconfig.Config) (*Avalanria, error) {
 
 	if !config.SkipBcVersionCheck {
 		if bcVersion != nil && *bcVersion > core.BlockChainVersion {
-			return nil, fmt.Errorf("database version is v%d, GAVN %s only supports v%d", *bcVersion, params.VersionWithMeta, core.BlockChainVersion)
+			return nil, fmt.Errorf("database version is v%d, Gavn %s only supports v%d", *bcVersion, params.VersionWithMeta, core.BlockChainVersion)
 		} else if bcVersion == nil || *bcVersion < core.BlockChainVersion {
 			if bcVersion != nil { // only print warning on upgrade, not on init
 				log.Warn("Upgrade blockchain database version", "from", dbVer, "to", core.BlockChainVersion)
@@ -188,22 +188,22 @@ func New(stack *node.Node, config *AVNconfig.Config) (*Avalanria, error) {
 			Preimages:           config.Preimages,
 		}
 	)
-	AVN.blockchain, err = core.NewBlockChain(chainDb, cacheConfig, chainConfig, AVN.engine, vmConfig, AVN.shouldPreserve, &config.TxLookupLimit)
+	avn.blockchain, err = core.NewBlockChain(chainDb, cacheConfig, chainConfig, avn.engine, vmConfig, avn.shouldPreserve, &config.TxLookupLimit)
 	if err != nil {
 		return nil, err
 	}
 	// Rewind the chain in case of an incompatible config upgrade.
 	if compat, ok := genesisErr.(*params.ConfigCompatError); ok {
 		log.Warn("Rewinding chain to upgrade configuration", "err", compat)
-		AVN.blockchain.SetHead(compat.RewindTo)
+		avn.blockchain.SetHead(compat.RewindTo)
 		rawdb.WriteChainConfig(chainDb, genesisHash, chainConfig)
 	}
-	AVN.bloomIndexer.Start(AVN.blockchain)
+	avn.bloomIndexer.Start(avn.blockchain)
 
 	if config.TxPool.Journal != "" {
 		config.TxPool.Journal = stack.ResolvePath(config.TxPool.Journal)
 	}
-	AVN.txPool = core.NewTxPool(config.TxPool, chainConfig, AVN.blockchain)
+	avn.txPool = core.NewTxPool(config.TxPool, chainConfig, avn.blockchain)
 
 	// Permit the downloader to use the trie cache allowance during fast sync
 	cacheLimit := cacheConfig.TrieCleanLimit + cacheConfig.TrieDirtyLimit + cacheConfig.SnapshotLimit
@@ -211,51 +211,51 @@ func New(stack *node.Node, config *AVNconfig.Config) (*Avalanria, error) {
 	if checkpoint == nil {
 		checkpoint = params.TrustedCheckpoints[genesisHash]
 	}
-	if AVN.handler, err = newHandler(&handlerConfig{
+	if avn.handler, err = newHandler(&handlerConfig{
 		Database:   chainDb,
-		Chain:      AVN.blockchain,
-		TxPool:     AVN.txPool,
+		Chain:      avn.blockchain,
+		TxPool:     avn.txPool,
 		Network:    config.NetworkId,
 		Sync:       config.SyncMode,
 		BloomCache: uint64(cacheLimit),
-		EventMux:   AVN.eventMux,
+		EventMux:   avn.eventMux,
 		Checkpoint: checkpoint,
 		Whitelist:  config.Whitelist,
 	}); err != nil {
 		return nil, err
 	}
 
-	AVN.miner = miner.New(AVN, &config.Miner, chainConfig, AVN.EventMux(), AVN.engine, AVN.isLocalBlock)
-	AVN.miner.SetExtra(makeExtraData(config.Miner.ExtraData))
+	avn.miner = miner.New(avn, &config.Miner, chainConfig, avn.EventMux(), avn.engine, avn.isLocalBlock)
+	avn.miner.SetExtra(makeExtraData(config.Miner.ExtraData))
 
-	AVN.APIBackend = &EthAPIBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, AVN, nil}
-	if AVN.APIBackend.allowUnprotectedTxs {
+	avn.APIBackend = &EthAPIBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, avn, nil}
+	if avn.APIBackend.allowUnprotectedTxs {
 		log.Info("Unprotected transactions allowed")
 	}
 	gpoParams := config.GPO
 	if gpoParams.Default == nil {
 		gpoParams.Default = config.Miner.GasPrice
 	}
-	AVN.APIBackend.gpo = gasprice.NewOracle(AVN.APIBackend, gpoParams)
+	avn.APIBackend.gpo = gasprice.NewOracle(avn.APIBackend, gpoParams)
 
 	// Setup DNS discovery iterators.
 	dnsclient := dnsdisc.NewClient(dnsdisc.Config{})
-	AVN.AVNDialCandidates, err = dnsclient.NewIterator(AVN.config.EthDiscoveryURLs...)
+	avn.avnDialCandidates, err = dnsclient.NewIterator(avn.config.EthDiscoveryURLs...)
 	if err != nil {
 		return nil, err
 	}
-	AVN.snapDialCandidates, err = dnsclient.NewIterator(AVN.config.SnapDiscoveryURLs...)
+	avn.snapDialCandidates, err = dnsclient.NewIterator(avn.config.SnapDiscoveryURLs...)
 	if err != nil {
 		return nil, err
 	}
 
 	// Start the RPC service
-	AVN.netRPCService = AVNapi.NewPublicNetAPI(AVN.p2pServer, config.NetworkId)
+	avn.netRPCService = avnapi.NewPublicNetAPI(avn.p2pServer, config.NetworkId)
 
 	// Register the backend on the node
-	stack.RegisterAPIs(AVN.APIs())
-	stack.RegisterProtocols(AVN.Protocols())
-	stack.RegisterLifecycle(AVN)
+	stack.RegisterAPIs(avn.APIs())
+	stack.RegisterProtocols(avn.Protocols())
+	stack.RegisterLifecycle(avn)
 	// Check for unclean shutdown
 	if uncleanShutdowns, discards, err := rawdb.PushUncleanShutdownMarker(chainDb); err != nil {
 		log.Error("Could not update unclean-shutdown-marker list", "error", err)
@@ -269,7 +269,7 @@ func New(stack *node.Node, config *AVNconfig.Config) (*Avalanria, error) {
 				"age", common.PrettyAge(t))
 		}
 	}
-	return AVN, nil
+	return avn, nil
 }
 
 func makeExtraData(extra []byte) []byte {
@@ -277,7 +277,7 @@ func makeExtraData(extra []byte) []byte {
 		// create default extradata
 		extra, _ = rlp.EncodeToBytes([]interface{}{
 			uint(params.VersionMajor<<16 | params.VersionMinor<<8 | params.VersionPatch),
-			"gAVN",
+			"gavn",
 			runtime.Version(),
 			runtime.GOOS,
 		})
@@ -289,10 +289,10 @@ func makeExtraData(extra []byte) []byte {
 	return extra
 }
 
-// APIs return the collection of RPC services the AVNereum package offers.
+// APIs return the collection of RPC services the avalanria package offers.
 // NOTE, some of these services probably need to be moved to somewhere else.
 func (s *Avalanria) APIs() []rpc.API {
-	apis := AVNapi.GetAPIs(s.APIBackend)
+	apis := avnapi.GetAPIs(s.APIBackend)
 
 	// Append any APIs exposed explicitly by the consensus engine
 	apis = append(apis, s.engine.APIs(s.BlockChain())...)
@@ -300,17 +300,17 @@ func (s *Avalanria) APIs() []rpc.API {
 	// Append all the local APIs and return
 	return append(apis, []rpc.API{
 		{
-			Namespace: "AVN",
+			Namespace: "avn",
 			Version:   "1.0",
 			Service:   NewPublicAvalanriaAPI(s),
 			Public:    true,
 		}, {
-			Namespace: "AVN",
+			Namespace: "avn",
 			Version:   "1.0",
 			Service:   NewPublicMinerAPI(s),
 			Public:    true,
 		}, {
-			Namespace: "AVN",
+			Namespace: "avn",
 			Version:   "1.0",
 			Service:   downloader.NewPublicDownloaderAPI(s.handler.downloader, s.eventMux),
 			Public:    true,
@@ -320,7 +320,7 @@ func (s *Avalanria) APIs() []rpc.API {
 			Service:   NewPrivateMinerAPI(s),
 			Public:    false,
 		}, {
-			Namespace: "AVN",
+			Namespace: "avn",
 			Version:   "1.0",
 			Service:   filters.NewPublicFilterAPI(s.APIBackend, false, 5*time.Minute),
 			Public:    true,
@@ -352,31 +352,31 @@ func (s *Avalanria) ResetWithGenesisBlock(gb *types.Block) {
 
 func (s *Avalanria) Etherbase() (eb common.Address, err error) {
 	s.lock.RLock()
-	AVNerbase := s.AVNerbase
+	avnerbase := s.avnerbase
 	s.lock.RUnlock()
 
-	if AVNerbase != (common.Address{}) {
-		return AVNerbase, nil
+	if avnerbase != (common.Address{}) {
+		return avnerbase, nil
 	}
 	if wallets := s.AccountManager().Wallets(); len(wallets) > 0 {
 		if accounts := wallets[0].Accounts(); len(accounts) > 0 {
-			AVNerbase := accounts[0].Address
+			avnerbase := accounts[0].Address
 
 			s.lock.Lock()
-			s.AVNerbase = AVNerbase
+			s.avnerbase = avnerbase
 			s.lock.Unlock()
 
-			log.Info("Etherbase automatically configured", "address", AVNerbase)
-			return AVNerbase, nil
+			log.Info("Etherbase automatically configured", "address", avnerbase)
+			return avnerbase, nil
 		}
 	}
-	return common.Address{}, fmt.Errorf("AVNerbase must be explicitly specified")
+	return common.Address{}, fmt.Errorf("avnerbase must be explicitly specified")
 }
 
-// isLocalBlock checks whAVNer the specified block is mined
+// isLocalBlock checks whavner the specified block is mined
 // by local miner accounts.
 //
-// We regard two types of accounts as local miner account: AVNerbase
+// We regard two types of accounts as local miner account: avnerbase
 // and accounts specified via `txpool.locals` flag.
 func (s *Avalanria) isLocalBlock(block *types.Block) bool {
 	author, err := s.engine.Author(block.Header())
@@ -384,14 +384,14 @@ func (s *Avalanria) isLocalBlock(block *types.Block) bool {
 		log.Warn("Failed to retrieve block author", "number", block.NumberU64(), "hash", block.Hash(), "err", err)
 		return false
 	}
-	// Check whAVNer the given address is AVNerbase.
+	// Check whavner the given address is avnerbase.
 	s.lock.RLock()
-	AVNerbase := s.AVNerbase
+	avnerbase := s.avnerbase
 	s.lock.RUnlock()
-	if author == AVNerbase {
+	if author == avnerbase {
 		return true
 	}
-	// Check whAVNer the given address is specified by `txpool.local`
+	// Check whavner the given address is specified by `txpool.local`
 	// CLI flag.
 	for _, account := range s.config.TxPool.Locals {
 		if account == author {
@@ -401,8 +401,8 @@ func (s *Avalanria) isLocalBlock(block *types.Block) bool {
 	return false
 }
 
-// shouldPreserve checks whAVNer we should preserve the given block
-// during the chain reorg depending on whAVNer the author of block
+// shouldPreserve checks whavner we should preserve the given block
+// during the chain reorg depending on whavner the author of block
 // is a local account.
 func (s *Avalanria) shouldPreserve(block *types.Block) bool {
 	// The reason we need to disable the self-reorg preserving for clique
@@ -428,16 +428,16 @@ func (s *Avalanria) shouldPreserve(block *types.Block) bool {
 }
 
 // SetEtherbase sets the mining reward address.
-func (s *Avalanria) SetEtherbase(AVNerbase common.Address) {
+func (s *Avalanria) SetEtherbase(avnerbase common.Address) {
 	s.lock.Lock()
-	s.AVNerbase = AVNerbase
+	s.avnerbase = avnerbase
 	s.lock.Unlock()
 
-	s.miner.SetEtherbase(AVNerbase)
+	s.miner.SetEtherbase(avnerbase)
 }
 
 // StartMining starts the miner with the given number of CPU threads. If mining
-// is already running, this mAVNod adjust the number of threads allowed to use
+// is already running, this mavnod adjust the number of threads allowed to use
 // and updates the minimum price required by the transaction pool.
 func (s *Avalanria) StartMining(threads int) error {
 	// Update the thread count within the consensus engine
@@ -462,8 +462,8 @@ func (s *Avalanria) StartMining(threads int) error {
 		// Configure the local mining address
 		eb, err := s.Etherbase()
 		if err != nil {
-			log.Error("Cannot start mining without AVNerbase", "err", err)
-			return fmt.Errorf("AVNerbase missing: %v", err)
+			log.Error("Cannot start mining without avnerbase", "err", err)
+			return fmt.Errorf("avnerbase missing: %v", err)
 		}
 		if clique, ok := s.engine.(*clique.Clique); ok {
 			wallet, err := s.accountManager.Find(accounts.Account{Address: eb})
@@ -504,7 +504,7 @@ func (s *Avalanria) BlockChain() *core.BlockChain       { return s.blockchain }
 func (s *Avalanria) TxPool() *core.TxPool               { return s.txPool }
 func (s *Avalanria) EventMux() *event.TypeMux           { return s.eventMux }
 func (s *Avalanria) Engine() consensus.Engine           { return s.engine }
-func (s *Avalanria) ChainDb() AVNdb.Database            { return s.chainDb }
+func (s *Avalanria) ChainDb() avndb.Database            { return s.chainDb }
 func (s *Avalanria) IsListening() bool                  { return true } // Always listening
 func (s *Avalanria) Downloader() *downloader.Downloader { return s.handler.downloader }
 func (s *Avalanria) Synced() bool                       { return atomic.LoadUint32(&s.handler.acceptTxs) == 1 }
@@ -514,7 +514,7 @@ func (s *Avalanria) BloomIndexer() *core.ChainIndexer   { return s.bloomIndexer 
 // Protocols returns all the currently configured
 // network protocols to start.
 func (s *Avalanria) Protocols() []p2p.Protocol {
-	protos := AVN.MakeProtocols((*AVNHandler)(s.handler), s.networkID, s.AVNDialCandidates)
+	protos := avn.MakeProtocols((*avnHandler)(s.handler), s.networkID, s.avnDialCandidates)
 	if s.config.SnapshotCache > 0 {
 		protos = append(protos, snap.MakeProtocols((*snapHandler)(s.handler), s.snapDialCandidates)...)
 	}
@@ -524,7 +524,7 @@ func (s *Avalanria) Protocols() []p2p.Protocol {
 // Start implements node.Lifecycle, starting all internal goroutines needed by the
 // Avalanria protocol implementation.
 func (s *Avalanria) Start() error {
-	AVN.StartENRUpdater(s.blockchain, s.p2pServer.LocalNode())
+	avn.StartENRUpdater(s.blockchain, s.p2pServer.LocalNode())
 
 	// Start the bloom bits servicing goroutines
 	s.startBloomHandlers(params.BloomBitsBlocks)
@@ -546,7 +546,7 @@ func (s *Avalanria) Start() error {
 // Avalanria protocol.
 func (s *Avalanria) Stop() error {
 	// Stop all the peer-related stuff first.
-	s.AVNDialCandidates.Close()
+	s.avnDialCandidates.Close()
 	s.snapDialCandidates.Close()
 	s.handler.Stop()
 

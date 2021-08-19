@@ -1,20 +1,20 @@
-// Copyright 2021 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2021 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package gAVNclient
+package gavnclient
 
 import (
 	"bytes"
@@ -22,19 +22,19 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVNclient"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avnclient"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 var (
@@ -52,17 +52,17 @@ func newTestBackend(t *testing.T) (*node.Node, []*types.Block) {
 		t.Fatalf("can't create new node: %v", err)
 	}
 	// Create Avalanria Service
-	config := &AVNconfig.Config{Genesis: genesis}
-	config.Ethash.PowMode = AVNash.ModeFake
-	AVNservice, err := AVN.New(n, config)
+	config := &avnconfig.Config{Genesis: genesis}
+	config.Ethash.PowMode = avnash.ModeFake
+	avnservice, err := avn.New(n, config)
 	if err != nil {
-		t.Fatalf("can't create new AVNereum service: %v", err)
+		t.Fatalf("can't create new avalanria service: %v", err)
 	}
 	// Import the test chain.
 	if err := n.Start(); err != nil {
 		t.Fatalf("can't start test node: %v", err)
 	}
-	if _, err := AVNservice.BlockChain().InsertChain(blocks[1:]); err != nil {
+	if _, err := avnservice.BlockChain().InsertChain(blocks[1:]); err != nil {
 		t.Fatalf("can't import test blocks: %v", err)
 	}
 	return n, blocks
@@ -82,13 +82,13 @@ func generateTestChain() (*core.Genesis, []*types.Block) {
 		g.SetExtra([]byte("test"))
 	}
 	gblock := genesis.ToBlock(db)
-	engine := AVNash.NewFaker()
+	engine := avnash.NewFaker()
 	blocks, _ := core.GenerateChain(config, gblock, engine, db, 1, generate)
 	blocks = append([]*types.Block{gblock}, blocks...)
 	return genesis, blocks
 }
 
-func TestGAVNClient(t *testing.T) {
+func TestGavnClient(t *testing.T) {
 	backend, _ := newTestBackend(t)
 	client, err := backend.Attach()
 	if err != nil {
@@ -134,7 +134,7 @@ func TestGAVNClient(t *testing.T) {
 func testAccessList(t *testing.T, client *rpc.Client) {
 	ec := New(client)
 	// Test transfer
-	msg := AVNereum.CallMsg{
+	msg := avalanria.CallMsg{
 		From:     testAddr,
 		To:       &common.Address{},
 		Gas:      21000,
@@ -155,7 +155,7 @@ func testAccessList(t *testing.T, client *rpc.Client) {
 		t.Fatalf("unexpected length of accesslist: %v", len(*al))
 	}
 	// Test reverting transaction
-	msg = AVNereum.CallMsg{
+	msg = avalanria.CallMsg{
 		From:     testAddr,
 		To:       nil,
 		Gas:      100000,
@@ -187,7 +187,7 @@ func testAccessList(t *testing.T, client *rpc.Client) {
 
 func testGetProof(t *testing.T, client *rpc.Client) {
 	ec := New(client)
-	AVNcl := AVNclient.NewClient(client)
+	avncl := avnclient.NewClient(client)
 	result, err := ec.GetProof(context.Background(), testAddr, []string{}, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -196,12 +196,12 @@ func testGetProof(t *testing.T, client *rpc.Client) {
 		t.Fatalf("unexpected address, want: %v got: %v", testAddr, result.Address)
 	}
 	// test nonce
-	nonce, _ := AVNcl.NonceAt(context.Background(), result.Address, nil)
+	nonce, _ := avncl.NonceAt(context.Background(), result.Address, nil)
 	if result.Nonce != nonce {
 		t.Fatalf("invalid nonce, want: %v got: %v", nonce, result.Nonce)
 	}
 	// test balance
-	balance, _ := AVNcl.BalanceAt(context.Background(), result.Address, nil)
+	balance, _ := avncl.BalanceAt(context.Background(), result.Address, nil)
 	if result.Balance.Cmp(balance) != 0 {
 		t.Fatalf("invalid balance, want: %v got: %v", balance, result.Balance)
 	}
@@ -248,12 +248,12 @@ func testSetHead(t *testing.T, client *rpc.Client) {
 
 func testSubscribePendingTransactions(t *testing.T, client *rpc.Client) {
 	ec := New(client)
-	AVNcl := AVNclient.NewClient(client)
+	avncl := avnclient.NewClient(client)
 	// Subscribe to Transactions
 	ch := make(chan common.Hash)
 	ec.SubscribePendingTransactions(context.Background(), ch)
 	// Send a transaction
-	chainID, err := AVNcl.ChainID(context.Background())
+	chainID, err := avncl.ChainID(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -269,7 +269,7 @@ func testSubscribePendingTransactions(t *testing.T, client *rpc.Client) {
 		t.Fatal(err)
 	}
 	// Send transaction
-	err = AVNcl.SendTransaction(context.Background(), signedTx)
+	err = avncl.SendTransaction(context.Background(), signedTx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -282,7 +282,7 @@ func testSubscribePendingTransactions(t *testing.T, client *rpc.Client) {
 
 func testCallContract(t *testing.T, client *rpc.Client) {
 	ec := New(client)
-	msg := AVNereum.CallMsg{
+	msg := avalanria.CallMsg{
 		From:     testAddr,
 		To:       &common.Address{},
 		Gas:      21000,

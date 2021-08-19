@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // Enabled is checked by the constructor functions for all of the

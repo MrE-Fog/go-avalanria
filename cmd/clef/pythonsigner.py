@@ -51,7 +51,7 @@ class StdIOHandler():
         Example request:
         {
             "jsonrpc": "2.0",
-            "mAVNod": "ApproveTx",
+            "mavnod": "ApproveTx",
             "params": [{
                 "transaction": {
                     "to": "0xae967917c465db8578ca9024c205720b1a3651A9",
@@ -62,7 +62,7 @@ class StdIOHandler():
                     "nonce": "0x0"
                 },
                 "from": "0xAe967917c465db8578ca9024c205720b1a3651A9",
-                "call_info": "Warning! Could not validate ABI-data against calldata\nSupplied ABI spec does not contain mAVNod signature in data: 0xd7a58658",
+                "call_info": "Warning! Could not validate ABI-data against calldata\nSupplied ABI spec does not contain mavnod signature in data: 0xd7a58658",
                 "meta": {
                     "remote": "127.0.0.1:34572",
                     "local": "localhost:8550",
@@ -133,7 +133,7 @@ class StdIOHandler():
         """
         Example request:
 
-        {"jsonrpc":"2.0","mAVNod":"ShowInfo","params":{"message":"Testing 'ShowError'"},"id":1}
+        {"jsonrpc":"2.0","mavnod":"ShowInfo","params":{"message":"Testing 'ShowError'"},"id":1}
 
         :param message: to show
         :return: nothing
@@ -146,7 +146,7 @@ class StdIOHandler():
     def ShowInfo(self,message = {}):
         """
         Example request
-        {"jsonrpc":"2.0","mAVNod":"ShowInfo","params":{"message":"Testing 'ShowInfo'"},"id":0}
+        {"jsonrpc":"2.0","mavnod":"ShowInfo","params":{"message":"Testing 'ShowInfo'"},"id":0}
 
         :param message: to display
         :return:nothing

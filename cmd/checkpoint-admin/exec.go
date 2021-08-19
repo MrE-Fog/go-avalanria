@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -25,17 +25,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/cmd/utils"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/contracts/checkpointoracle"
-	"github.com/AVNereum/go-AVNereum/contracts/checkpointoracle/contract"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNclient"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/cmd/utils"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/contracts/checkpointoracle"
+	"github.com/avalanria/go-avalanria/contracts/checkpointoracle/contract"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avnclient"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -124,7 +124,7 @@ func deploy(ctx *cli.Context) error {
 // sign checkpoint.
 func sign(ctx *cli.Context) error {
 	var (
-		offline bool // The indicator whAVNer we sign checkpoint by offline.
+		offline bool // The indicator whavner we sign checkpoint by offline.
 		chash   common.Hash
 		cindex  uint64
 		address common.Address
@@ -160,7 +160,7 @@ func sign(ctx *cli.Context) error {
 		reqCtx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancelFn()
 
-		head, err := AVNclient.NewClient(node).HeaderByNumber(reqCtx, nil)
+		head, err := avnclient.NewClient(node).HeaderByNumber(reqCtx, nil)
 		if err != nil {
 			return err
 		}
@@ -184,7 +184,7 @@ func sign(ctx *cli.Context) error {
 		signature string
 		signer    string
 	)
-	// isAdmin checks whAVNer the specified signer is admin.
+	// isAdmin checks whavner the specified signer is admin.
 	isAdmin := func(addr common.Address) error {
 		signers, err := oracle.Contract().GetAllAdmin(nil)
 		if err != nil {
@@ -283,12 +283,12 @@ func publish(ctx *cli.Context) error {
 	reqCtx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelFn()
 
-	head, err := AVNclient.NewClient(client).HeaderByNumber(reqCtx, nil)
+	head, err := avnclient.NewClient(client).HeaderByNumber(reqCtx, nil)
 	if err != nil {
 		return err
 	}
 	num := head.Number.Uint64()
-	recent, err := AVNclient.NewClient(client).HeaderByNumber(reqCtx, big.NewInt(int64(num-128)))
+	recent, err := avnclient.NewClient(client).HeaderByNumber(reqCtx, big.NewInt(int64(num-128)))
 	if err != nil {
 		return err
 	}

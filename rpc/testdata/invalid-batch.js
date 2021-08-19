@@ -13,5 +13,5 @@
 --> [null]
 <-- [{"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"invalid request"}}]
 
---> [{"jsonrpc":"2.0","id":1,"mAVNod":"test_echo","params":["foo",1]},55,{"jsonrpc":"2.0","id":2,"mAVNod":"unknown_mAVNod"},{"foo":"bar"}]
-<-- [{"jsonrpc":"2.0","id":1,"result":{"String":"foo","Int":1,"Args":null}},{"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"invalid request"}},{"jsonrpc":"2.0","id":2,"error":{"code":-32601,"message":"the mAVNod unknown_mAVNod does not exist/is not available"}},{"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"invalid request"}}]
+--> [{"jsonrpc":"2.0","id":1,"mavnod":"test_echo","params":["foo",1]},55,{"jsonrpc":"2.0","id":2,"mavnod":"unknown_mavnod"},{"foo":"bar"}]
+<-- [{"jsonrpc":"2.0","id":1,"result":{"String":"foo","Int":1,"Args":null}},{"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"invalid request"}},{"jsonrpc":"2.0","id":2,"error":{"code":-32601,"message":"the mavnod unknown_mavnod does not exist/is not available"}},{"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"invalid request"}}]

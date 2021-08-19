@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // This file contains a miner stress test based on the Ethash consensus engine.
 package main
@@ -26,22 +26,22 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts/keystore"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/fdlimit"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/miner"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/accounts/keystore"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/fdlimit"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/miner"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 func main() {
@@ -53,19 +53,19 @@ func main() {
 	for i := 0; i < len(faucets); i++ {
 		faucets[i], _ = crypto.GenerateKey()
 	}
-	// Pre-generate the AVNash mining DAG so we don't race
-	AVNash.MakeDataset(1, filepath.Join(os.Getenv("HOME"), ".AVNash"))
+	// Pre-generate the avnash mining DAG so we don't race
+	avnash.MakeDataset(1, filepath.Join(os.Getenv("HOME"), ".avnash"))
 
 	// Create an Ethash network based off of the Ropsten config
 	genesis := makeGenesis(faucets)
 
 	var (
-		nodes  []*AVN.Avalanria
+		nodes  []*avn.Avalanria
 		enodes []*enode.Node
 	)
 	for i := 0; i < 4; i++ {
 		// Start the node and wait until it's up
-		stack, AVNBackend, err := makeMiner(genesis)
+		stack, avnBackend, err := makeMiner(genesis)
 		if err != nil {
 			panic(err)
 		}
@@ -79,7 +79,7 @@ func main() {
 			stack.Server().AddPeer(n)
 		}
 		// Start tracking the node and its enode
-		nodes = append(nodes, AVNBackend)
+		nodes = append(nodes, avnBackend)
 		enodes = append(enodes, stack.Server().Self())
 
 		// Inject the signer key and start sealing with it
@@ -141,12 +141,12 @@ func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
 	return genesis
 }
 
-func makeMiner(genesis *core.Genesis) (*node.Node, *AVN.Avalanria, error) {
+func makeMiner(genesis *core.Genesis) (*node.Node, *avn.Avalanria, error) {
 	// Define the basic configurations for the Avalanria node
 	datadir, _ := ioutil.TempDir("", "")
 
 	config := &node.Config{
-		Name:    "gAVN",
+		Name:    "gavn",
 		Version: params.Version,
 		DataDir: datadir,
 		P2P: p2p.Config{
@@ -161,15 +161,15 @@ func makeMiner(genesis *core.Genesis) (*node.Node, *AVN.Avalanria, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	AVNBackend, err := AVN.New(stack, &AVNconfig.Config{
+	avnBackend, err := avn.New(stack, &avnconfig.Config{
 		Genesis:         genesis,
 		NetworkId:       genesis.Config.ChainID.Uint64(),
 		SyncMode:        downloader.FullSync,
 		DatabaseCache:   256,
 		DatabaseHandles: 256,
 		TxPool:          core.DefaultTxPoolConfig,
-		GPO:             AVNconfig.Defaults.GPO,
-		Ethash:          AVNconfig.Defaults.Ethash,
+		GPO:             avnconfig.Defaults.GPO,
+		Ethash:          avnconfig.Defaults.Ethash,
 		Miner: miner.Config{
 			GasCeil:  genesis.GasLimit * 11 / 10,
 			GasPrice: big.NewInt(1),
@@ -181,5 +181,5 @@ func makeMiner(genesis *core.Genesis) (*node.Node, *AVN.Avalanria, error) {
 	}
 
 	err = stack.Start()
-	return stack, AVNBackend, err
+	return stack, avnBackend, err
 }

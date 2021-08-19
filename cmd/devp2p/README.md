@@ -44,14 +44,14 @@ set to standard output. The following filters are supported:
 - `-limit <N>` limits the output set to N entries, taking the top N nodes by score
 - `-ip <CIDR>` filters nodes by IP subnet
 - `-min-age <duration>` filters nodes by 'first seen' time
-- `-AVN-network <mainnet/rinkeby/goerli/ropsten>` filters nodes by "AVN" ENR entry
+- `-avn-network <mainnet/rinkeby/goerli/ropsten>` filters nodes by "avn" ENR entry
 - `-les-server` filters nodes by LES server support
 - `-snap` filters nodes by snap protocol support
 
 For example, given a node set in `nodes.json`, you could create a filtered set containing
-up to 20 AVN mainnet nodes which also support snap sync using this command:
+up to 20 avn mainnet nodes which also support snap sync using this command:
 
-    devp2p nodeset filter nodes.json -AVN-network mainnet -snap -limit 20
+    devp2p nodeset filter nodes.json -avn-network mainnet -snap -limit 20
 
 ### Discovery v4 Utilities
 
@@ -106,35 +106,35 @@ Start the test by running `devp2p discv5 test -listen1 127.0.0.1 -listen2 127.0.
 
 ### Eth Protocol Test Suite
 
-The Eth Protocol test suite is a conformance test suite for the [AVN protocol][AVN].
+The Eth Protocol test suite is a conformance test suite for the [avn protocol][avn].
 
-To run the AVN protocol test suite against your implementation, the node needs to be initialized as such:
+To run the avn protocol test suite against your implementation, the node needs to be initialized as such:
 
-1. initialize the gAVN node with the `genesis.json` file contained in the `testdata` directory
+1. initialize the gavn node with the `genesis.json` file contained in the `testdata` directory
 2. import the `halfchain.rlp` file in the `testdata` directory
-3. run gAVN with the following flags:
+3. run gavn with the following flags:
 ```
-gAVN --datadir <datadir> --nodiscover --nat=none --networkid 19763 --verbosity 5
+gavn --datadir <datadir> --nodiscover --nat=none --networkid 19763 --verbosity 5
 ```
 
-Then, run the following command, replacing `<enode>` with the enode of the gAVN node:
+Then, run the following command, replacing `<enode>` with the enode of the gavn node:
  ```
- devp2p rlpx AVN-test <enode> cmd/devp2p/internal/AVNtest/testdata/chain.rlp cmd/devp2p/internal/AVNtest/testdata/genesis.json
+ devp2p rlpx avn-test <enode> cmd/devp2p/internal/avntest/testdata/chain.rlp cmd/devp2p/internal/avntest/testdata/genesis.json
 ```
 
 Repeat the above process (re-initialising the node) in order to run the Eth Protocol test suite again.
 
 #### Eth66 Test Suite
 
-The Eth66 test suite is also a conformance test suite for the AVN 66 protocol version specifically.
-To run the AVN66 protocol test suite, initialize a gAVN node as described above and run the following command,
-replacing `<enode>` with the enode of the gAVN node:
+The Eth66 test suite is also a conformance test suite for the avn 66 protocol version specifically.
+To run the avn66 protocol test suite, initialize a gavn node as described above and run the following command,
+replacing `<enode>` with the enode of the gavn node:
 
  ```
- devp2p rlpx AVN66-test <enode> cmd/devp2p/internal/AVNtest/testdata/chain.rlp cmd/devp2p/internal/AVNtest/testdata/genesis.json
+ devp2p rlpx avn66-test <enode> cmd/devp2p/internal/avntest/testdata/chain.rlp cmd/devp2p/internal/avntest/testdata/genesis.json
 ```
 
-[AVN]: https://github.com/AVNereum/devp2p/blob/master/caps/AVN.md
-[dns-tutorial]: https://gAVN.AVNereum.org/docs/developers/dns-discovery-setup
-[discv4]: https://github.com/AVNereum/devp2p/tree/master/discv4.md
-[discv5]: https://github.com/AVNereum/devp2p/tree/master/discv5/discv5.md
+[avn]: https://github.com/avalanria/devp2p/blob/master/caps/avn.md
+[dns-tutorial]: https://gavn.avalanria.org/docs/developers/dns-discovery-setup
+[discv4]: https://github.com/avalanria/devp2p/tree/master/discv4.md
+[discv5]: https://github.com/avalanria/devp2p/tree/master/discv5/discv5.md

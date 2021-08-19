@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/avalanria/go-avalanria/common"
 )
 
 func (g *G2) one() *PointG2 {

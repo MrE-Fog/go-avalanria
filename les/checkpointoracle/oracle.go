@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package checkpointoracle is a wrapper of checkpoint oracle contract with
 // additional rules defined. This package can be used both in LES client or
@@ -25,12 +25,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/contracts/checkpointoracle"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/contracts/checkpointoracle"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 // CheckpointOracle is responsible for offering the latest stable checkpoint
@@ -40,7 +40,7 @@ type CheckpointOracle struct {
 	config   *params.CheckpointOracleConfig
 	contract *checkpointoracle.CheckpointOracle
 
-	running  int32                                 // Flag whAVNer the contract backend is set or not
+	running  int32                                 // Flag whavner the contract backend is set or not
 	getLocal func(uint64) params.TrustedCheckpoint // Function used to retrieve local checkpoint
 
 	checkMu              sync.Mutex                // Mutex to sync access to the fields below
@@ -72,7 +72,7 @@ func (oracle *CheckpointOracle) Start(backend bind.ContractBackend) {
 	oracle.contract = contract
 }
 
-// IsRunning returns an indicator whAVNer the oracle is running.
+// IsRunning returns an indicator whavner the oracle is running.
 func (oracle *CheckpointOracle) IsRunning() bool {
 	return atomic.LoadInt32(&oracle.running) == 1
 }
@@ -117,7 +117,7 @@ func (oracle *CheckpointOracle) StableCheckpoint() (*params.TrustedCheckpoint, u
 }
 
 // VerifySigners recovers the signer addresses according to the signature and
-// checks whAVNer there are enough approvals to finalize the checkpoint.
+// checks whavner there are enough approvals to finalize the checkpoint.
 func (oracle *CheckpointOracle) VerifySigners(index uint64, hash [32]byte, signatures [][]byte) (bool, []common.Address) {
 	// Short circuit if the given signatures doesn't reach the threshold.
 	if len(signatures) < int(oracle.config.Threshold) {

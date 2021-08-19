@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/avalanria/go-avalanria/common"
 )
 
 func TestPairingExpected(t *testing.T) {

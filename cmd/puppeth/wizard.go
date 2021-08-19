@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -31,18 +31,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/log"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-// config contains all the configurations needed by puppAVN that should be saved
+// config contains all the configurations needed by puppavn that should be saved
 // between sessions.
 type config struct {
 	path      string   // File containing the configuration values
 	bootnodes []string // Bootnodes to always connect to by all nodes
-	AVNstats  string   // Ethstats settings to cache for node deploys
+	avnstats  string   // Ethstats settings to cache for node deploys
 
 	Genesis *core.Genesis     `json:"genesis,omitempty"` // Genesis block to cache for node deploys
 	Servers map[string][]byte `json:"servers,omitempty"`
@@ -65,7 +65,7 @@ func (c config) flush() {
 
 	out, _ := json.MarshalIndent(c, "", "  ")
 	if err := ioutil.WriteFile(c.path, out, 0644); err != nil {
-		log.Warn("Failed to save puppAVN configs", "file", c.path, "err", err)
+		log.Warn("Failed to save puppavn configs", "file", c.path, "err", err)
 	}
 }
 
@@ -346,7 +346,7 @@ func (w *wizard) readJSON() string {
 // readIPAddress reads a single line from stdin, trimming if from spaces and
 // returning it if it's convertible to an IP address. The reason for keeping
 // the user input format instead of returning a Go net.IP is to match with
-// weird formats used by AVNstats, which compares IPs textually, not by value.
+// weird formats used by avnstats, which compares IPs textually, not by value.
 func (w *wizard) readIPAddress() string {
 	for {
 		// Read the IP address from the user

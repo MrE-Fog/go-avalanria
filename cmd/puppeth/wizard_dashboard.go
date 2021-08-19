@@ -1,25 +1,25 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
 import (
 	"fmt"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // deployDashboard queries the user for various input on deploying a web-service
@@ -60,7 +60,7 @@ func (w *wizard) deployDashboard() {
 			available[service] = append(available[service], server)
 		}
 	}
-	for _, service := range []string{"AVNstats", "explorer", "faucet"} {
+	for _, service := range []string{"avnstats", "explorer", "faucet"} {
 		// Gather all the locally hosted pages of this type
 		var pages []string
 		for _, server := range available[service] {
@@ -71,7 +71,7 @@ func (w *wizard) deployDashboard() {
 			// If there's a service running on the machine, retrieve it's port number
 			var port int
 			switch service {
-			case "AVNstats":
+			case "avnstats":
 				if infos, err := checkEthstats(client, w.network); err == nil {
 					port = infos.port
 				}
@@ -119,18 +119,18 @@ func (w *wizard) deployDashboard() {
 		}
 		// Save the users choice
 		switch service {
-		case "AVNstats":
-			infos.AVNstats = page
+		case "avnstats":
+			infos.avnstats = page
 		case "explorer":
 			infos.explorer = page
 		case "faucet":
 			infos.faucet = page
 		}
 	}
-	// If we have AVNstats running, ask whAVNer to make the secret public or not
-	if w.conf.AVNstats != "" {
+	// If we have avnstats running, ask whavner to make the secret public or not
+	if w.conf.avnstats != "" {
 		fmt.Println()
-		fmt.Println("Include AVNstats secret on dashboard (y/n)? (default = yes)")
+		fmt.Println("Include avnstats secret on dashboard (y/n)? (default = yes)")
 		infos.trusted = w.readDefaultYesNo(true)
 	}
 	// Try to deploy the dashboard container on the host

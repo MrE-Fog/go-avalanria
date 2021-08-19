@@ -1,31 +1,31 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNtest
+package avntest
 
 import (
 	"os"
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/internal/utesting"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/internal/utesting"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
 )
 
 var (
@@ -35,13 +35,13 @@ var (
 )
 
 func TestEthSuite(t *testing.T) {
-	gAVN, err := runGAVN()
+	gavn, err := runGavn()
 	if err != nil {
-		t.Fatalf("could not run gAVN: %v", err)
+		t.Fatalf("could not run gavn: %v", err)
 	}
-	defer gAVN.Close()
+	defer gavn.Close()
 
-	suite, err := NewSuite(gAVN.Server().Self(), fullchainFile, genesisFile)
+	suite, err := NewSuite(gavn.Server().Self(), fullchainFile, genesisFile)
 	if err != nil {
 		t.Fatalf("could not create new test suite: %v", err)
 	}
@@ -55,8 +55,8 @@ func TestEthSuite(t *testing.T) {
 	}
 }
 
-// runGAVN creates and starts a gAVN node
-func runGAVN() (*node.Node, error) {
+// runGavn creates and starts a gavn node
+func runGavn() (*node.Node, error) {
 	stack, err := node.New(&node.Config{
 		P2P: p2p.Config{
 			ListenAddr:  "127.0.0.1:0",
@@ -69,7 +69,7 @@ func runGAVN() (*node.Node, error) {
 		return nil, err
 	}
 
-	err = setupGAVN(stack)
+	err = setupGavn(stack)
 	if err != nil {
 		stack.Close()
 		return nil, err
@@ -81,13 +81,13 @@ func runGAVN() (*node.Node, error) {
 	return stack, nil
 }
 
-func setupGAVN(stack *node.Node) error {
+func setupGavn(stack *node.Node) error {
 	chain, err := loadChain(halfchainFile, genesisFile)
 	if err != nil {
 		return err
 	}
 
-	backend, err := AVN.New(stack, &AVNconfig.Config{
+	backend, err := avn.New(stack, &avnconfig.Config{
 		Genesis:                 &chain.genesis,
 		NetworkId:               chain.genesis.Config.ChainID.Uint64(), // 19763
 		DatabaseCache:           10,

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -26,14 +26,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // faucetDockerfile is the Dockerfile required to build a faucet container to
 // grant crypto tokens based on GitHub authentications.
 var faucetDockerfile = `
-FROM AVNereum/client-go:alltools-latest
+FROM avalanria/client-go:alltools-latest
 
 ADD genesis.json /genesis.json
 ADD account.json /account.json
@@ -42,7 +42,7 @@ ADD account.pass /account.pass
 EXPOSE 8080 30303 30303/udp
 
 ENTRYPOINT [ \
-	"faucet", "--genesis", "/genesis.json", "--network", "{{.NetworkID}}", "--bootnodes", "{{.Bootnodes}}", "--AVNstats", "{{.Ethstats}}", "--AVNport", "{{.EthPort}}",     \
+	"faucet", "--genesis", "/genesis.json", "--network", "{{.NetworkID}}", "--bootnodes", "{{.Bootnodes}}", "--avnstats", "{{.Ethstats}}", "--avnport", "{{.EthPort}}",     \
 	"--faucet.name", "{{.FaucetName}}", "--faucet.amount", "{{.FaucetAmount}}", "--faucet.minutes", "{{.FaucetMinutes}}", "--faucet.tiers", "{{.FaucetTiers}}",             \
 	"--account.json", "/account.json", "--account.pass", "/account.pass"                                                                                                    \
 	{{if .CaptchaToken}}, "--captcha.token", "{{.CaptchaToken}}", "--captcha.secret", "{{.CaptchaSecret}}"{{end}}{{if .NoAuth}}, "--noauth"{{end}}                          \
@@ -96,7 +96,7 @@ func deployFaucet(client *sshClient, network string, bootnodes []string, config 
 	template.Must(template.New("").Parse(faucetDockerfile)).Execute(dockerfile, map[string]interface{}{
 		"NetworkID":     config.node.network,
 		"Bootnodes":     strings.Join(bootnodes, ","),
-		"Ethstats":      config.node.AVNstats,
+		"Ethstats":      config.node.avnstats,
 		"EthPort":       config.node.port,
 		"CaptchaToken":  config.captchaToken,
 		"CaptchaSecret": config.captchaSecret,
@@ -116,7 +116,7 @@ func deployFaucet(client *sshClient, network string, bootnodes []string, config 
 		"VHost":         config.host,
 		"ApiPort":       config.port,
 		"EthPort":       config.node.port,
-		"EthName":       config.node.AVNstats[:strings.Index(config.node.AVNstats, ":")],
+		"EthName":       config.node.avnstats[:strings.Index(config.node.avnstats, ":")],
 		"CaptchaToken":  config.captchaToken,
 		"CaptchaSecret": config.captchaSecret,
 		"FaucetAmount":  config.amount,
@@ -171,7 +171,7 @@ func (info *faucetInfos) Report() map[string]string {
 		"Funding tiers":                strconv.Itoa(info.tiers),
 		"Captha protection":            fmt.Sprintf("%v", info.captchaToken != ""),
 		"Using Twitter API":            fmt.Sprintf("%v", info.twitterToken != ""),
-		"Ethstats username":            info.node.AVNstats,
+		"Ethstats username":            info.node.avnstats,
 	}
 	if info.noauth {
 		report["Debug mode (no auth)"] = "enabled"
@@ -189,7 +189,7 @@ func (info *faucetInfos) Report() map[string]string {
 	return report
 }
 
-// checkFaucet does a health-check against a faucet server to verify whAVNer
+// checkFaucet does a health-check against a faucet server to verify whavner
 // it's running, and if yes, gathering a collection of useful infos about it.
 func checkFaucet(client *sshClient, network string) (*faucetInfos, error) {
 	// Inspect a possible faucet container on the host
@@ -237,7 +237,7 @@ func checkFaucet(client *sshClient, network string) (*faucetInfos, error) {
 		node: &nodeInfos{
 			datadir:  infos.volumes["/root/.faucet"],
 			port:     infos.portmap[infos.envvars["AVN_PORT"]+"/tcp"],
-			AVNstats: infos.envvars["AVN_NAME"],
+			avnstats: infos.envvars["AVN_NAME"],
 			keyJSON:  keyJSON,
 			keyPass:  keyPass,
 		},

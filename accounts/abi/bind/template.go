@@ -1,22 +1,22 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package bind
 
-import "github.com/AVNereum/go-AVNereum/accounts/abi"
+import "github.com/avalanria/go-avalanria/accounts/abi"
 
 // tmplData is the data structure required to fill the binding template.
 type tmplData struct {
@@ -32,22 +32,22 @@ type tmplContract struct {
 	InputABI    string                 // JSON ABI used as the input to generate the binding from
 	InputBin    string                 // Optional EVM bytecode used to generate deploy code from
 	FuncSigs    map[string]string      // Optional map: string signature -> 4-byte signature
-	Constructor abi.MAVNod             // Contract constructor for deploy parametrization
-	Calls       map[string]*tmplMAVNod // Contract calls that only read state data
-	Transacts   map[string]*tmplMAVNod // Contract calls that write state data
-	Fallback    *tmplMAVNod            // Additional special fallback function
-	Receive     *tmplMAVNod            // Additional special receive function
+	Constructor abi.Mavnod             // Contract constructor for deploy parametrization
+	Calls       map[string]*tmplMavnod // Contract calls that only read state data
+	Transacts   map[string]*tmplMavnod // Contract calls that write state data
+	Fallback    *tmplMavnod            // Additional special fallback function
+	Receive     *tmplMavnod            // Additional special receive function
 	Events      map[string]*tmplEvent  // Contract events accessors
 	Libraries   map[string]string      // Same as tmplData, but filtered to only keep what the contract needs
-	Library     bool                   // Indicator whAVNer the contract is a library
+	Library     bool                   // Indicator whavner the contract is a library
 }
 
-// tmplMAVNod is a wrapper around an abi.MAVNod that contains a few preprocessed
+// tmplMavnod is a wrapper around an abi.Mavnod that contains a few preprocessed
 // and cached data fields.
-type tmplMAVNod struct {
-	Original   abi.MAVNod // Original mAVNod as parsed by the abi package
-	Normalized abi.MAVNod // Normalized version of the parsed mAVNod (capitalized names, non-anonymous args/returns)
-	Structured bool       // WhAVNer the returns should be accumulated into a struct
+type tmplMavnod struct {
+	Original   abi.Mavnod // Original mavnod as parsed by the abi package
+	Normalized abi.Mavnod // Normalized version of the parsed mavnod (capitalized names, non-anonymous args/returns)
+	Structured bool       // Whavner the returns should be accumulated into a struct
 }
 
 // tmplEvent is a wrapper around an abi.Event that contains a few preprocessed
@@ -92,12 +92,12 @@ import (
 	"strings"
 	"errors"
 
-	AVNereum "github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/accounts/abi"
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/event"
+	avalanria "github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/accounts/abi"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/event"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -105,7 +105,7 @@ var (
 	_ = errors.New
 	_ = big.NewInt
 	_ = strings.NewReader
-	_ = AVNereum.NotFound
+	_ = avalanria.NotFound
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -217,17 +217,17 @@ var (
 
 	// {{.Type}}Raw is an auto generated low-level Go binding around an Avalanria contract.
 	type {{.Type}}Raw struct {
-	  Contract *{{.Type}} // Generic contract binding to access the raw mAVNods on
+	  Contract *{{.Type}} // Generic contract binding to access the raw mavnods on
 	}
 
 	// {{.Type}}CallerRaw is an auto generated low-level read-only Go binding around an Avalanria contract.
 	type {{.Type}}CallerRaw struct {
-		Contract *{{.Type}}Caller // Generic read-only contract binding to access the raw mAVNods on
+		Contract *{{.Type}}Caller // Generic read-only contract binding to access the raw mavnods on
 	}
 
 	// {{.Type}}TransactorRaw is an auto generated low-level write-only Go binding around an Avalanria contract.
 	type {{.Type}}TransactorRaw struct {
-		Contract *{{.Type}}Transactor // Generic write-only contract binding to access the raw mAVNods on
+		Contract *{{.Type}}Transactor // Generic write-only contract binding to access the raw mavnods on
 	}
 
 	// New{{.Type}} creates a new instance of {{.Type}}, bound to a specific deployed contract.
@@ -275,46 +275,46 @@ var (
 	  return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
 	}
 
-	// Call invokes the (constant) contract mAVNod with params as input values and
+	// Call invokes the (constant) contract mavnod with params as input values and
 	// sets the output to result. The result type might be a single field for simple
 	// returns, a slice of interfaces for anonymous returns and a struct for named
 	// returns.
-	func (_{{$contract.Type}} *{{$contract.Type}}Raw) Call(opts *bind.CallOpts, result *[]interface{}, mAVNod string, params ...interface{}) error {
-		return _{{$contract.Type}}.Contract.{{$contract.Type}}Caller.contract.Call(opts, result, mAVNod, params...)
+	func (_{{$contract.Type}} *{{$contract.Type}}Raw) Call(opts *bind.CallOpts, result *[]interface{}, mavnod string, params ...interface{}) error {
+		return _{{$contract.Type}}.Contract.{{$contract.Type}}Caller.contract.Call(opts, result, mavnod, params...)
 	}
 
 	// Transfer initiates a plain transaction to move funds to the contract, calling
-	// its default mAVNod if one is available.
+	// its default mavnod if one is available.
 	func (_{{$contract.Type}} *{{$contract.Type}}Raw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
 		return _{{$contract.Type}}.Contract.{{$contract.Type}}Transactor.contract.Transfer(opts)
 	}
 
-	// Transact invokes the (paid) contract mAVNod with params as input values.
-	func (_{{$contract.Type}} *{{$contract.Type}}Raw) Transact(opts *bind.TransactOpts, mAVNod string, params ...interface{}) (*types.Transaction, error) {
-		return _{{$contract.Type}}.Contract.{{$contract.Type}}Transactor.contract.Transact(opts, mAVNod, params...)
+	// Transact invokes the (paid) contract mavnod with params as input values.
+	func (_{{$contract.Type}} *{{$contract.Type}}Raw) Transact(opts *bind.TransactOpts, mavnod string, params ...interface{}) (*types.Transaction, error) {
+		return _{{$contract.Type}}.Contract.{{$contract.Type}}Transactor.contract.Transact(opts, mavnod, params...)
 	}
 
-	// Call invokes the (constant) contract mAVNod with params as input values and
+	// Call invokes the (constant) contract mavnod with params as input values and
 	// sets the output to result. The result type might be a single field for simple
 	// returns, a slice of interfaces for anonymous returns and a struct for named
 	// returns.
-	func (_{{$contract.Type}} *{{$contract.Type}}CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, mAVNod string, params ...interface{}) error {
-		return _{{$contract.Type}}.Contract.contract.Call(opts, result, mAVNod, params...)
+	func (_{{$contract.Type}} *{{$contract.Type}}CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, mavnod string, params ...interface{}) error {
+		return _{{$contract.Type}}.Contract.contract.Call(opts, result, mavnod, params...)
 	}
 
 	// Transfer initiates a plain transaction to move funds to the contract, calling
-	// its default mAVNod if one is available.
+	// its default mavnod if one is available.
 	func (_{{$contract.Type}} *{{$contract.Type}}TransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
 		return _{{$contract.Type}}.Contract.contract.Transfer(opts)
 	}
 
-	// Transact invokes the (paid) contract mAVNod with params as input values.
-	func (_{{$contract.Type}} *{{$contract.Type}}TransactorRaw) Transact(opts *bind.TransactOpts, mAVNod string, params ...interface{}) (*types.Transaction, error) {
-		return _{{$contract.Type}}.Contract.contract.Transact(opts, mAVNod, params...)
+	// Transact invokes the (paid) contract mavnod with params as input values.
+	func (_{{$contract.Type}} *{{$contract.Type}}TransactorRaw) Transact(opts *bind.TransactOpts, mavnod string, params ...interface{}) (*types.Transaction, error) {
+		return _{{$contract.Type}}.Contract.contract.Transact(opts, mavnod, params...)
 	}
 
 	{{range .Calls}}
-		// {{.Normalized.Name}} is a free data retrieval call binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+		// {{.Normalized.Name}} is a free data retrieval call binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 		//
 		// Solidity: {{.Original.String}}
 		func (_{{$contract.Type}} *{{$contract.Type}}Caller) {{.Normalized.Name}}(opts *bind.CallOpts {{range .Normalized.Inputs}}, {{.Name}} {{bindtype .Type $structs}} {{end}}) ({{if .Structured}}struct{ {{range .Normalized.Outputs}}{{.Name}} {{bindtype .Type $structs}};{{end}} },{{else}}{{range .Normalized.Outputs}}{{bindtype .Type $structs}},{{end}}{{end}} error) {
@@ -340,14 +340,14 @@ var (
 			{{end}}
 		}
 
-		// {{.Normalized.Name}} is a free data retrieval call binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+		// {{.Normalized.Name}} is a free data retrieval call binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 		//
 		// Solidity: {{.Original.String}}
 		func (_{{$contract.Type}} *{{$contract.Type}}Session) {{.Normalized.Name}}({{range $i, $_ := .Normalized.Inputs}}{{if ne $i 0}},{{end}} {{.Name}} {{bindtype .Type $structs}} {{end}}) ({{if .Structured}}struct{ {{range .Normalized.Outputs}}{{.Name}} {{bindtype .Type $structs}};{{end}} }, {{else}} {{range .Normalized.Outputs}}{{bindtype .Type $structs}},{{end}} {{end}} error) {
 		  return _{{$contract.Type}}.Contract.{{.Normalized.Name}}(&_{{$contract.Type}}.CallOpts {{range .Normalized.Inputs}}, {{.Name}}{{end}})
 		}
 
-		// {{.Normalized.Name}} is a free data retrieval call binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+		// {{.Normalized.Name}} is a free data retrieval call binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 		//
 		// Solidity: {{.Original.String}}
 		func (_{{$contract.Type}} *{{$contract.Type}}CallerSession) {{.Normalized.Name}}({{range $i, $_ := .Normalized.Inputs}}{{if ne $i 0}},{{end}} {{.Name}} {{bindtype .Type $structs}} {{end}}) ({{if .Structured}}struct{ {{range .Normalized.Outputs}}{{.Name}} {{bindtype .Type $structs}};{{end}} }, {{else}} {{range .Normalized.Outputs}}{{bindtype .Type $structs}},{{end}} {{end}} error) {
@@ -356,21 +356,21 @@ var (
 	{{end}}
 
 	{{range .Transacts}}
-		// {{.Normalized.Name}} is a paid mutator transaction binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+		// {{.Normalized.Name}} is a paid mutator transaction binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 		//
 		// Solidity: {{.Original.String}}
 		func (_{{$contract.Type}} *{{$contract.Type}}Transactor) {{.Normalized.Name}}(opts *bind.TransactOpts {{range .Normalized.Inputs}}, {{.Name}} {{bindtype .Type $structs}} {{end}}) (*types.Transaction, error) {
 			return _{{$contract.Type}}.contract.Transact(opts, "{{.Original.Name}}" {{range .Normalized.Inputs}}, {{.Name}}{{end}})
 		}
 
-		// {{.Normalized.Name}} is a paid mutator transaction binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+		// {{.Normalized.Name}} is a paid mutator transaction binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 		//
 		// Solidity: {{.Original.String}}
 		func (_{{$contract.Type}} *{{$contract.Type}}Session) {{.Normalized.Name}}({{range $i, $_ := .Normalized.Inputs}}{{if ne $i 0}},{{end}} {{.Name}} {{bindtype .Type $structs}} {{end}}) (*types.Transaction, error) {
 		  return _{{$contract.Type}}.Contract.{{.Normalized.Name}}(&_{{$contract.Type}}.TransactOpts {{range $i, $_ := .Normalized.Inputs}}, {{.Name}}{{end}})
 		}
 
-		// {{.Normalized.Name}} is a paid mutator transaction binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+		// {{.Normalized.Name}} is a paid mutator transaction binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 		//
 		// Solidity: {{.Original.String}}
 		func (_{{$contract.Type}} *{{$contract.Type}}TransactorSession) {{.Normalized.Name}}({{range $i, $_ := .Normalized.Inputs}}{{if ne $i 0}},{{end}} {{.Name}} {{bindtype .Type $structs}} {{end}}) (*types.Transaction, error) {
@@ -433,11 +433,11 @@ var (
 			event    string              // Event name to use for unpacking event data
 
 			logs chan types.Log        // Log channel receiving the found contract events
-			sub  AVNereum.Subscription // Subscription for errors, completion and termination
-			done bool                  // WhAVNer the subscription completed delivering logs
+			sub  avalanria.Subscription // Subscription for errors, completion and termination
+			done bool                  // Whavner the subscription completed delivering logs
 			fail error                 // Occurred error to stop iteration
 		}
-		// Next advances the iterator to the subsequent event, returning whAVNer there
+		// Next advances the iterator to the subsequent event, returning whavner there
 		// are any more events found. In case of a retrieval or parsing error, false is
 		// returned and Error() can be queried for the exact failure.
 		func (it *{{$contract.Type}}{{.Normalized.Name}}Iterator) Next() bool {
@@ -578,7 +578,7 @@ const tmplSourceJava = `
 
 package {{.Package}};
 
-import org.AVNereum.gAVN.*;
+import org.avalanria.gavn.*;
 import java.util.*;
 
 {{$structs := .Structs}}
@@ -602,7 +602,7 @@ import java.util.*;
 
 	// deploy deploys a new Avalanria contract, binding an instance of {{.Type}} to it.
 	public static {{.Type}} deploy(TransactOpts auth, AvalanriaClient client{{range .Constructor.Inputs}}, {{bindtype .Type $structs}} {{.Name}}{{end}}) throws Exception {
-		Interfaces args = GAVN.newInterfaces({{(len .Constructor.Inputs)}});
+		Interfaces args = Gavn.newInterfaces({{(len .Constructor.Inputs)}});
 		String bytecode = BYTECODE;
 		{{if .Libraries}}
 
@@ -612,9 +612,9 @@ import java.util.*;
 		bytecode = bytecode.replace("__${{$pattern}}$__", {{decapitalise $name}}Inst.Address.getHex().substring(2));
 		{{end}}
 		{{end}}
-		{{range $index, $element := .Constructor.Inputs}}Interface arg{{$index}} = GAVN.newInterface();arg{{$index}}.set{{namedtype (bindtype .Type $structs) .Type}}({{.Name}});args.set({{$index}},arg{{$index}});
+		{{range $index, $element := .Constructor.Inputs}}Interface arg{{$index}} = Gavn.newInterface();arg{{$index}}.set{{namedtype (bindtype .Type $structs) .Type}}({{.Name}});args.set({{$index}},arg{{$index}});
 		{{end}}
-		return new {{.Type}}(GAVN.deployContract(auth, ABI, GAVN.decodeFromHex(bytecode), client, args));
+		return new {{.Type}}(Gavn.deployContract(auth, ABI, Gavn.decodeFromHex(bytecode), client, args));
 	}
 
 	// Internal constructor used by contract deployment.
@@ -636,7 +636,7 @@ import java.util.*;
 
 	// Creates a new instance of {{.Type}}, bound to a specific deployed contract.
 	public {{.Type}}(Address address, AvalanriaClient client) throws Exception {
-		this(GAVN.bindContract(address, ABI, client));
+		this(Gavn.bindContract(address, ABI, client));
 	}
 
 	{{range .Calls}}
@@ -648,20 +648,20 @@ import java.util.*;
 	}
 	{{end}}
 
-	// {{.Normalized.Name}} is a free data retrieval call binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+	// {{.Normalized.Name}} is a free data retrieval call binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 	//
 	// Solidity: {{.Original.String}}
 	public {{if gt (len .Normalized.Outputs) 1}}{{capitalise .Normalized.Name}}Results{{else if eq (len .Normalized.Outputs) 0}}void{{else}}{{range .Normalized.Outputs}}{{bindtype .Type $structs}}{{end}}{{end}} {{.Normalized.Name}}(CallOpts opts{{range .Normalized.Inputs}}, {{bindtype .Type $structs}} {{.Name}}{{end}}) throws Exception {
-		Interfaces args = GAVN.newInterfaces({{(len .Normalized.Inputs)}});
-		{{range $index, $item := .Normalized.Inputs}}Interface arg{{$index}} = GAVN.newInterface();arg{{$index}}.set{{namedtype (bindtype .Type $structs) .Type}}({{.Name}});args.set({{$index}},arg{{$index}});
+		Interfaces args = Gavn.newInterfaces({{(len .Normalized.Inputs)}});
+		{{range $index, $item := .Normalized.Inputs}}Interface arg{{$index}} = Gavn.newInterface();arg{{$index}}.set{{namedtype (bindtype .Type $structs) .Type}}({{.Name}});args.set({{$index}},arg{{$index}});
 		{{end}}
 
-		Interfaces results = GAVN.newInterfaces({{(len .Normalized.Outputs)}});
-		{{range $index, $item := .Normalized.Outputs}}Interface result{{$index}} = GAVN.newInterface(); result{{$index}}.setDefault{{namedtype (bindtype .Type $structs) .Type}}(); results.set({{$index}}, result{{$index}});
+		Interfaces results = Gavn.newInterfaces({{(len .Normalized.Outputs)}});
+		{{range $index, $item := .Normalized.Outputs}}Interface result{{$index}} = Gavn.newInterface(); result{{$index}}.setDefault{{namedtype (bindtype .Type $structs) .Type}}(); results.set({{$index}}, result{{$index}});
 		{{end}}
 
 		if (opts == null) {
-			opts = GAVN.newCallOpts();
+			opts = Gavn.newCallOpts();
 		}
 		this.Contract.call(opts, results, "{{.Original.Name}}", args);
 		{{if gt (len .Normalized.Outputs) 1}}
@@ -675,12 +675,12 @@ import java.util.*;
 	{{end}}
 
 	{{range .Transacts}}
-	// {{.Normalized.Name}} is a paid mutator transaction binding the contract mAVNod 0x{{printf "%x" .Original.ID}}.
+	// {{.Normalized.Name}} is a paid mutator transaction binding the contract mavnod 0x{{printf "%x" .Original.ID}}.
 	//
 	// Solidity: {{.Original.String}}
 	public Transaction {{.Normalized.Name}}(TransactOpts opts{{range .Normalized.Inputs}}, {{bindtype .Type $structs}} {{.Name}}{{end}}) throws Exception {
-		Interfaces args = GAVN.newInterfaces({{(len .Normalized.Inputs)}});
-		{{range $index, $item := .Normalized.Inputs}}Interface arg{{$index}} = GAVN.newInterface();arg{{$index}}.set{{namedtype (bindtype .Type $structs) .Type}}({{.Name}});args.set({{$index}},arg{{$index}});
+		Interfaces args = Gavn.newInterfaces({{(len .Normalized.Inputs)}});
+		{{range $index, $item := .Normalized.Inputs}}Interface arg{{$index}} = Gavn.newInterface();arg{{$index}}.set{{namedtype (bindtype .Type $structs) .Type}}({{.Name}});args.set({{$index}},arg{{$index}});
 		{{end}}
 		return this.Contract.transact(opts, "{{.Original.Name}}"	, args);
 	}

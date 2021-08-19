@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
@@ -23,22 +23,22 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb/memorydb"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/avndb/memorydb"
 )
 
 func TestIterator(t *testing.T) {
 	trie := newEmpty()
 	vals := []struct{ k, v string }{
 		{"do", "verb"},
-		{"AVNer", "wookiedoo"},
+		{"avner", "wookiedoo"},
 		{"horse", "stallion"},
 		{"shaman", "horse"},
 		{"doge", "coin"},
 		{"dog", "puppy"},
-		{"somAVNingveryoddindeedthis is", "myothernodedata"},
+		{"somavningveryoddindeedthis is", "myothernodedata"},
 	}
 	all := make(map[string]string)
 	for _, val := range vals {
@@ -446,7 +446,7 @@ func checkIteratorNoDups(t *testing.T, it NodeIterator, seen map[string]bool) in
 
 type loggingDb struct {
 	getCount uint64
-	backend  AVNdb.KeyValueStore
+	backend  avndb.KeyValueStore
 }
 
 func (l *loggingDb) Has(key []byte) (bool, error) {
@@ -466,11 +466,11 @@ func (l *loggingDb) Delete(key []byte) error {
 	return l.backend.Delete(key)
 }
 
-func (l *loggingDb) NewBatch() AVNdb.Batch {
+func (l *loggingDb) NewBatch() avndb.Batch {
 	return l.backend.NewBatch()
 }
 
-func (l *loggingDb) NewIterator(prefix []byte, start []byte) AVNdb.Iterator {
+func (l *loggingDb) NewIterator(prefix []byte, start []byte) avndb.Iterator {
 	fmt.Printf("NewIterator\n")
 	return l.backend.NewIterator(prefix, start)
 }

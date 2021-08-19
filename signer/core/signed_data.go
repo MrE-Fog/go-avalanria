@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -30,15 +30,15 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/consensus/clique"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/signer/core/apitypes"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/consensus/clique"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/signer/core/apitypes"
 )
 
 type SigFormat struct {
@@ -87,7 +87,7 @@ func (t *Type) isArray() bool {
 }
 
 // typeName returns the canonical name of the type. If the type is 'Person[]', then
-// this mAVNod returns 'Person'
+// this mavnod returns 'Person'
 func (t *Type) typeName() string {
 	if strings.HasSuffix(t.Type, "[]") {
 		return strings.TrimSuffix(t.Type, "[]")
@@ -176,12 +176,12 @@ func (api *SignerAPI) SignData(ctx context.Context, contentType string, addr com
 	return signature, nil
 }
 
-// determineSignatureFormat determines which signature mAVNod should be used based upon the mime type
+// determineSignatureFormat determines which signature mavnod should be used based upon the mime type
 // In the cases where it matters ensure that the charset is handled. The charset
 // resides in the 'params' returned as the second returnvalue from mime.ParseMediaType
 // charset, ok := params["charset"]
 // As it is now, we accept any charset and just treat it as 'raw'.
-// This mAVNod returns the mimetype for signing along with the request
+// This mavnod returns the mimetype for signing along with the request
 func (api *SignerAPI) determineSignatureFormat(ctx context.Context, contentType string, addr common.MixedcaseAddress, data interface{}) (*SignDataRequest, bool, error) {
 	var (
 		req          *SignDataRequest
@@ -298,7 +298,7 @@ func SignTextValidator(validatorData ValidatorData) (hexutil.Bytes, string) {
 // signing. It is the hash of the entire header apart from the 65 byte signature
 // contained at the end of the extra data.
 //
-// The mAVNod requires the extra data to be at least 65 bytes -- the original implementation
+// The mavnod requires the extra data to be at least 65 bytes -- the original implementation
 // in clique.go panics if this is the case, thus it's been reimplemented here to avoid the panic
 // and simply return an error instead
 func cliqueHeaderHashAndRlp(header *types.Header) (hash, rlp []byte, err error) {
@@ -644,7 +644,7 @@ func dataMismatchError(encType string, encValue interface{}) error {
 func (api *SignerAPI) EcRecover(ctx context.Context, data hexutil.Bytes, sig hexutil.Bytes) (common.Address, error) {
 	// Returns the address for the Account that was used to create the signature.
 	//
-	// Note, this function is compatible with AVN_sign and personal_sign. As such it recovers
+	// Note, this function is compatible with avn_sign and personal_sign. As such it recovers
 	// the address of:
 	// hash = keccak256("\x19${byteVersion}Avalanria Signed Message:\n${message length}${message}")
 	// addr = ecrecover(hash, signature)
@@ -652,7 +652,7 @@ func (api *SignerAPI) EcRecover(ctx context.Context, data hexutil.Bytes, sig hex
 	// Note, the signature must conform to the secp256k1 curve R, S and V values, where
 	// the V value must be be 27 or 28 for legacy reasons.
 	//
-	// https://github.com/AVNereum/go-AVNereum/wiki/Management-APIs#personal_ecRecover
+	// https://github.com/avalanria/go-avalanria/wiki/Management-APIs#personal_ecRecover
 	if len(sig) != 65 {
 		return common.Address{}, fmt.Errorf("signature must be 65 bytes long")
 	}

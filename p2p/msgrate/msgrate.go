@@ -1,18 +1,18 @@
-// Copyright 2021 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2021 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package msgrate allows estimating the throughput of peers for more balanced syncs.
 package msgrate
@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // measurementImpact is the impact a single measurement has on a peer's final
@@ -128,7 +128,7 @@ type Tracker struct {
 	//
 	// Callers of course are free to use the item counter as a byte counter if
 	// or when their protocol of choise if capped by bytes instead of items.
-	// (eg. AVN.getHeaders vs snap.getAccountRange).
+	// (eg. avn.getHeaders vs snap.getAccountRange).
 	capacity map[uint64]float64
 
 	// roundtrip is the latency a peer in general responds to data requests.
@@ -157,7 +157,7 @@ func NewTracker(caps map[uint64]float64, rtt time.Duration) *Tracker {
 }
 
 // Capacity calculates the number of items the peer is estimated to be able to
-// retrieve within the alloted time slot. The mAVNod will round up any division
+// retrieve within the alloted time slot. The mavnod will round up any division
 // errors and will add an additional overestimation ratio on top. The reason for
 // overshooting the capacity is because certain message types might not increase
 // the load proportionally to the requested items, so fetching a bit more might

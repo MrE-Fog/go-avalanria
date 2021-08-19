@@ -1,6 +1,6 @@
 ---
 name: Report a bug
-about: SomAVNing with go-AVNereum is not working as expected
+about: Somavning with go-avalanria is not working as expected
 title: ''
 labels: 'type:bug'
 assignees: ''
@@ -8,7 +8,7 @@ assignees: ''
 
 #### System information
 
-GAVN version: `gAVN version`
+Gavn version: `gavn version`
 OS & Version: Windows/Linux/OSX
 Commit hash : (if `develop`)
 

@@ -1,29 +1,29 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package vm
 
 import (
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/math"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/math"
 	"github.com/holiman/uint256"
 )
 
 // calcMemSize64 calculates the required memory size, and returns
-// the size and whAVNer the result overflowed uint64
+// the size and whavner the result overflowed uint64
 func calcMemSize64(off, l *uint256.Int) (uint64, bool) {
 	if !l.IsUint64() {
 		return 0, true
@@ -32,7 +32,7 @@ func calcMemSize64(off, l *uint256.Int) (uint64, bool) {
 }
 
 // calcMemSize64WithUint calculates the required memory size, and returns
-// the size and whAVNer the result overflowed uint64
+// the size and whavner the result overflowed uint64
 // Identical to calcMemSize64, but length is a uint64
 func calcMemSize64WithUint(off *uint256.Int, length64 uint64) (uint64, bool) {
 	// if length is zero, memsize is always zero, regardless of offset

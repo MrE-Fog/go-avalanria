@@ -1,30 +1,30 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"errors"
 	"math/big"
 	"sync"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/snap"
-	"github.com/AVNereum/go-AVNereum/p2p"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/avn/protocols/snap"
+	"github.com/avalanria/go-avalanria/p2p"
 )
 
 var (
@@ -41,18 +41,18 @@ var (
 	errPeerNotRegistered = errors.New("peer not registered")
 
 	// errSnapWithoutEth is returned if a peer attempts to connect only on the
-	// snap protocol without advertizing the AVN main protocol.
-	errSnapWithoutEth = errors.New("peer connected on snap without compatible AVN support")
+	// snap protocol without advertizing the avn main protocol.
+	errSnapWithoutEth = errors.New("peer connected on snap without compatible avn support")
 )
 
 // peerSet represents the collection of active peers currently participating in
-// the `AVN` protocol, with or without the `snap` extension.
+// the `avn` protocol, with or without the `snap` extension.
 type peerSet struct {
-	peers     map[string]*AVNPeer // Peers connected on the `AVN` protocol
+	peers     map[string]*avnPeer // Peers connected on the `avn` protocol
 	snapPeers int                 // Number of `snap` compatible peers for connection prioritization
 
-	snapWait map[string]chan *snap.Peer // Peers connected on `AVN` waiting for their snap extension
-	snapPend map[string]*snap.Peer      // Peers connected on the `snap` protocol, but not yet on `AVN`
+	snapWait map[string]chan *snap.Peer // Peers connected on `avn` waiting for their snap extension
+	snapPend map[string]*snap.Peer      // Peers connected on the `snap` protocol, but not yet on `avn`
 
 	lock   sync.RWMutex
 	closed bool
@@ -61,19 +61,19 @@ type peerSet struct {
 // newPeerSet creates a new peer set to track the active participants.
 func newPeerSet() *peerSet {
 	return &peerSet{
-		peers:    make(map[string]*AVNPeer),
+		peers:    make(map[string]*avnPeer),
 		snapWait: make(map[string]chan *snap.Peer),
 		snapPend: make(map[string]*snap.Peer),
 	}
 }
 
-// registerSnapExtension unblocks an already connected `AVN` peer waiting for its
+// registerSnapExtension unblocks an already connected `avn` peer waiting for its
 // `snap` extension, or if no such peer exists, tracks the extension for the time
-// being until the `AVN` main protocol starts looking for it.
+// being until the `avn` main protocol starts looking for it.
 func (ps *peerSet) registerSnapExtension(peer *snap.Peer) error {
-	// Reject the peer if it advertises `snap` without `AVN` as `snap` is only a
-	// satellite protocol meaningful with the chain selection of `AVN`
-	if !peer.RunningCap(AVN.ProtocolName, AVN.ProtocolVersions) {
+	// Reject the peer if it advertises `snap` without `avn` as `snap` is only a
+	// satellite protocol meaningful with the chain selection of `avn`
+	if !peer.RunningCap(avn.ProtocolName, avn.ProtocolVersions) {
 		return errSnapWithoutEth
 	}
 	// Ensure nobody can double connect
@@ -87,7 +87,7 @@ func (ps *peerSet) registerSnapExtension(peer *snap.Peer) error {
 	if _, ok := ps.snapPend[id]; ok {
 		return errPeerAlreadyRegistered // avoid connections with the same id as pending ones
 	}
-	// Inject the peer into an `AVN` counterpart is available, otherwise save for later
+	// Inject the peer into an `avn` counterpart is available, otherwise save for later
 	if wait, ok := ps.snapWait[id]; ok {
 		delete(ps.snapWait, id)
 		wait <- peer
@@ -99,7 +99,7 @@ func (ps *peerSet) registerSnapExtension(peer *snap.Peer) error {
 
 // waitExtensions blocks until all satellite protocols are connected and tracked
 // by the peerset.
-func (ps *peerSet) waitSnapExtension(peer *AVN.Peer) (*snap.Peer, error) {
+func (ps *peerSet) waitSnapExtension(peer *avn.Peer) (*snap.Peer, error) {
 	// If the peer does not support a compatible `snap`, don't wait
 	if !peer.RunningCap(snap.ProtocolName, snap.ProtocolVersions) {
 		return nil, nil
@@ -131,9 +131,9 @@ func (ps *peerSet) waitSnapExtension(peer *AVN.Peer) (*snap.Peer, error) {
 	return <-wait, nil
 }
 
-// registerPeer injects a new `AVN` peer into the working set, or returns an error
+// registerPeer injects a new `avn` peer into the working set, or returns an error
 // if the peer is already known.
-func (ps *peerSet) registerPeer(peer *AVN.Peer, ext *snap.Peer) error {
+func (ps *peerSet) registerPeer(peer *avn.Peer, ext *snap.Peer) error {
 	// Start tracking the new peer
 	ps.lock.Lock()
 	defer ps.lock.Unlock()
@@ -145,14 +145,14 @@ func (ps *peerSet) registerPeer(peer *AVN.Peer, ext *snap.Peer) error {
 	if _, ok := ps.peers[id]; ok {
 		return errPeerAlreadyRegistered
 	}
-	AVN := &AVNPeer{
+	avn := &avnPeer{
 		Peer: peer,
 	}
 	if ext != nil {
-		AVN.snapExt = &snapPeer{ext}
+		avn.snapExt = &snapPeer{ext}
 		ps.snapPeers++
 	}
-	ps.peers[id] = AVN
+	ps.peers[id] = avn
 	return nil
 }
 
@@ -174,7 +174,7 @@ func (ps *peerSet) unregisterPeer(id string) error {
 }
 
 // peer retrieves the registered peer with the given id.
-func (ps *peerSet) peer(id string) *AVNPeer {
+func (ps *peerSet) peer(id string) *avnPeer {
 	ps.lock.RLock()
 	defer ps.lock.RUnlock()
 
@@ -183,11 +183,11 @@ func (ps *peerSet) peer(id string) *AVNPeer {
 
 // peersWithoutBlock retrieves a list of peers that do not have a given block in
 // their set of known hashes so it might be propagated to them.
-func (ps *peerSet) peersWithoutBlock(hash common.Hash) []*AVNPeer {
+func (ps *peerSet) peersWithoutBlock(hash common.Hash) []*avnPeer {
 	ps.lock.RLock()
 	defer ps.lock.RUnlock()
 
-	list := make([]*AVNPeer, 0, len(ps.peers))
+	list := make([]*avnPeer, 0, len(ps.peers))
 	for _, p := range ps.peers {
 		if !p.KnownBlock(hash) {
 			list = append(list, p)
@@ -198,11 +198,11 @@ func (ps *peerSet) peersWithoutBlock(hash common.Hash) []*AVNPeer {
 
 // peersWithoutTransaction retrieves a list of peers that do not have a given
 // transaction in their set of known hashes.
-func (ps *peerSet) peersWithoutTransaction(hash common.Hash) []*AVNPeer {
+func (ps *peerSet) peersWithoutTransaction(hash common.Hash) []*avnPeer {
 	ps.lock.RLock()
 	defer ps.lock.RUnlock()
 
-	list := make([]*AVNPeer, 0, len(ps.peers))
+	list := make([]*avnPeer, 0, len(ps.peers))
 	for _, p := range ps.peers {
 		if !p.KnownTransaction(hash) {
 			list = append(list, p)
@@ -211,9 +211,9 @@ func (ps *peerSet) peersWithoutTransaction(hash common.Hash) []*AVNPeer {
 	return list
 }
 
-// len returns if the current number of `AVN` peers in the set. Since the `snap`
-// peers are tied to the existence of an `AVN` connection, that will always be a
-// subset of `AVN`.
+// len returns if the current number of `avn` peers in the set. Since the `snap`
+// peers are tied to the existence of an `avn` connection, that will always be a
+// subset of `avn`.
 func (ps *peerSet) len() int {
 	ps.lock.RLock()
 	defer ps.lock.RUnlock()
@@ -231,12 +231,12 @@ func (ps *peerSet) snapLen() int {
 
 // peerWithHighestTD retrieves the known peer with the currently highest total
 // difficulty.
-func (ps *peerSet) peerWithHighestTD() *AVN.Peer {
+func (ps *peerSet) peerWithHighestTD() *avn.Peer {
 	ps.lock.RLock()
 	defer ps.lock.RUnlock()
 
 	var (
-		bestPeer *AVN.Peer
+		bestPeer *avn.Peer
 		bestTd   *big.Int
 	)
 	for _, p := range ps.peers {

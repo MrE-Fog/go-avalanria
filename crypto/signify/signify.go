@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // signFile reads the contents of an input file and signs it (in armored format)
 // with the key provided, placing the signature into the output file.
@@ -54,7 +54,7 @@ func parsePrivateKey(key string) (k ed25519.PrivateKey, header []byte, keyNum []
 // This accepts base64 keys in the format created by the 'signify' tool.
 // The signature is written to the 'output' file.
 func SignFile(input string, output string, key string, untrustedComment string, trustedComment string) error {
-	// Pre-check comments and ensure they're set to somAVNing.
+	// Pre-check comments and ensure they're set to somavning.
 	if strings.IndexByte(untrustedComment, '\n') >= 0 {
 		return errors.New("untrusted comment must not contain newline")
 	}

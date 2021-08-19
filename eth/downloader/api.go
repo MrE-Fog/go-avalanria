@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package downloader
 
@@ -20,13 +20,13 @@ import (
 	"context"
 	"sync"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 // PublicDownloaderAPI provides an API which gives information about the current synchronisation status.
-// It offers only mAVNods that operates on data that can be available to anyone without security risks.
+// It offers only mavnods that operates on data that can be available to anyone without security risks.
 type PublicDownloaderAPI struct {
 	d                         *Downloader
 	mux                       *event.TypeMux
@@ -122,7 +122,7 @@ func (api *PublicDownloaderAPI) Syncing(ctx context.Context) (*rpc.Subscription,
 // SyncingResult provides information about the current synchronisation status for this node.
 type SyncingResult struct {
 	Syncing bool                  `json:"syncing"`
-	Status  AVNereum.SyncProgress `json:"status"`
+	Status  avalanria.SyncProgress `json:"status"`
 }
 
 // uninstallSyncSubscriptionRequest uninstalles a syncing subscription in the API event loop.
@@ -140,7 +140,7 @@ type SyncStatusSubscription struct {
 
 // Unsubscribe uninstalls the subscription from the DownloadAPI event loop.
 // The status channel that was passed to subscribeSyncStatus isn't used anymore
-// after this mAVNod returns.
+// after this mavnod returns.
 func (s *SyncStatusSubscription) Unsubscribe() {
 	s.unsubOnce.Do(func() {
 		req := uninstallSyncSubscriptionRequest{s.c, make(chan interface{})}

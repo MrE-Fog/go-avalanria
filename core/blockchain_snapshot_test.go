@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Tests that abnormal program termination (i.e.crash) and restart can recovery
 // the snapshot properly if the snapshot is enabled.
@@ -29,13 +29,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 // snapshotTestBasic wraps the common testing fields in the snapshot tests.
@@ -52,8 +52,8 @@ type snapshotTestBasic struct {
 
 	// share fields, set in runtime
 	datadir string
-	db      AVNdb.Database
-	gendb   AVNdb.Database
+	db      avndb.Database
+	gendb   avndb.Database
 	engine  consensus.Engine
 }
 
@@ -72,7 +72,7 @@ func (basic *snapshotTestBasic) prepare(t *testing.T) (*BlockChain, []*types.Blo
 	// Initialize a fresh chain
 	var (
 		genesis = (&Genesis{BaseFee: big.NewInt(params.InitialBaseFee)}).MustCommit(db)
-		engine  = AVNash.NewFullFaker()
+		engine  = avnash.NewFullFaker()
 		gendb   = rawdb.NewMemoryDatabase()
 
 		// Snapshot is enabled, the first snapshot is created from the Genesis.
@@ -210,7 +210,7 @@ func (basic *snapshotTestBasic) teardown() {
 }
 
 // snapshotTest is a test case type for normal snapshot recovery.
-// It can be used for testing that restart GAVN normally.
+// It can be used for testing that restart Gavn normally.
 type snapshotTest struct {
 	snapshotTestBasic
 }
@@ -233,7 +233,7 @@ func (snaptest *snapshotTest) test(t *testing.T) {
 }
 
 // crashSnapshotTest is a test case type for innormal snapshot recovery.
-// It can be used for testing that restart GAVN after the crash.
+// It can be used for testing that restart Gavn after the crash.
 type crashSnapshotTest struct {
 	snapshotTestBasic
 }
@@ -449,7 +449,7 @@ func (snaptest *wipeCrashSnapshotTest) test(t *testing.T) {
 	snaptest.verify(t, newchain, blocks)
 }
 
-// Tests a GAVN restart with valid snapshot. Before the shutdown, all snapshot
+// Tests a Gavn restart with valid snapshot. Before the shutdown, all snapshot
 // journal will be persisted correctly. In this case no snapshot recovery is
 // required.
 func TestRestartWithNewSnapshot(t *testing.T) {
@@ -486,7 +486,7 @@ func TestRestartWithNewSnapshot(t *testing.T) {
 	test.teardown()
 }
 
-// Tests a GAVN was crashed and restarts with a broken snapshot. In this case the
+// Tests a Gavn was crashed and restarts with a broken snapshot. In this case the
 // chain head should be rewound to the point with available state. And also the
 // new head should must be lower than disk layer. But there is no committed point
 // so the chain should be rewound to genesis and the disk layer should be left
@@ -525,7 +525,7 @@ func TestNoCommitCrashWithNewSnapshot(t *testing.T) {
 	test.teardown()
 }
 
-// Tests a GAVN was crashed and restarts with a broken snapshot. In this case the
+// Tests a Gavn was crashed and restarts with a broken snapshot. In this case the
 // chain head should be rewound to the point with available state. And also the
 // new head should must be lower than disk layer. But there is only a low committed
 // point so the chain should be rewound to committed point and the disk layer
@@ -564,7 +564,7 @@ func TestLowCommitCrashWithNewSnapshot(t *testing.T) {
 	test.teardown()
 }
 
-// Tests a GAVN was crashed and restarts with a broken snapshot. In this case
+// Tests a Gavn was crashed and restarts with a broken snapshot. In this case
 // the chain head should be rewound to the point with available state. And also
 // the new head should must be lower than disk layer. But there is only a high
 // committed point so the chain should be rewound to genesis and the disk layer
@@ -603,7 +603,7 @@ func TestHighCommitCrashWithNewSnapshot(t *testing.T) {
 	test.teardown()
 }
 
-// Tests a GAVN was running with snapshot enabled. Then restarts without
+// Tests a Gavn was running with snapshot enabled. Then restarts without
 // enabling snapshot and after that re-enable the snapshot again. In this
 // case the snapshot should be rebuilt with latest chain head.
 func TestGappedNewSnapshot(t *testing.T) {
@@ -641,7 +641,7 @@ func TestGappedNewSnapshot(t *testing.T) {
 	test.teardown()
 }
 
-// Tests the GAVN was running with snapshot enabled and resetHead is applied.
+// Tests the Gavn was running with snapshot enabled and resetHead is applied.
 // In this case the head is rewound to the target(with state available). After
 // that the chain is restarted and the original disk layer is kept.
 func TestSetHeadWithNewSnapshot(t *testing.T) {
@@ -679,7 +679,7 @@ func TestSetHeadWithNewSnapshot(t *testing.T) {
 	test.teardown()
 }
 
-// Tests the GAVN was running with a complete snapshot and then imports a few
+// Tests the Gavn was running with a complete snapshot and then imports a few
 // more new blocks on top without enabling the snapshot. After the restart,
 // crash happens. Check everything is ok after the restart.
 func TestRecoverSnapshotFromWipingCrash(t *testing.T) {

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package consensus implements different Avalanria consensus engines.
 package consensus
@@ -20,14 +20,14 @@ package consensus
 import (
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
-// ChainHeaderReader defines a small collection of mAVNods needed to access the local
+// ChainHeaderReader defines a small collection of mavnods needed to access the local
 // blockchain during header verification.
 type ChainHeaderReader interface {
 	// Config retrieves the blockchain's chain configuration.
@@ -46,7 +46,7 @@ type ChainHeaderReader interface {
 	GetHeaderByHash(hash common.Hash) *types.Header
 }
 
-// ChainReader defines a small collection of mAVNods needed to access the local
+// ChainReader defines a small collection of mavnods needed to access the local
 // blockchain during header and/or uncle verification.
 type ChainReader interface {
 	ChainHeaderReader
@@ -62,13 +62,13 @@ type Engine interface {
 	// engine is based on signatures.
 	Author(header *types.Header) (common.Address, error)
 
-	// VerifyHeader checks whAVNer a header conforms to the consensus rules of a
+	// VerifyHeader checks whavner a header conforms to the consensus rules of a
 	// given engine. Verifying the seal may be done optionally here, or explicitly
-	// via the VerifySeal mAVNod.
+	// via the VerifySeal mavnod.
 	VerifyHeader(chain ChainHeaderReader, header *types.Header, seal bool) error
 
 	// VerifyHeaders is similar to VerifyHeader, but verifies a batch of headers
-	// concurrently. The mAVNod returns a quit channel to abort the operations and
+	// concurrently. The mavnod returns a quit channel to abort the operations and
 	// a results channel to retrieve the async verifications (the order is that of
 	// the input slice).
 	VerifyHeaders(chain ChainHeaderReader, headers []*types.Header, seals []bool) (chan<- struct{}, <-chan error)
@@ -100,7 +100,7 @@ type Engine interface {
 	// Seal generates a new sealing request for the given input block and pushes
 	// the result into the given channel.
 	//
-	// Note, the mAVNod returns immediately and will send the result async. More
+	// Note, the mavnod returns immediately and will send the result async. More
 	// than one result may also be returned depending on the consensus algorithm.
 	Seal(chain ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error
 

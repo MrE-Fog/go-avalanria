@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package server
 
@@ -22,10 +22,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/les/utils"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/nodestate"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/les/utils"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/nodestate"
 )
 
 var errBalanceOverflow = errors.New("balance overflow")
@@ -485,7 +485,7 @@ func (n *nodeBalance) removeCallback(id int) bool {
 	return true
 }
 
-// checkCallbacks checks whAVNer the threshold of any of the active callbacks
+// checkCallbacks checks whavner the threshold of any of the active callbacks
 // have been reached and returns triggered callbacks.
 // Note: checkCallbacks assumes that the balance has been recently updated.
 func (n *nodeBalance) checkCallbacks(now mclock.AbsTime) (callbacks []func()) {
@@ -568,7 +568,7 @@ func (n *nodeBalance) balanceExhausted() {
 	}
 }
 
-// checkPriorityStatus checks whAVNer the node has gained priority status and sets the priority
+// checkPriorityStatus checks whavner the node has gained priority status and sets the priority
 // callback and flag if necessary. It assumes that the balance has been recently updated.
 // Note that the priority flag has to be set by the caller after the mutex has been released.
 func (n *nodeBalance) checkPriorityStatus() bool {

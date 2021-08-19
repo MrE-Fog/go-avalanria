@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package dbtest
 
@@ -22,12 +22,12 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/AVNdb"
+	"github.com/avalanria/go-avalanria/avndb"
 )
 
 // TestDatabaseSuite runs a suite of tests against a KeyValueStore database
 // implementation.
-func TestDatabaseSuite(t *testing.T, New func() AVNdb.KeyValueStore) {
+func TestDatabaseSuite(t *testing.T, New func() avndb.KeyValueStore) {
 	t.Run("Iterator", func(t *testing.T) {
 		tests := []struct {
 			content map[string]string
@@ -315,7 +315,7 @@ func TestDatabaseSuite(t *testing.T, New func() AVNdb.KeyValueStore) {
 
 }
 
-func iterateKeys(it AVNdb.Iterator) []string {
+func iterateKeys(it avndb.Iterator) []string {
 	keys := []string{}
 	for it.Next() {
 		keys = append(keys, string(it.Key()))

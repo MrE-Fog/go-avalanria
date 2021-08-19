@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package node
 
@@ -25,12 +25,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/rpc"
 	"github.com/stretchr/testify/assert"
 )
 
 // This test uses the admin_startRPC and admin_startWS APIs,
-// checking whAVNer the HTTP server is started correctly.
+// checking whavner the HTTP server is started correctly.
 func TestStartRPC(t *testing.T) {
 	type test struct {
 		name string
@@ -38,10 +38,10 @@ func TestStartRPC(t *testing.T) {
 		fn   func(*testing.T, *Node, *privateAdminAPI)
 
 		// Checks. These run after the node is configured and all API calls have been made.
-		wantReachable bool // whAVNer the HTTP server should be reachable at all
-		wantHandlers  bool // whAVNer RegisterHandler handlers should be accessible
-		wantRPC       bool // whAVNer JSON-RPC/HTTP should be accessible
-		wantWS        bool // whAVNer JSON-RPC/WS should be accessible
+		wantReachable bool // whavner the HTTP server should be reachable at all
+		wantHandlers  bool // whavner RegisterHandler handlers should be accessible
+		wantRPC       bool // whavner JSON-RPC/HTTP should be accessible
+		wantWS        bool // whavner JSON-RPC/WS should be accessible
 	}
 
 	tests := []test{
@@ -310,7 +310,7 @@ func checkReachable(rawurl string) bool {
 	return true
 }
 
-// checkBodyOK checks whAVNer the given HTTP URL responds with 200 OK and body "OK".
+// checkBodyOK checks whavner the given HTTP URL responds with 200 OK and body "OK".
 func checkBodyOK(url string) bool {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -328,7 +328,7 @@ func checkBodyOK(url string) bool {
 	return bytes.Equal(buf, []byte("OK"))
 }
 
-// checkRPC checks whAVNer JSON-RPC works against the given URL.
+// checkRPC checks whavner JSON-RPC works against the given URL.
 func checkRPC(url string) bool {
 	c, err := rpc.Dial(url)
 	if err != nil {

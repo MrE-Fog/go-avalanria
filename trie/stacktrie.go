@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
@@ -25,10 +25,10 @@ import (
 	"io"
 	"sync"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 var ErrCommitDisabled = errors.New("no database for committing")
@@ -39,7 +39,7 @@ var stPool = sync.Pool{
 	},
 }
 
-func stackTrieFromPool(db AVNdb.KeyValueWriter) *StackTrie {
+func stackTrieFromPool(db avndb.KeyValueWriter) *StackTrie {
 	st := stPool.Get().(*StackTrie)
 	st.db = db
 	return st
@@ -59,11 +59,11 @@ type StackTrie struct {
 	key       []byte               // key chunk covered by this (full|ext) node
 	keyOffset int                  // offset of the key chunk inside a full key
 	children  [16]*StackTrie       // list of children (for fullnodes and exts)
-	db        AVNdb.KeyValueWriter // Pointer to the commit db, can be nil
+	db        avndb.KeyValueWriter // Pointer to the commit db, can be nil
 }
 
 // NewStackTrie allocates and initializes an empty trie.
-func NewStackTrie(db AVNdb.KeyValueWriter) *StackTrie {
+func NewStackTrie(db avndb.KeyValueWriter) *StackTrie {
 	return &StackTrie{
 		nodeType: emptyNode,
 		db:       db,
@@ -71,7 +71,7 @@ func NewStackTrie(db AVNdb.KeyValueWriter) *StackTrie {
 }
 
 // NewFromBinary initialises a serialized stacktrie with the given db.
-func NewFromBinary(data []byte, db AVNdb.KeyValueWriter) (*StackTrie, error) {
+func NewFromBinary(data []byte, db avndb.KeyValueWriter) (*StackTrie, error) {
 	var st StackTrie
 	if err := st.UnmarshalBinary(data); err != nil {
 		return nil, err
@@ -151,7 +151,7 @@ func (st *StackTrie) unmarshalBinary(r io.Reader) error {
 	return nil
 }
 
-func (st *StackTrie) setDb(db AVNdb.KeyValueWriter) {
+func (st *StackTrie) setDb(db avndb.KeyValueWriter) {
 	st.db = db
 	for _, child := range st.children {
 		if child != nil {
@@ -160,7 +160,7 @@ func (st *StackTrie) setDb(db AVNdb.KeyValueWriter) {
 	}
 }
 
-func newLeaf(ko int, key, val []byte, db AVNdb.KeyValueWriter) *StackTrie {
+func newLeaf(ko int, key, val []byte, db avndb.KeyValueWriter) *StackTrie {
 	st := stackTrieFromPool(db)
 	st.nodeType = leafNode
 	st.keyOffset = ko
@@ -169,7 +169,7 @@ func newLeaf(ko int, key, val []byte, db AVNdb.KeyValueWriter) *StackTrie {
 	return st
 }
 
-func newExt(ko int, key []byte, child *StackTrie, db AVNdb.KeyValueWriter) *StackTrie {
+func newExt(ko int, key []byte, child *StackTrie, db avndb.KeyValueWriter) *StackTrie {
 	st := stackTrieFromPool(db)
 	st.nodeType = extNode
 	st.keyOffset = ko
@@ -369,7 +369,7 @@ func (st *StackTrie) insert(key, value []byte) {
 //  - Then the <32 byte rlp-encoded value will be accessible in 'st.val'.
 //  - And the 'st.type' will be 'hashedNode' AGAIN
 //
-// This mAVNod will also:
+// This mavnod will also:
 // set 'st.type' to hashedNode
 // clear 'st.key'
 func (st *StackTrie) hash() {

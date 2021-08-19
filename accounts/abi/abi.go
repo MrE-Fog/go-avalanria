@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package abi
 
@@ -23,23 +23,23 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/crypto"
 )
 
 // The ABI holds information about a contract's context and available
-// invokable mAVNods. It will allow you to type check function calls and
+// invokable mavnods. It will allow you to type check function calls and
 // packs data accordingly.
 type ABI struct {
-	Constructor MAVNod
-	MAVNods     map[string]MAVNod
+	Constructor Mavnod
+	Mavnods     map[string]Mavnod
 	Events      map[string]Event
 
 	// Additional "special" functions introduced in solidity v0.6.0.
 	// It's separated from the original default fallback. Each contract
 	// can only define one fallback and receive function.
-	Fallback MAVNod // Note it's also used to represent legacy fallback before v0.6.0
-	Receive  MAVNod
+	Fallback Mavnod // Note it's also used to represent legacy fallback before v0.6.0
+	Receive  Mavnod
 }
 
 // JSON returns a parsed ABI interface and error if it failed.
@@ -53,13 +53,13 @@ func JSON(reader io.Reader) (ABI, error) {
 	return abi, nil
 }
 
-// Pack the given mAVNod name to conform the ABI. MAVNod call's data
-// will consist of mAVNod_id, args0, arg1, ... argN. MAVNod id consists
+// Pack the given mavnod name to conform the ABI. Mavnod call's data
+// will consist of mavnod_id, args0, arg1, ... argN. Mavnod id consists
 // of 4 bytes and arguments are all 32 bytes.
-// MAVNod ids are created from the first 4 bytes of the hash of the
-// mAVNods string signature. (signature = baz(uint32,string32))
+// Mavnod ids are created from the first 4 bytes of the hash of the
+// mavnods string signature. (signature = baz(uint32,string32))
 func (abi ABI) Pack(name string, args ...interface{}) ([]byte, error) {
-	// Fetch the ABI of the requested mAVNod
+	// Fetch the ABI of the requested mavnod
 	if name == "" {
 		// constructor
 		arguments, err := abi.Constructor.Inputs.Pack(args...)
@@ -68,33 +68,33 @@ func (abi ABI) Pack(name string, args ...interface{}) ([]byte, error) {
 		}
 		return arguments, nil
 	}
-	mAVNod, exist := abi.MAVNods[name]
+	mavnod, exist := abi.Mavnods[name]
 	if !exist {
-		return nil, fmt.Errorf("mAVNod '%s' not found", name)
+		return nil, fmt.Errorf("mavnod '%s' not found", name)
 	}
-	arguments, err := mAVNod.Inputs.Pack(args...)
+	arguments, err := mavnod.Inputs.Pack(args...)
 	if err != nil {
 		return nil, err
 	}
-	// Pack up the mAVNod ID too if not a constructor and return
-	return append(mAVNod.ID, arguments...), nil
+	// Pack up the mavnod ID too if not a constructor and return
+	return append(mavnod.ID, arguments...), nil
 }
 
 func (abi ABI) getArguments(name string, data []byte) (Arguments, error) {
 	// since there can't be naming collisions with contracts and events,
-	// we need to decide whAVNer we're calling a mAVNod or an event
+	// we need to decide whavner we're calling a mavnod or an event
 	var args Arguments
-	if mAVNod, ok := abi.MAVNods[name]; ok {
+	if mavnod, ok := abi.Mavnods[name]; ok {
 		if len(data)%32 != 0 {
 			return nil, fmt.Errorf("abi: improperly formatted output: %s - Bytes: [%+v]", string(data), data)
 		}
-		args = mAVNod.Outputs
+		args = mavnod.Outputs
 	}
 	if event, ok := abi.Events[name]; ok {
 		args = event.Inputs
 	}
 	if args == nil {
-		return nil, errors.New("abi: could not locate named mAVNod or event")
+		return nil, errors.New("abi: could not locate named mavnod or event")
 	}
 	return args, nil
 }
@@ -155,22 +155,22 @@ func (abi *ABI) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-	abi.MAVNods = make(map[string]MAVNod)
+	abi.Mavnods = make(map[string]Mavnod)
 	abi.Events = make(map[string]Event)
 	for _, field := range fields {
 		switch field.Type {
 		case "constructor":
-			abi.Constructor = NewMAVNod("", "", Constructor, field.StateMutability, field.Constant, field.Payable, field.Inputs, nil)
+			abi.Constructor = NewMavnod("", "", Constructor, field.StateMutability, field.Constant, field.Payable, field.Inputs, nil)
 		case "function":
-			name := abi.overloadedMAVNodName(field.Name)
-			abi.MAVNods[name] = NewMAVNod(name, field.Name, Function, field.StateMutability, field.Constant, field.Payable, field.Inputs, field.Outputs)
+			name := abi.overloadedMavnodName(field.Name)
+			abi.Mavnods[name] = NewMavnod(name, field.Name, Function, field.StateMutability, field.Constant, field.Payable, field.Inputs, field.Outputs)
 		case "fallback":
 			// New introduced function type in v0.6.0, check more detail
 			// here https://solidity.readthedocs.io/en/v0.6.0/contracts.html#fallback-function
 			if abi.HasFallback() {
 				return errors.New("only single fallback is allowed")
 			}
-			abi.Fallback = NewMAVNod("", "", Fallback, field.StateMutability, field.Constant, field.Payable, nil, nil)
+			abi.Fallback = NewMavnod("", "", Fallback, field.StateMutability, field.Constant, field.Payable, nil, nil)
 		case "receive":
 			// New introduced function type in v0.6.0, check more detail
 			// here https://solidity.readthedocs.io/en/v0.6.0/contracts.html#fallback-function
@@ -180,7 +180,7 @@ func (abi *ABI) UnmarshalJSON(data []byte) error {
 			if field.StateMutability != "payable" {
 				return errors.New("the statemutability of receive can only be payable")
 			}
-			abi.Receive = NewMAVNod("", "", Receive, field.StateMutability, field.Constant, field.Payable, nil, nil)
+			abi.Receive = NewMavnod("", "", Receive, field.StateMutability, field.Constant, field.Payable, nil, nil)
 		case "event":
 			name := abi.overloadedEventName(field.Name)
 			abi.Events[name] = NewEvent(name, field.Name, field.Anonymous, field.Inputs)
@@ -191,17 +191,17 @@ func (abi *ABI) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// overloadedMAVNodName returns the next available name for a given function.
+// overloadedMavnodName returns the next available name for a given function.
 // Needed since solidity allows for function overload.
 //
-// e.g. if the abi contains MAVNods send, send1
-// overloadedMAVNodName would return send2 for input send.
-func (abi *ABI) overloadedMAVNodName(rawName string) string {
+// e.g. if the abi contains Mavnods send, send1
+// overloadedMavnodName would return send2 for input send.
+func (abi *ABI) overloadedMavnodName(rawName string) string {
 	name := rawName
-	_, ok := abi.MAVNods[name]
+	_, ok := abi.Mavnods[name]
 	for idx := 0; ok; idx++ {
 		name = fmt.Sprintf("%s%d", rawName, idx)
-		_, ok = abi.MAVNods[name]
+		_, ok = abi.Mavnods[name]
 	}
 	return name
 }
@@ -221,18 +221,18 @@ func (abi *ABI) overloadedEventName(rawName string) string {
 	return name
 }
 
-// MAVNodById looks up a mAVNod by the 4-byte id,
+// MavnodById looks up a mavnod by the 4-byte id,
 // returns nil if none found.
-func (abi *ABI) MAVNodById(sigdata []byte) (*MAVNod, error) {
+func (abi *ABI) MavnodById(sigdata []byte) (*Mavnod, error) {
 	if len(sigdata) < 4 {
-		return nil, fmt.Errorf("data too short (%d bytes) for abi mAVNod lookup", len(sigdata))
+		return nil, fmt.Errorf("data too short (%d bytes) for abi mavnod lookup", len(sigdata))
 	}
-	for _, mAVNod := range abi.MAVNods {
-		if bytes.Equal(mAVNod.ID, sigdata[:4]) {
-			return &mAVNod, nil
+	for _, mavnod := range abi.Mavnods {
+		if bytes.Equal(mavnod.ID, sigdata[:4]) {
+			return &mavnod, nil
 		}
 	}
-	return nil, fmt.Errorf("no mAVNod with id: %#x", sigdata[:4])
+	return nil, fmt.Errorf("no mavnod with id: %#x", sigdata[:4])
 }
 
 // EventByID looks an event up by its topic hash in the
@@ -246,12 +246,12 @@ func (abi *ABI) EventByID(topic common.Hash) (*Event, error) {
 	return nil, fmt.Errorf("no event with id: %#x", topic.Hex())
 }
 
-// HasFallback returns an indicator whAVNer a fallback function is included.
+// HasFallback returns an indicator whavner a fallback function is included.
 func (abi *ABI) HasFallback() bool {
 	return abi.Fallback.Type == Fallback
 }
 
-// HasReceive returns an indicator whAVNer a receive function is included.
+// HasReceive returns an indicator whavner a receive function is included.
 func (abi *ABI) HasReceive() bool {
 	return abi.Receive.Type == Receive
 }

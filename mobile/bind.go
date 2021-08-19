@@ -1,36 +1,36 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Contains all the wrappers from the bind package.
 
-package gAVN
+package gavn
 
 import (
 	"math/big"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/accounts/abi"
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/accounts/keystore"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/avalanria/go-avalanria/accounts/abi"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/accounts/keystore"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/types"
 )
 
 // Signer is an interface defining the callback when a contract requires a
-// mAVNod to sign the transaction before submission.
+// mavnod to sign the transaction before submission.
 type Signer interface {
 	Sign(addr *Address, unsignedTx *Transaction) (tx *Transaction, _ error)
 }
@@ -80,7 +80,7 @@ func NewTransactOpts() *TransactOpts {
 	return new(TransactOpts)
 }
 
-// NewKeyedTransactOpts is a utility mAVNod to easily create a transaction signer
+// NewKeyedTransactOpts is a utility mavnod to easily create a transaction signer
 // from a single private key.
 func NewKeyedTransactOpts(keyJson []byte, passphrase string, chainID *big.Int) (*TransactOpts, error) {
 	key, err := keystore.DecryptKey(keyJson, passphrase)
@@ -124,7 +124,7 @@ func (opts *TransactOpts) SetGasLimit(limit int64)     { opts.opts.GasLimit = ui
 func (opts *TransactOpts) SetContext(context *Context) { opts.opts.Context = context.context }
 
 // BoundContract is the base wrapper object that reflects a contract on the
-// Avalanria network. It contains a collection of mAVNods that are used by the
+// Avalanria network. It contains a collection of mavnods that are used by the
 // higher level contract bindings to operate.
 type BoundContract struct {
 	contract *bind.BoundContract
@@ -172,28 +172,28 @@ func (c *BoundContract) GetDeployer() *Transaction {
 	return &Transaction{c.deployer}
 }
 
-// Call invokes the (constant) contract mAVNod with params as input values and
+// Call invokes the (constant) contract mavnod with params as input values and
 // sets the output to result.
-func (c *BoundContract) Call(opts *CallOpts, out *Interfaces, mAVNod string, args *Interfaces) error {
+func (c *BoundContract) Call(opts *CallOpts, out *Interfaces, mavnod string, args *Interfaces) error {
 	results := make([]interface{}, len(out.objects))
 	copy(results, out.objects)
-	if err := c.contract.Call(&opts.opts, &results, mAVNod, args.objects...); err != nil {
+	if err := c.contract.Call(&opts.opts, &results, mavnod, args.objects...); err != nil {
 		return err
 	}
 	copy(out.objects, results)
 	return nil
 }
 
-// Transact invokes the (paid) contract mAVNod with params as input values.
-func (c *BoundContract) Transact(opts *TransactOpts, mAVNod string, args *Interfaces) (tx *Transaction, _ error) {
-	rawTx, err := c.contract.Transact(&opts.opts, mAVNod, args.objects...)
+// Transact invokes the (paid) contract mavnod with params as input values.
+func (c *BoundContract) Transact(opts *TransactOpts, mavnod string, args *Interfaces) (tx *Transaction, _ error) {
+	rawTx, err := c.contract.Transact(&opts.opts, mavnod, args.objects...)
 	if err != nil {
 		return nil, err
 	}
 	return &Transaction{rawTx}, nil
 }
 
-// RawTransact invokes the (paid) contract mAVNod with raw calldata as input values.
+// RawTransact invokes the (paid) contract mavnod with raw calldata as input values.
 func (c *BoundContract) RawTransact(opts *TransactOpts, calldata []byte) (tx *Transaction, _ error) {
 	rawTx, err := c.contract.RawTransact(&opts.opts, calldata)
 	if err != nil {
@@ -203,7 +203,7 @@ func (c *BoundContract) RawTransact(opts *TransactOpts, calldata []byte) (tx *Tr
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
-// its default mAVNod if one is available.
+// its default mavnod if one is available.
 func (c *BoundContract) Transfer(opts *TransactOpts) (tx *Transaction, _ error) {
 	rawTx, err := c.contract.Transfer(&opts.opts)
 	if err != nil {

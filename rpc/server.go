@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -22,7 +22,7 @@ import (
 	"sync/atomic"
 
 	mapset "github.com/deckarep/golang-set"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 const MetadataApi = "rpc"
@@ -33,8 +33,8 @@ const MetadataApi = "rpc"
 type CodecOption int
 
 const (
-	// OptionMAVNodInvocation is an indication that the codec supports RPC mAVNod calls
-	OptionMAVNodInvocation CodecOption = 1 << iota
+	// OptionMavnodInvocation is an indication that the codec supports RPC mavnod calls
+	OptionMavnodInvocation CodecOption = 1 << iota
 
 	// OptionSubscriptions is an indication that the codec supports RPC notifications
 	OptionSubscriptions = 1 << iota // support pub sub
@@ -52,14 +52,14 @@ type Server struct {
 func NewServer() *Server {
 	server := &Server{idgen: randomIDGenerator(), codecs: mapset.NewSet(), run: 1}
 	// Register the default service providing meta information about the RPC service such
-	// as the services and mAVNods it offers.
+	// as the services and mavnods it offers.
 	rpcService := &RPCService{server}
 	server.RegisterName(MetadataApi, rpcService)
 	return server
 }
 
 // RegisterName creates a service for the given receiver type under the given name. When no
-// mAVNods on the given receiver match the criteria to be either a RPC mAVNod or a
+// mavnods on the given receiver match the criteria to be either a RPC mavnod or a
 // subscription an error is returned. Otherwise a new service is created and added to the
 // service collection this server provides to clients.
 func (s *Server) RegisterName(name string, receiver interface{}) error {

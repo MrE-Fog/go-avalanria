@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -31,10 +31,10 @@ import (
 
 const (
 	vsn                      = "2.0"
-	serviceMAVNodSeparator   = "_"
-	subscribeMAVNodSuffix    = "_subscribe"
-	unsubscribeMAVNodSuffix  = "_unsubscribe"
-	notificationMAVNodSuffix = "_subscription"
+	serviceMavnodSeparator   = "_"
+	subscribeMavnodSuffix    = "_subscribe"
+	unsubscribeMavnodSuffix  = "_unsubscribe"
+	notificationMavnodSuffix = "_subscription"
 
 	defaultWriteTimeout = 10 * time.Second // used if context has no deadline
 )
@@ -51,22 +51,22 @@ type subscriptionResult struct {
 type jsonrpcMessage struct {
 	Version string          `json:"jsonrpc,omitempty"`
 	ID      json.RawMessage `json:"id,omitempty"`
-	MAVNod  string          `json:"mAVNod,omitempty"`
+	Mavnod  string          `json:"mavnod,omitempty"`
 	Params  json.RawMessage `json:"params,omitempty"`
 	Error   *jsonError      `json:"error,omitempty"`
 	Result  json.RawMessage `json:"result,omitempty"`
 }
 
 func (msg *jsonrpcMessage) isNotification() bool {
-	return msg.ID == nil && msg.MAVNod != ""
+	return msg.ID == nil && msg.Mavnod != ""
 }
 
 func (msg *jsonrpcMessage) isCall() bool {
-	return msg.hasValidID() && msg.MAVNod != ""
+	return msg.hasValidID() && msg.Mavnod != ""
 }
 
 func (msg *jsonrpcMessage) isResponse() bool {
-	return msg.hasValidID() && msg.MAVNod == "" && msg.Params == nil && (msg.Result != nil || msg.Error != nil)
+	return msg.hasValidID() && msg.Mavnod == "" && msg.Params == nil && (msg.Result != nil || msg.Error != nil)
 }
 
 func (msg *jsonrpcMessage) hasValidID() bool {
@@ -74,15 +74,15 @@ func (msg *jsonrpcMessage) hasValidID() bool {
 }
 
 func (msg *jsonrpcMessage) isSubscribe() bool {
-	return strings.HasSuffix(msg.MAVNod, subscribeMAVNodSuffix)
+	return strings.HasSuffix(msg.Mavnod, subscribeMavnodSuffix)
 }
 
 func (msg *jsonrpcMessage) isUnsubscribe() bool {
-	return strings.HasSuffix(msg.MAVNod, unsubscribeMAVNodSuffix)
+	return strings.HasSuffix(msg.Mavnod, unsubscribeMavnodSuffix)
 }
 
 func (msg *jsonrpcMessage) namespace() string {
-	elem := strings.SplitN(msg.MAVNod, serviceMAVNodSeparator, 2)
+	elem := strings.SplitN(msg.Mavnod, serviceMavnodSeparator, 2)
 	return elem[0]
 }
 
@@ -143,7 +143,7 @@ func (err *jsonError) ErrorData() interface{} {
 	return err.Data
 }
 
-// Conn is a subset of the mAVNods of net.Conn which are sufficient for ServerCodec.
+// Conn is a subset of the mavnods of net.Conn which are sufficient for ServerCodec.
 type Conn interface {
 	io.ReadWriteCloser
 	SetWriteDeadline(time.Time) error
@@ -334,9 +334,9 @@ func parseSubscriptionName(rawArgs json.RawMessage) (string, error) {
 		return "", errors.New("non-array args")
 	}
 	v, _ := dec.Token()
-	mAVNod, ok := v.(string)
+	mavnod, ok := v.(string)
 	if !ok {
 		return "", errors.New("expected subscription name as first argument")
 	}
-	return mAVNod, nil
+	return mavnod, nil
 }

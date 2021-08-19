@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -21,15 +21,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 var (
@@ -49,7 +49,7 @@ type LesOdrRequest interface {
 	GetCost(*serverPeer) uint64
 	CanSend(*serverPeer) bool
 	Request(uint64, *serverPeer) error
-	Validate(AVNdb.Database, *Msg) error
+	Validate(avndb.Database, *Msg) error
 }
 
 func LesRequest(req light.OdrRequest) LesOdrRequest {
@@ -96,7 +96,7 @@ func (r *BlockRequest) Request(reqID uint64, peer *serverPeer) error {
 // Valid processes an ODR request reply message from the LES network
 // returns true and stores results in memory if the message was a valid reply
 // to the request (implementation of LesOdrRequest)
-func (r *BlockRequest) Validate(db AVNdb.Database, msg *Msg) error {
+func (r *BlockRequest) Validate(db avndb.Database, msg *Msg) error {
 	log.Debug("Validating block body", "hash", r.Hash)
 
 	// Ensure we have a correct message with a single block body
@@ -154,7 +154,7 @@ func (r *ReceiptsRequest) Request(reqID uint64, peer *serverPeer) error {
 // Valid processes an ODR request reply message from the LES network
 // returns true and stores results in memory if the message was a valid reply
 // to the request (implementation of LesOdrRequest)
-func (r *ReceiptsRequest) Validate(db AVNdb.Database, msg *Msg) error {
+func (r *ReceiptsRequest) Validate(db avndb.Database, msg *Msg) error {
 	log.Debug("Validating block receipts", "hash", r.Hash)
 
 	// Ensure we have a correct message with a single block receipt
@@ -216,7 +216,7 @@ func (r *TrieRequest) Request(reqID uint64, peer *serverPeer) error {
 // Valid processes an ODR request reply message from the LES network
 // returns true and stores results in memory if the message was a valid reply
 // to the request (implementation of LesOdrRequest)
-func (r *TrieRequest) Validate(db AVNdb.Database, msg *Msg) error {
+func (r *TrieRequest) Validate(db avndb.Database, msg *Msg) error {
 	log.Debug("Validating trie proof", "root", r.Id.Root, "key", r.Key)
 
 	if msg.MsgType != MsgProofsV2 {
@@ -269,7 +269,7 @@ func (r *CodeRequest) Request(reqID uint64, peer *serverPeer) error {
 // Valid processes an ODR request reply message from the LES network
 // returns true and stores results in memory if the message was a valid reply
 // to the request (implementation of LesOdrRequest)
-func (r *CodeRequest) Validate(db AVNdb.Database, msg *Msg) error {
+func (r *CodeRequest) Validate(db avndb.Database, msg *Msg) error {
 	log.Debug("Validating code data", "hash", r.Hash)
 
 	// Ensure we have a correct message with a single code element
@@ -346,7 +346,7 @@ func (r *ChtRequest) Request(reqID uint64, peer *serverPeer) error {
 // Valid processes an ODR request reply message from the LES network
 // returns true and stores results in memory if the message was a valid reply
 // to the request (implementation of LesOdrRequest)
-func (r *ChtRequest) Validate(db AVNdb.Database, msg *Msg) error {
+func (r *ChtRequest) Validate(db avndb.Database, msg *Msg) error {
 	log.Debug("Validating CHT", "cht", r.ChtNum, "block", r.BlockNum)
 
 	if msg.MsgType != MsgHelperTrieProofs {
@@ -442,7 +442,7 @@ func (r *BloomRequest) Request(reqID uint64, peer *serverPeer) error {
 // Valid processes an ODR request reply message from the LES network
 // returns true and stores results in memory if the message was a valid reply
 // to the request (implementation of LesOdrRequest)
-func (r *BloomRequest) Validate(db AVNdb.Database, msg *Msg) error {
+func (r *BloomRequest) Validate(db avndb.Database, msg *Msg) error {
 	log.Debug("Validating BloomBits", "bloomTrie", r.BloomTrieNum, "bitIdx", r.BitIdx, "sections", r.SectionIndexList)
 
 	// Ensure we have a correct message with a single proof element
@@ -499,7 +499,7 @@ func (r *TxStatusRequest) Request(reqID uint64, peer *serverPeer) error {
 // Validate processes an ODR request reply message from the LES network
 // returns true and stores results in memory if the message was a valid reply
 // to the request (implementation of LesOdrRequest)
-func (r *TxStatusRequest) Validate(db AVNdb.Database, msg *Msg) error {
+func (r *TxStatusRequest) Validate(db avndb.Database, msg *Msg) error {
 	log.Debug("Validating transaction status", "count", len(r.Hashes))
 
 	if msg.MsgType != MsgTxStatus {
@@ -516,7 +516,7 @@ func (r *TxStatusRequest) Validate(db AVNdb.Database, msg *Msg) error {
 // readTraceDB stores the keys of database reads. We use this to check that received node
 // sets contain only the trie nodes necessary to make proofs pass.
 type readTraceDB struct {
-	db    AVNdb.KeyValueReader
+	db    avndb.KeyValueReader
 	reads map[string]struct{}
 }
 

@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package server
 
@@ -21,14 +21,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/les/utils"
-	"github.com/AVNereum/go-AVNereum/les/vflux"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/nodestate"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/les/utils"
+	"github.com/avalanria/go-avalanria/les/vflux"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/nodestate"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 var (
@@ -53,7 +53,7 @@ var (
 // each client can have several minutes of connection time.
 //
 // Balances of disconnected clients are stored in nodeDB including positive balance
-// and negative banalce. BoAVN positive balance and negative balance will decrease
+// and negative banalce. Boavn positive balance and negative balance will decrease
 // exponentially. If the balance is low enough, then the record will be dropped.
 type ClientPool struct {
 	*priorityPool
@@ -82,7 +82,7 @@ type clientPeer interface {
 }
 
 // NewClientPool creates a new client pool
-func NewClientPool(balanceDb AVNdb.KeyValueStore, minCap uint64, connectedBias time.Duration, clock mclock.Clock, synced func() bool) *ClientPool {
+func NewClientPool(balanceDb avndb.KeyValueStore, minCap uint64, connectedBias time.Duration, clock mclock.Clock, synced func() bool) *ClientPool {
 	setup := newServerSetup()
 	ns := nodestate.NewNodeStateMachine(nil, nil, clock, setup.setup)
 	cp := &ClientPool{
@@ -219,7 +219,7 @@ func (cp *ClientPool) SetCapacity(node *enode.Node, reqCap uint64, bias time.Dur
 		}
 		if requested {
 			// mark the requested node so that the UpdateCapacity callback can signal
-			// whAVNer the update is the direct result of a SetCapacity call on the given node
+			// whavner the update is the direct result of a SetCapacity call on the given node
 			cp.capReqNode = node
 			defer func() {
 				cp.capReqNode = nil

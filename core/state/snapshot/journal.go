@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package snapshot
 
@@ -25,23 +25,23 @@ import (
 	"time"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 const journalVersion uint64 = 0
 
 // journalGenerator is a disk layer entry containing the generator progress marker.
 type journalGenerator struct {
-	// Indicator that whAVNer the database was in progress of being wiped.
+	// Indicator that whavner the database was in progress of being wiped.
 	// It's deprecated but keep it here for background compatibility.
 	Wiping bool
 
-	Done     bool // WhAVNer the generator finished creating the snapshot
+	Done     bool // Whavner the generator finished creating the snapshot
 	Marker   []byte
 	Accounts uint64
 	Slots    uint64
@@ -67,7 +67,7 @@ type journalStorage struct {
 }
 
 // loadAndParseJournal tries to parse the snapshot journal in latest format.
-func loadAndParseJournal(db AVNdb.KeyValueStore, base *diskLayer) (snapshot, journalGenerator, error) {
+func loadAndParseJournal(db avndb.KeyValueStore, base *diskLayer) (snapshot, journalGenerator, error) {
 	// Retrieve the disk layer generator. It must exist, no matter the
 	// snapshot is fully generated or not. Otherwise the entire disk
 	// layer is invalid.
@@ -80,7 +80,7 @@ func loadAndParseJournal(db AVNdb.KeyValueStore, base *diskLayer) (snapshot, jou
 		return nil, journalGenerator{}, fmt.Errorf("failed to decode snapshot generator: %v", err)
 	}
 	// Retrieve the diff layer journal. It's possible that the journal is
-	// not existent, e.g. the disk layer is generating while that the GAVN
+	// not existent, e.g. the disk layer is generating while that the Gavn
 	// crashes without persisting the diff journal.
 	// So if there is no journal, or the journal is invalid(e.g. the journal
 	// is not matched with disk layer; or the it's the legacy-format journal,
@@ -110,7 +110,7 @@ func loadAndParseJournal(db AVNdb.KeyValueStore, base *diskLayer) (snapshot, jou
 		return nil, journalGenerator{}, errors.New("missing disk layer root")
 	}
 	// The diff journal is not matched with disk, discard them.
-	// It can happen that GAVN crashes without persisting the latest
+	// It can happen that Gavn crashes without persisting the latest
 	// diff journal.
 	if !bytes.Equal(root.Bytes(), base.root.Bytes()) {
 		log.Warn("Loaded snapshot journal", "diskroot", base.root, "diffs", "unmatched")
@@ -126,9 +126,9 @@ func loadAndParseJournal(db AVNdb.KeyValueStore, base *diskLayer) (snapshot, jou
 }
 
 // loadSnapshot loads a pre-existing state snapshot backed by a key-value store.
-func loadSnapshot(diskdb AVNdb.KeyValueStore, triedb *trie.Database, cache int, root common.Hash, recovery bool) (snapshot, bool, error) {
+func loadSnapshot(diskdb avndb.KeyValueStore, triedb *trie.Database, cache int, root common.Hash, recovery bool) (snapshot, bool, error) {
 	// If snapshotting is disabled (initial sync in progress), don't do anything,
-	// wait for the chain to permit us to do somAVNing meaningful
+	// wait for the chain to permit us to do somavning meaningful
 	if rawdb.ReadSnapshotDisabled(diskdb) {
 		return nil, true, nil
 	}
@@ -153,7 +153,7 @@ func loadSnapshot(diskdb AVNdb.KeyValueStore, triedb *trie.Database, cache int, 
 	// snapshot is not matched with current state root, print a warning log
 	// or discard the entire snapshot it's legacy snapshot.
 	//
-	// Possible scenario: GAVN was crashed without persisting journal and then
+	// Possible scenario: Gavn was crashed without persisting journal and then
 	// restart, the head is rewound to the point with available state(trie)
 	// which is below the snapshot. In this case the snapshot can be recovered
 	// by re-executing blocks but right now it's unavailable.
@@ -172,7 +172,7 @@ func loadSnapshot(diskdb AVNdb.KeyValueStore, triedb *trie.Database, cache int, 
 	}
 	// Everything loaded correctly, resume any suspended operations
 	if !generator.Done {
-		// WhAVNer or not wiping was in progress, load any generator progress too
+		// Whavner or not wiping was in progress, load any generator progress too
 		base.genMarker = generator.Marker
 		if base.genMarker == nil {
 			base.genMarker = []byte{}

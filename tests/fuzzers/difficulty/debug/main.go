@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/AVNereum/go-AVNereum/tests/fuzzers/difficulty"
+	"github.com/avalanria/go-avalanria/tests/fuzzers/difficulty"
 )
 
 func main() {

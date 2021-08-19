@@ -1,20 +1,20 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNash
+package avnash
 
 import (
 	"bytes"
@@ -30,14 +30,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/core/types"
 )
 
 const (
-	// staleThreshold is the maximum depth of the acceptable stale but valid AVNash solution.
+	// staleThreshold is the maximum depth of the acceptable stale but valid avnash solution.
 	staleThreshold = 7
 )
 
@@ -48,36 +48,36 @@ var (
 
 // Seal implements consensus.Engine, attempting to find a nonce that satisfies
 // the block's difficulty requirements.
-func (AVNash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
+func (avnash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	// If we're running a fake PoW, simply return a 0 nonce immediately
-	if AVNash.config.PowMode == ModeFake || AVNash.config.PowMode == ModeFullFake {
+	if avnash.config.PowMode == ModeFake || avnash.config.PowMode == ModeFullFake {
 		header := block.Header()
 		header.Nonce, header.MixDigest = types.BlockNonce{}, common.Hash{}
 		select {
 		case results <- block.WithSeal(header):
 		default:
-			AVNash.config.Log.Warn("Sealing result is not read by miner", "mode", "fake", "sealhash", AVNash.SealHash(block.Header()))
+			avnash.config.Log.Warn("Sealing result is not read by miner", "mode", "fake", "sealhash", avnash.SealHash(block.Header()))
 		}
 		return nil
 	}
 	// If we're running a shared PoW, delegate sealing to it
-	if AVNash.shared != nil {
-		return AVNash.shared.Seal(chain, block, results, stop)
+	if avnash.shared != nil {
+		return avnash.shared.Seal(chain, block, results, stop)
 	}
 	// Create a runner and the multiple search threads it directs
 	abort := make(chan struct{})
 
-	AVNash.lock.Lock()
-	threads := AVNash.threads
-	if AVNash.rand == nil {
+	avnash.lock.Lock()
+	threads := avnash.threads
+	if avnash.rand == nil {
 		seed, err := crand.Int(crand.Reader, big.NewInt(math.MaxInt64))
 		if err != nil {
-			AVNash.lock.Unlock()
+			avnash.lock.Unlock()
 			return err
 		}
-		AVNash.rand = rand.New(rand.NewSource(seed.Int64()))
+		avnash.rand = rand.New(rand.NewSource(seed.Int64()))
 	}
-	AVNash.lock.Unlock()
+	avnash.lock.Unlock()
 	if threads == 0 {
 		threads = runtime.NumCPU()
 	}
@@ -85,8 +85,8 @@ func (AVNash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block
 		threads = 0 // Allows disabling local mining without extra logic around local/remote
 	}
 	// Push new work to remote sealer
-	if AVNash.remote != nil {
-		AVNash.remote.workCh <- &sealTask{block: block, results: results}
+	if avnash.remote != nil {
+		avnash.remote.workCh <- &sealTask{block: block, results: results}
 	}
 	var (
 		pend   sync.WaitGroup
@@ -96,8 +96,8 @@ func (AVNash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block
 		pend.Add(1)
 		go func(id int, nonce uint64) {
 			defer pend.Done()
-			AVNash.mine(block, id, nonce, abort, locals)
-		}(i, uint64(AVNash.rand.Int63()))
+			avnash.mine(block, id, nonce, abort, locals)
+		}(i, uint64(avnash.rand.Int63()))
 	}
 	// Wait until sealing is terminated or a nonce is found
 	go func() {
@@ -111,14 +111,14 @@ func (AVNash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block
 			select {
 			case results <- result:
 			default:
-				AVNash.config.Log.Warn("Sealing result is not read by miner", "mode", "local", "sealhash", AVNash.SealHash(block.Header()))
+				avnash.config.Log.Warn("Sealing result is not read by miner", "mode", "local", "sealhash", avnash.SealHash(block.Header()))
 			}
 			close(abort)
-		case <-AVNash.update:
+		case <-avnash.update:
 			// Thread count was changed on user request, restart
 			close(abort)
-			if err := AVNash.Seal(chain, block, results, stop); err != nil {
-				AVNash.config.Log.Error("Failed to restart sealing after update", "err", err)
+			if err := avnash.Seal(chain, block, results, stop); err != nil {
+				avnash.config.Log.Error("Failed to restart sealing after update", "err", err)
 			}
 		}
 		// Wait for all miners to terminate and return the block
@@ -129,14 +129,14 @@ func (AVNash *Ethash) Seal(chain consensus.ChainHeaderReader, block *types.Block
 
 // mine is the actual proof-of-work miner that searches for a nonce starting from
 // seed that results in correct final block difficulty.
-func (AVNash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan struct{}, found chan *types.Block) {
+func (avnash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan struct{}, found chan *types.Block) {
 	// Extract some data from the header
 	var (
 		header  = block.Header()
-		hash    = AVNash.SealHash(header).Bytes()
+		hash    = avnash.SealHash(header).Bytes()
 		target  = new(big.Int).Div(two256, header.Difficulty)
 		number  = header.Number.Uint64()
-		dataset = AVNash.dataset(number, false)
+		dataset = avnash.dataset(number, false)
 	)
 	// Start generating random nonces until we abort or find a good one
 	var (
@@ -144,22 +144,22 @@ func (AVNash *Ethash) mine(block *types.Block, id int, seed uint64, abort chan s
 		nonce     = seed
 		powBuffer = new(big.Int)
 	)
-	logger := AVNash.config.Log.New("miner", id)
-	logger.Trace("Started AVNash search for new nonces", "seed", seed)
+	logger := avnash.config.Log.New("miner", id)
+	logger.Trace("Started avnash search for new nonces", "seed", seed)
 search:
 	for {
 		select {
 		case <-abort:
 			// Mining terminated, update stats and abort
 			logger.Trace("Ethash nonce search aborted", "attempts", nonce-seed)
-			AVNash.hashrate.Mark(attempts)
+			avnash.hashrate.Mark(attempts)
 			break search
 
 		default:
 			// We don't have to update hash rate on every nonce, so update after after 2^X nonces
 			attempts++
 			if (attempts % (1 << 15)) == 0 {
-				AVNash.hashrate.Mark(attempts)
+				avnash.hashrate.Mark(attempts)
 				attempts = 0
 			}
 			// Compute the PoW value of this nonce
@@ -199,7 +199,7 @@ type remoteSealer struct {
 	cancelNotify context.CancelFunc // cancels all notification requests
 	reqWG        sync.WaitGroup     // tracks notification request goroutines
 
-	AVNash       *Ethash
+	avnash       *Ethash
 	noverify     bool
 	notifyURLs   []string
 	results      chan<- *types.Block
@@ -242,10 +242,10 @@ type sealWork struct {
 	res  chan [4]string
 }
 
-func startRemoteSealer(AVNash *Ethash, urls []string, noverify bool) *remoteSealer {
+func startRemoteSealer(avnash *Ethash, urls []string, noverify bool) *remoteSealer {
 	ctx, cancel := context.WithCancel(context.Background())
 	s := &remoteSealer{
-		AVNash:       AVNash,
+		avnash:       avnash,
 		noverify:     noverify,
 		notifyURLs:   urls,
 		notifyCtx:    ctx,
@@ -266,7 +266,7 @@ func startRemoteSealer(AVNash *Ethash, urls []string, noverify bool) *remoteSeal
 
 func (s *remoteSealer) loop() {
 	defer func() {
-		s.AVNash.config.Log.Trace("Ethash remote sealer is exiting")
+		s.avnash.config.Log.Trace("Ethash remote sealer is exiting")
 		s.cancelNotify()
 		s.reqWG.Wait()
 		close(s.exitCh)
@@ -344,7 +344,7 @@ func (s *remoteSealer) loop() {
 //   result[2], 32 bytes hex encoded boundary condition ("target"), 2^256/difficulty
 //   result[3], hex encoded block number
 func (s *remoteSealer) makeWork(block *types.Block) {
-	hash := s.AVNash.SealHash(block.Header())
+	hash := s.avnash.SealHash(block.Header())
 	s.currentWork[0] = hash.Hex()
 	s.currentWork[1] = common.BytesToHash(SeedHash(block.NumberU64())).Hex()
 	s.currentWork[2] = common.BytesToHash(new(big.Int).Div(two256, block.Difficulty()).Bytes()).Hex()
@@ -363,7 +363,7 @@ func (s *remoteSealer) notifyWork() {
 	// Encode the JSON payload of the notification. When NotifyFull is set,
 	// this is the complete block header, otherwise it is a JSON array.
 	var blob []byte
-	if s.AVNash.config.NotifyFull {
+	if s.avnash.config.NotifyFull {
 		blob, _ = json.Marshal(s.currentBlock.Header())
 	} else {
 		blob, _ = json.Marshal(work)
@@ -380,7 +380,7 @@ func (s *remoteSealer) sendNotification(ctx context.Context, url string, json []
 
 	req, err := http.NewRequest("POST", url, bytes.NewReader(json))
 	if err != nil {
-		s.AVNash.config.Log.Warn("Can't create remote miner notification", "err", err)
+		s.avnash.config.Log.Warn("Can't create remote miner notification", "err", err)
 		return
 	}
 	ctx, cancel := context.WithTimeout(ctx, remoteSealerTimeout)
@@ -390,25 +390,25 @@ func (s *remoteSealer) sendNotification(ctx context.Context, url string, json []
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		s.AVNash.config.Log.Warn("Failed to notify remote miner", "err", err)
+		s.avnash.config.Log.Warn("Failed to notify remote miner", "err", err)
 	} else {
-		s.AVNash.config.Log.Trace("Notified remote miner", "miner", url, "hash", work[0], "target", work[2])
+		s.avnash.config.Log.Trace("Notified remote miner", "miner", url, "hash", work[0], "target", work[2])
 		resp.Body.Close()
 	}
 }
 
 // submitWork verifies the submitted pow solution, returning
-// whAVNer the solution was accepted or not (not can be both a bad pow as well as
+// whavner the solution was accepted or not (not can be both a bad pow as well as
 // any other error, like no pending work or stale mining result).
 func (s *remoteSealer) submitWork(nonce types.BlockNonce, mixDigest common.Hash, sealhash common.Hash) bool {
 	if s.currentBlock == nil {
-		s.AVNash.config.Log.Error("Pending work without block", "sealhash", sealhash)
+		s.avnash.config.Log.Error("Pending work without block", "sealhash", sealhash)
 		return false
 	}
 	// Make sure the work submitted is present
 	block := s.works[sealhash]
 	if block == nil {
-		s.AVNash.config.Log.Warn("Work submitted but none pending", "sealhash", sealhash, "curnumber", s.currentBlock.NumberU64())
+		s.avnash.config.Log.Warn("Work submitted but none pending", "sealhash", sealhash, "curnumber", s.currentBlock.NumberU64())
 		return false
 	}
 	// Verify the correctness of submitted result.
@@ -418,17 +418,17 @@ func (s *remoteSealer) submitWork(nonce types.BlockNonce, mixDigest common.Hash,
 
 	start := time.Now()
 	if !s.noverify {
-		if err := s.AVNash.verifySeal(nil, header, true); err != nil {
-			s.AVNash.config.Log.Warn("Invalid proof-of-work submitted", "sealhash", sealhash, "elapsed", common.PrettyDuration(time.Since(start)), "err", err)
+		if err := s.avnash.verifySeal(nil, header, true); err != nil {
+			s.avnash.config.Log.Warn("Invalid proof-of-work submitted", "sealhash", sealhash, "elapsed", common.PrettyDuration(time.Since(start)), "err", err)
 			return false
 		}
 	}
 	// Make sure the result channel is assigned.
 	if s.results == nil {
-		s.AVNash.config.Log.Warn("Ethash result channel is empty, submitted mining result is rejected")
+		s.avnash.config.Log.Warn("Ethash result channel is empty, submitted mining result is rejected")
 		return false
 	}
-	s.AVNash.config.Log.Trace("Verified correct proof-of-work", "sealhash", sealhash, "elapsed", common.PrettyDuration(time.Since(start)))
+	s.avnash.config.Log.Trace("Verified correct proof-of-work", "sealhash", sealhash, "elapsed", common.PrettyDuration(time.Since(start)))
 
 	// Solutions seems to be valid, return to the miner and notify acceptance.
 	solution := block.WithSeal(header)
@@ -437,14 +437,14 @@ func (s *remoteSealer) submitWork(nonce types.BlockNonce, mixDigest common.Hash,
 	if solution.NumberU64()+staleThreshold > s.currentBlock.NumberU64() {
 		select {
 		case s.results <- solution:
-			s.AVNash.config.Log.Debug("Work submitted is acceptable", "number", solution.NumberU64(), "sealhash", sealhash, "hash", solution.Hash())
+			s.avnash.config.Log.Debug("Work submitted is acceptable", "number", solution.NumberU64(), "sealhash", sealhash, "hash", solution.Hash())
 			return true
 		default:
-			s.AVNash.config.Log.Warn("Sealing result is not read by miner", "mode", "remote", "sealhash", sealhash)
+			s.avnash.config.Log.Warn("Sealing result is not read by miner", "mode", "remote", "sealhash", sealhash)
 			return false
 		}
 	}
 	// The submitted block is too old to accept, drop it.
-	s.AVNash.config.Log.Warn("Work submitted is too old", "number", solution.NumberU64(), "sealhash", sealhash, "hash", solution.Hash())
+	s.avnash.config.Log.Warn("Work submitted is too old", "number", solution.NumberU64(), "sealhash", sealhash, "hash", solution.Hash())
 	return false
 }

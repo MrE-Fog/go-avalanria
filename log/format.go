@@ -24,7 +24,7 @@ const (
 
 // locationTrims are trimmed for display to avoid unwieldy log lines.
 var locationTrims = []string{
-	"github.com/AVNereum/go-AVNereum/",
+	"github.com/avalanria/go-avalanria/",
 }
 
 // PrintOrigins sets or unsets log location (file:line) printing for terminal
@@ -37,7 +37,7 @@ func PrintOrigins(print bool) {
 	}
 }
 
-// locationEnabled is an atomic flag controlling whAVNer the terminal formatter
+// locationEnabled is an atomic flag controlling whavner the terminal formatter
 // should append the log locations too when printing entries.
 var locationEnabled uint32
 

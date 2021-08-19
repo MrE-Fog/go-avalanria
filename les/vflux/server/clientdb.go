@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package server
 
@@ -21,13 +21,13 @@ import (
 	"encoding/binary"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/les/utils"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/les/utils"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/rlp"
 	lru "github.com/hashicorp/golang-lru"
 )
 
@@ -56,17 +56,17 @@ var (
 )
 
 type nodeDB struct {
-	db            AVNdb.KeyValueStore
+	db            avndb.KeyValueStore
 	cache         *lru.Cache
 	auxbuf        []byte                                              // 37-byte auxiliary buffer for key encoding
 	verbuf        [2]byte                                             // 2-byte auxiliary buffer for db version
-	evictCallBack func(mclock.AbsTime, bool, utils.ExpiredValue) bool // Callback to determine whAVNer the balance can be evicted.
+	evictCallBack func(mclock.AbsTime, bool, utils.ExpiredValue) bool // Callback to determine whavner the balance can be evicted.
 	clock         mclock.Clock
 	closeCh       chan struct{}
 	cleanupHook   func() // Test hook used for testing
 }
 
-func newNodeDB(db AVNdb.KeyValueStore, clock mclock.Clock) *nodeDB {
+func newNodeDB(db avndb.KeyValueStore, clock mclock.Clock) *nodeDB {
 	cache, _ := lru.New(balanceCacheLimit)
 	ndb := &nodeDB{
 		db:      db,
@@ -220,7 +220,7 @@ func (db *nodeDB) expirer() {
 	}
 }
 
-// expireNodes iterates the whole node db and checks whAVNer the
+// expireNodes iterates the whole node db and checks whavner the
 // token balances can be deleted.
 func (db *nodeDB) expireNodes() {
 	var (

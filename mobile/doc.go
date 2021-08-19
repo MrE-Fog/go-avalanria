@@ -1,23 +1,23 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package gAVN contains the simplified mobile APIs to go-AVNereum.
+// Package gavn contains the simplified mobile APIs to go-avalanria.
 //
 // The scope of this package is *not* to allow writing a custom Avalanria client
-// with pieces plucked from go-AVNereum, rather to allow writing native dapps on
+// with pieces plucked from go-avalanria, rather to allow writing native dapps on
 // mobile platforms. Keep this in mind when using or extending this package!
 //
 // API limitations
@@ -33,29 +33,29 @@
 // writing custom library generators, but those are out of scope now.
 //
 // Content wise each file in this package corresponds to an entire Go package
-// from the go-AVNereum repository. Please adhere to this scoping to prevent this
+// from the go-avalanria repository. Please adhere to this scoping to prevent this
 // package getting unmaintainable.
 //
 // Wrapping guidelines:
 //
 // Every type that is to be exposed should be wrapped into its own plain struct,
-// which internally contains a single field: the original go-AVNereum version.
+// which internally contains a single field: the original go-avalanria version.
 // This is needed because gomobile cannot expose named types for now.
 //
-// Whenever a mAVNod argument or a return type is a custom struct, the pointer
+// Whenever a mavnod argument or a return type is a custom struct, the pointer
 // variant should always be used as value types crossing over between language
 // boundaries might have strange behaviors.
 //
 // Slices of types should be converted into a single multiplicative type wrapping
-// a go slice with the mAVNods `Size`, `Get` and `Set`. Further slice operations
+// a go slice with the mavnods `Size`, `Get` and `Set`. Further slice operations
 // should not be provided to limit the remote code complexity. Arrays should be
 // avoided as much as possible since they complicate bounds checking.
 //
-// If a mAVNod has multiple return values (e.g. some return + an error), those
+// If a mavnod has multiple return values (e.g. some return + an error), those
 // are generated as output arguments in ObjC. To avoid weird generated names like
 // ret_0 for them, please always assign names to output variables if tuples.
 //
 // Note, a panic *cannot* cross over language boundaries, instead will result in
 // an undebuggable SEGFAULT in the process. For error handling only ever use error
 // returns, which may be the only or the second return.
-package gAVN
+package gavn

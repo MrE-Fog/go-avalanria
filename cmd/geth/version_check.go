@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -25,12 +25,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 	"github.com/jedisct1/go-minisign"
 	"gopkg.in/urfave/cli.v1"
 )
 
-var gAVNPubKeys []string = []string{
+var gavnPubKeys []string = []string{
 	//@holiman, minisign public key FB1D084D39BAEC24
 	"RWQk7Lo5TQgd+wxBNZM+Zoy+7UhhMHaWKzqoes9tvSbFLJYZhNTbrIjx",
 	//minisign public key 138B1CA303E51687
@@ -72,7 +72,7 @@ func checkCurrent(url, current string) error {
 	if sig, err = fetch(fmt.Sprintf("%v.minisig", url)); err != nil {
 		return fmt.Errorf("could not retrieve signature: %w", err)
 	}
-	if err = verifySignature(gAVNPubKeys, data, sig); err != nil {
+	if err = verifySignature(gavnPubKeys, data, sig); err != nil {
 		return err
 	}
 	var vulns []vulnJson
@@ -127,7 +127,7 @@ func fetch(url string) ([]byte, error) {
 }
 
 // verifySignature checks that the sigData is a valid signature of the given
-// data, for pubkey GAVNPubkey
+// data, for pubkey GavnPubkey
 func verifySignature(pubkeys []string, data, sigdata []byte) error {
 	sig, err := minisign.DecodeSignature(string(sigdata))
 	if err != nil {

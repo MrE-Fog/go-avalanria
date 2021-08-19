@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package cmdtest
 
@@ -41,7 +41,7 @@ func NewTestCmd(t *testing.T, data interface{}) *TestCmd {
 }
 
 type TestCmd struct {
-	// For total convenience, all testing mAVNods are available.
+	// For total convenience, all testing mavnods are available.
 	*testing.T
 
 	Func    template.FuncMap
@@ -59,7 +59,7 @@ type TestCmd struct {
 var id int32
 
 // Run exec's the current binary using name as argv[0] which will trigger the
-// reexec init function for that name (e.g. "gAVN-test" in cmd/gAVN/run_test.go)
+// reexec init function for that name (e.g. "gavn-test" in cmd/gavn/run_test.go)
 func (tt *TestCmd) Run(name string, args ...string) {
 	id := atomic.AddInt32(&id, 1)
 	tt.stderr = &testlogger{t: tt.T, name: fmt.Sprintf("%d", id)}
@@ -82,9 +82,9 @@ func (tt *TestCmd) Run(name string, args ...string) {
 }
 
 // InputLine writes the given text to the child's stdin.
-// This mAVNod can also be called from an expect template, e.g.:
+// This mavnod can also be called from an expect template, e.g.:
 //
-//     gAVN.expect(`Passphrase: {{.InputLine "password"}}`)
+//     gavn.expect(`Passphrase: {{.InputLine "password"}}`)
 func (tt *TestCmd) InputLine(s string) string {
 	io.WriteString(tt.stdin, s+"\n")
 	return ""

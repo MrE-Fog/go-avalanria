@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -177,7 +177,7 @@ func (n *Notifier) send(sub *Subscription, data json.RawMessage) error {
 	ctx := context.Background()
 	return n.h.conn.writeJSON(ctx, &jsonrpcMessage{
 		Version: vsn,
-		MAVNod:  n.namespace + notificationMAVNodSuffix,
+		Mavnod:  n.namespace + notificationMavnodSuffix,
 		Params:  params,
 	})
 }
@@ -201,7 +201,7 @@ func (s *Subscription) MarshalJSON() ([]byte, error) {
 }
 
 // ClientSubscription is a subscription established through the Client's Subscribe or
-// EthSubscribe mAVNods.
+// EthSubscribe mavnods.
 type ClientSubscription struct {
 	client    *Client
 	etype     reflect.Type
@@ -297,7 +297,7 @@ func (sub *ClientSubscription) run() {
 	// blocked in sub.deliver() or sub.close(). Closing forwardDone unblocks them.
 	close(sub.forwardDone)
 
-	// Call the unsubscribe mAVNod on the server.
+	// Call the unsubscribe mavnod on the server.
 	if unsubscribe {
 		sub.requestUnsubscribe()
 	}
@@ -371,5 +371,5 @@ func (sub *ClientSubscription) unmarshal(result json.RawMessage) (interface{}, e
 
 func (sub *ClientSubscription) requestUnsubscribe() error {
 	var result interface{}
-	return sub.client.Call(&result, sub.namespace+unsubscribeMAVNodSuffix, sub.subid)
+	return sub.client.Call(&result, sub.namespace+unsubscribeMavnodSuffix, sub.subid)
 }

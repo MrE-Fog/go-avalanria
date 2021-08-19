@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package les implements the Light Avalanria Subprotocol.
 package les
@@ -21,32 +21,32 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/common/mclock"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/bloombits"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/AVN/filters"
-	"github.com/AVNereum/go-AVNereum/AVN/gasprice"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/les/vflux"
-	vfc "github.com/AVNereum/go-AVNereum/les/vflux/client"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/enr"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/mclock"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/bloombits"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/avn/filters"
+	"github.com/avalanria/go-avalanria/avn/gasprice"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/les/vflux"
+	vfc "github.com/avalanria/go-avalanria/les/vflux/client"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/enr"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
 type LightAvalanria struct {
@@ -71,7 +71,7 @@ type LightAvalanria struct {
 	eventMux       *event.TypeMux
 	engine         consensus.Engine
 	accountManager *accounts.Manager
-	netRPCService  *AVNapi.PublicNetAPI
+	netRPCService  *avnapi.PublicNetAPI
 
 	p2pServer  *p2p.Server
 	p2pConfig  *p2p.Config
@@ -79,12 +79,12 @@ type LightAvalanria struct {
 }
 
 // New creates an instance of the light client.
-func New(stack *node.Node, config *AVNconfig.Config) (*LightAvalanria, error) {
-	chainDb, err := stack.OpenDatabase("lightchaindata", config.DatabaseCache, config.DatabaseHandles, "AVN/db/chaindata/", false)
+func New(stack *node.Node, config *avnconfig.Config) (*LightAvalanria, error) {
+	chainDb, err := stack.OpenDatabase("lightchaindata", config.DatabaseCache, config.DatabaseHandles, "avn/db/chaindata/", false)
 	if err != nil {
 		return nil, err
 	}
-	lesDb, err := stack.OpenDatabase("les.client", 0, 0, "AVN/db/lesclient/", false)
+	lesDb, err := stack.OpenDatabase("les.client", 0, 0, "avn/db/lesclient/", false)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func New(stack *node.Node, config *AVNconfig.Config) (*LightAvalanria, error) {
 	log.Info("Initialised chain configuration", "config", chainConfig)
 
 	peers := newServerPeerSet()
-	lAVN := &LightAvalanria{
+	lavn := &LightAvalanria{
 		lesCommons: lesCommons{
 			genesis:     genesisHash,
 			config:      config,
@@ -109,7 +109,7 @@ func New(stack *node.Node, config *AVNconfig.Config) (*LightAvalanria, error) {
 		eventMux:       stack.EventMux(),
 		reqDist:        newRequestDistributor(peers, &mclock.System{}),
 		accountManager: stack.AccountManager(),
-		engine:         AVNconfig.CreateConsensusEngine(stack, chainConfig, &config.Ethash, nil, false, chainDb),
+		engine:         avnconfig.CreateConsensusEngine(stack, chainConfig, &config.Ethash, nil, false, chainDb),
 		bloomRequests:  make(chan chan *bloombits.Retrieval),
 		bloomIndexer:   core.NewBloomIndexer(chainDb, params.BloomBitsBlocksClient, params.HelperTrieConfirmations),
 		p2pServer:      stack.Server(),
@@ -118,19 +118,19 @@ func New(stack *node.Node, config *AVNconfig.Config) (*LightAvalanria, error) {
 	}
 
 	var prenegQuery vfc.QueryFunc
-	if lAVN.udpEnabled {
-		prenegQuery = lAVN.prenegQuery
+	if lavn.udpEnabled {
+		prenegQuery = lavn.prenegQuery
 	}
-	lAVN.serverPool, lAVN.serverPoolIterator = vfc.NewServerPool(lesDb, []byte("serverpool:"), time.Second, prenegQuery, &mclock.System{}, config.UltraLightServers, requestList)
-	lAVN.serverPool.AddMetrics(suggestedTimeoutGauge, totalValueGauge, serverSelectableGauge, serverConnectedGauge, sessionValueMeter, serverDialedMeter)
+	lavn.serverPool, lavn.serverPoolIterator = vfc.NewServerPool(lesDb, []byte("serverpool:"), time.Second, prenegQuery, &mclock.System{}, config.UltraLightServers, requestList)
+	lavn.serverPool.AddMetrics(suggestedTimeoutGauge, totalValueGauge, serverSelectableGauge, serverConnectedGauge, sessionValueMeter, serverDialedMeter)
 
-	lAVN.retriever = newRetrieveManager(peers, lAVN.reqDist, lAVN.serverPool.GetTimeout)
-	lAVN.relay = newLesTxRelay(peers, lAVN.retriever)
+	lavn.retriever = newRetrieveManager(peers, lavn.reqDist, lavn.serverPool.GetTimeout)
+	lavn.relay = newLesTxRelay(peers, lavn.retriever)
 
-	lAVN.odr = NewLesOdr(chainDb, light.DefaultClientIndexerConfig, lAVN.peers, lAVN.retriever)
-	lAVN.chtIndexer = light.NewChtIndexer(chainDb, lAVN.odr, params.CHTFrequency, params.HelperTrieConfirmations, config.LightNoPrune)
-	lAVN.bloomTrieIndexer = light.NewBloomTrieIndexer(chainDb, lAVN.odr, params.BloomBitsBlocksClient, params.BloomTrieFrequency, config.LightNoPrune)
-	lAVN.odr.SetIndexers(lAVN.chtIndexer, lAVN.bloomTrieIndexer, lAVN.bloomIndexer)
+	lavn.odr = NewLesOdr(chainDb, light.DefaultClientIndexerConfig, lavn.peers, lavn.retriever)
+	lavn.chtIndexer = light.NewChtIndexer(chainDb, lavn.odr, params.CHTFrequency, params.HelperTrieConfirmations, config.LightNoPrune)
+	lavn.bloomTrieIndexer = light.NewBloomTrieIndexer(chainDb, lavn.odr, params.BloomBitsBlocksClient, params.BloomTrieFrequency, config.LightNoPrune)
+	lavn.odr.SetIndexers(lavn.chtIndexer, lavn.bloomTrieIndexer, lavn.bloomIndexer)
 
 	checkpoint := config.Checkpoint
 	if checkpoint == nil {
@@ -138,49 +138,49 @@ func New(stack *node.Node, config *AVNconfig.Config) (*LightAvalanria, error) {
 	}
 	// Note: NewLightChain adds the trusted checkpoint so it needs an ODR with
 	// indexers already set but not started yet
-	if lAVN.blockchain, err = light.NewLightChain(lAVN.odr, lAVN.chainConfig, lAVN.engine, checkpoint); err != nil {
+	if lavn.blockchain, err = light.NewLightChain(lavn.odr, lavn.chainConfig, lavn.engine, checkpoint); err != nil {
 		return nil, err
 	}
-	lAVN.chainReader = lAVN.blockchain
-	lAVN.txPool = light.NewTxPool(lAVN.chainConfig, lAVN.blockchain, lAVN.relay)
+	lavn.chainReader = lavn.blockchain
+	lavn.txPool = light.NewTxPool(lavn.chainConfig, lavn.blockchain, lavn.relay)
 
 	// Set up checkpoint oracle.
-	lAVN.oracle = lAVN.setupOracle(stack, genesisHash, config)
+	lavn.oracle = lavn.setupOracle(stack, genesisHash, config)
 
 	// Note: AddChildIndexer starts the update process for the child
-	lAVN.bloomIndexer.AddChildIndexer(lAVN.bloomTrieIndexer)
-	lAVN.chtIndexer.Start(lAVN.blockchain)
-	lAVN.bloomIndexer.Start(lAVN.blockchain)
+	lavn.bloomIndexer.AddChildIndexer(lavn.bloomTrieIndexer)
+	lavn.chtIndexer.Start(lavn.blockchain)
+	lavn.bloomIndexer.Start(lavn.blockchain)
 
 	// Start a light chain pruner to delete useless historical data.
-	lAVN.pruner = newPruner(chainDb, lAVN.chtIndexer, lAVN.bloomTrieIndexer)
+	lavn.pruner = newPruner(chainDb, lavn.chtIndexer, lavn.bloomTrieIndexer)
 
 	// Rewind the chain in case of an incompatible config upgrade.
 	if compat, ok := genesisErr.(*params.ConfigCompatError); ok {
 		log.Warn("Rewinding chain to upgrade configuration", "err", compat)
-		lAVN.blockchain.SetHead(compat.RewindTo)
+		lavn.blockchain.SetHead(compat.RewindTo)
 		rawdb.WriteChainConfig(chainDb, genesisHash, chainConfig)
 	}
 
-	lAVN.ApiBackend = &LesApiBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, lAVN, nil}
+	lavn.ApiBackend = &LesApiBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, lavn, nil}
 	gpoParams := config.GPO
 	if gpoParams.Default == nil {
 		gpoParams.Default = config.Miner.GasPrice
 	}
-	lAVN.ApiBackend.gpo = gasprice.NewOracle(lAVN.ApiBackend, gpoParams)
+	lavn.ApiBackend.gpo = gasprice.NewOracle(lavn.ApiBackend, gpoParams)
 
-	lAVN.handler = newClientHandler(config.UltraLightServers, config.UltraLightFraction, checkpoint, lAVN)
-	if lAVN.handler.ulc != nil {
-		log.Warn("Ultra light client is enabled", "trustedNodes", len(lAVN.handler.ulc.keys), "minTrustedFraction", lAVN.handler.ulc.fraction)
-		lAVN.blockchain.DisableCheckFreq()
+	lavn.handler = newClientHandler(config.UltraLightServers, config.UltraLightFraction, checkpoint, lavn)
+	if lavn.handler.ulc != nil {
+		log.Warn("Ultra light client is enabled", "trustedNodes", len(lavn.handler.ulc.keys), "minTrustedFraction", lavn.handler.ulc.fraction)
+		lavn.blockchain.DisableCheckFreq()
 	}
 
-	lAVN.netRPCService = AVNapi.NewPublicNetAPI(lAVN.p2pServer, lAVN.config.NetworkId)
+	lavn.netRPCService = avnapi.NewPublicNetAPI(lavn.p2pServer, lavn.config.NetworkId)
 
 	// Register the backend on the node
-	stack.RegisterAPIs(lAVN.APIs())
-	stack.RegisterProtocols(lAVN.Protocols())
-	stack.RegisterLifecycle(lAVN)
+	stack.RegisterAPIs(lavn.APIs())
+	stack.RegisterProtocols(lavn.Protocols())
+	stack.RegisterLifecycle(lavn)
 
 	// Check for unclean shutdown
 	if uncleanShutdowns, discards, err := rawdb.PushUncleanShutdownMarker(chainDb); err != nil {
@@ -195,7 +195,7 @@ func New(stack *node.Node, config *AVNconfig.Config) (*LightAvalanria, error) {
 				"age", common.PrettyAge(t))
 		}
 	}
-	return lAVN, nil
+	return lavn, nil
 }
 
 // VfluxRequest sends a batch of requests to the given node through discv5 UDP TalkRequest and returns the responses
@@ -236,7 +236,7 @@ func (s *LightAvalanria) vfxVersion(n *enode.Node) uint {
 	return version
 }
 
-// prenegQuery sends a capacity query to the given server node to determine whAVNer
+// prenegQuery sends a capacity query to the given server node to determine whavner
 // a connection slot is immediately available
 func (s *LightAvalanria) prenegQuery(n *enode.Node) int {
 	if s.vfxVersion(n) < 1 {
@@ -282,24 +282,24 @@ func (s *LightDummyAPI) Mining() bool {
 	return false
 }
 
-// APIs returns the collection of RPC services the AVNereum package offers.
+// APIs returns the collection of RPC services the avalanria package offers.
 // NOTE, some of these services probably need to be moved to somewhere else.
 func (s *LightAvalanria) APIs() []rpc.API {
-	apis := AVNapi.GetAPIs(s.ApiBackend)
+	apis := avnapi.GetAPIs(s.ApiBackend)
 	apis = append(apis, s.engine.APIs(s.BlockChain().HeaderChain())...)
 	return append(apis, []rpc.API{
 		{
-			Namespace: "AVN",
+			Namespace: "avn",
 			Version:   "1.0",
 			Service:   &LightDummyAPI{},
 			Public:    true,
 		}, {
-			Namespace: "AVN",
+			Namespace: "avn",
 			Version:   "1.0",
 			Service:   downloader.NewPublicDownloaderAPI(s.handler.downloader, s.eventMux),
 			Public:    true,
 		}, {
-			Namespace: "AVN",
+			Namespace: "avn",
 			Version:   "1.0",
 			Service:   filters.NewPublicFilterAPI(s.ApiBackend, true, 5*time.Minute),
 			Public:    true,
@@ -344,7 +344,7 @@ func (s *LightAvalanria) Protocols() []p2p.Protocol {
 }
 
 // Start implements node.Lifecycle, starting all internal goroutines needed by the
-// light AVNereum protocol implementation.
+// light avalanria protocol implementation.
 func (s *LightAvalanria) Start() error {
 	log.Warn("Light client mode is an experimental feature")
 
@@ -387,6 +387,6 @@ func (s *LightAvalanria) Stop() error {
 	s.chainDb.Close()
 	s.lesDb.Close()
 	s.wg.Wait()
-	log.Info("Light AVNereum stopped")
+	log.Info("Light avalanria stopped")
 	return nil
 }

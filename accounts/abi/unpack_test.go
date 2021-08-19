@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package abi
 
@@ -26,7 +26,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/avalanria/go-avalanria/common"
 	"github.com/stretchr/testify/require"
 )
 
@@ -35,7 +35,7 @@ func TestUnpack(t *testing.T) {
 	for i, test := range packUnpackTests {
 		t.Run(strconv.Itoa(i)+" "+test.def, func(t *testing.T) {
 			//Unpack
-			def := fmt.Sprintf(`[{ "name" : "mAVNod", "type": "function", "outputs": %s}]`, test.def)
+			def := fmt.Sprintf(`[{ "name" : "mavnod", "type": "function", "outputs": %s}]`, test.def)
 			abi, err := JSON(strings.NewReader(def))
 			if err != nil {
 				t.Fatalf("invalid ABI definition %s: %v", def, err)
@@ -44,7 +44,7 @@ func TestUnpack(t *testing.T) {
 			if err != nil {
 				t.Fatalf("invalid hex %s: %v", test.packed, err)
 			}
-			out, err := abi.Unpack("mAVNod", encb)
+			out, err := abi.Unpack("mavnod", encb)
 			if err != nil {
 				t.Errorf("test %d (%v) failed: %v", i, test.def, err)
 				return
@@ -209,7 +209,7 @@ func TestLocalUnpackTests(t *testing.T) {
 	for i, test := range unpackTests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			//Unpack
-			def := fmt.Sprintf(`[{ "name" : "mAVNod", "type": "function", "outputs": %s}]`, test.def)
+			def := fmt.Sprintf(`[{ "name" : "mavnod", "type": "function", "outputs": %s}]`, test.def)
 			abi, err := JSON(strings.NewReader(def))
 			if err != nil {
 				t.Fatalf("invalid ABI definition %s: %v", def, err)
@@ -219,7 +219,7 @@ func TestLocalUnpackTests(t *testing.T) {
 				t.Fatalf("invalid hex %s: %v", test.enc, err)
 			}
 			outptr := reflect.New(reflect.TypeOf(test.want))
-			err = abi.UnpackIntoInterface(outptr.Interface(), "mAVNod", encb)
+			err = abi.UnpackIntoInterface(outptr.Interface(), "mavnod", encb)
 			if err := test.checkError(err); err != nil {
 				t.Errorf("test %d (%v) failed: %v", i, test.def, err)
 				return
@@ -281,15 +281,15 @@ func TestUnpackIntoInterfaceSetDynamicArrayOutput(t *testing.T) {
 	}
 }
 
-type mAVNodMultiOutput struct {
+type mavnodMultiOutput struct {
 	Int    *big.Int
 	String string
 }
 
-func mAVNodMultiReturn(require *require.Assertions) (ABI, []byte, mAVNodMultiOutput) {
+func mavnodMultiReturn(require *require.Assertions) (ABI, []byte, mavnodMultiOutput) {
 	const definition = `[
 	{ "name" : "multi", "type": "function", "outputs": [ { "name": "Int", "type": "uint256" }, { "name": "String", "type": "string" } ] }]`
-	var expected = mAVNodMultiOutput{big.NewInt(1), "hello"}
+	var expected = mavnodMultiOutput{big.NewInt(1), "hello"}
 
 	abi, err := JSON(strings.NewReader(definition))
 	require.NoError(err)
@@ -302,7 +302,7 @@ func mAVNodMultiReturn(require *require.Assertions) (ABI, []byte, mAVNodMultiOut
 	return abi, buff.Bytes(), expected
 }
 
-func TestMAVNodMultiReturn(t *testing.T) {
+func TestMavnodMultiReturn(t *testing.T) {
 	type reversed struct {
 		String string
 		Int    *big.Int
@@ -313,7 +313,7 @@ func TestMAVNodMultiReturn(t *testing.T) {
 		return &slice
 	}
 
-	abi, data, expected := mAVNodMultiReturn(require.New(t))
+	abi, data, expected := mavnodMultiReturn(require.New(t))
 	bigint := new(big.Int)
 	var testCases = []struct {
 		dest     interface{}
@@ -321,7 +321,7 @@ func TestMAVNodMultiReturn(t *testing.T) {
 		error    string
 		name     string
 	}{{
-		&mAVNodMultiOutput{},
+		&mavnodMultiOutput{},
 		&expected,
 		"",
 		"Can unpack into structure",
@@ -367,7 +367,7 @@ func TestMAVNodMultiReturn(t *testing.T) {
 			require := require.New(t)
 			err := abi.UnpackIntoInterface(tc.dest, "multi", data)
 			if tc.error == "" {
-				require.Nil(err, "Should be able to unpack mAVNod outputs.")
+				require.Nil(err, "Should be able to unpack mavnod outputs.")
 				require.Equal(tc.expected, tc.dest)
 			} else {
 				require.EqualError(err, tc.error)
@@ -448,7 +448,7 @@ func TestMultiReturnWithStringSlice(t *testing.T) {
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // output[1] length
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000064")) // output[1][0] value
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000065")) // output[1][1] value
-	ret1, ret1Exp := new([]string), []string{"AVNereum", "go-AVNereum"}
+	ret1, ret1Exp := new([]string), []string{"avalanria", "go-avalanria"}
 	ret2, ret2Exp := new([]*big.Int), []*big.Int{big.NewInt(100), big.NewInt(101)}
 	if err := abi.UnpackIntoInterface(&[]interface{}{ret1, ret2}, "multi", buff.Bytes()); err != nil {
 		t.Fatal(err)
@@ -809,7 +809,7 @@ func TestUnpackTuple(t *testing.T) {
 
 	type T struct {
 		X *big.Int `abi:"x"`
-		Z *big.Int `abi:"y"` // Test whAVNer the abi tag works.
+		Z *big.Int `abi:"y"` // Test whavner the abi tag works.
 	}
 
 	type S struct {
@@ -902,7 +902,7 @@ func TestOOMMaliciousInput(t *testing.T) {
 		},
 	}
 	for i, test := range oomTests {
-		def := fmt.Sprintf(`[{ "name" : "mAVNod", "type": "function", "outputs": %s}]`, test.def)
+		def := fmt.Sprintf(`[{ "name" : "mavnod", "type": "function", "outputs": %s}]`, test.def)
 		abi, err := JSON(strings.NewReader(def))
 		if err != nil {
 			t.Fatalf("invalid ABI definition %s: %v", def, err)
@@ -911,7 +911,7 @@ func TestOOMMaliciousInput(t *testing.T) {
 		if err != nil {
 			t.Fatalf("invalid hex: %s" + test.enc)
 		}
-		_, err = abi.MAVNods["mAVNod"].Outputs.UnpackValues(encb)
+		_, err = abi.Mavnods["mavnod"].Outputs.UnpackValues(encb)
 		if err == nil {
 			t.Fatalf("Expected error on malicious input, test %d", i)
 		}

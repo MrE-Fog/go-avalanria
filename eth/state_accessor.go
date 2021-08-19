@@ -1,33 +1,33 @@
-// Copyright 2021 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2021 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 // stateAtBlock retrieves the state database associated with a certain block.
@@ -35,7 +35,7 @@ import (
 // are attempted to be reexecuted to generate the desired state. The optional
 // base layer statedb can be passed then it's regarded as the statedb of the
 // parent block.
-func (AVN *Avalanria) stateAtBlock(block *types.Block, reexec uint64, base *state.StateDB, checkLive bool) (statedb *state.StateDB, err error) {
+func (avn *Avalanria) stateAtBlock(block *types.Block, reexec uint64, base *state.StateDB, checkLive bool) (statedb *state.StateDB, err error) {
 	var (
 		current  *types.Block
 		database state.Database
@@ -44,7 +44,7 @@ func (AVN *Avalanria) stateAtBlock(block *types.Block, reexec uint64, base *stat
 	)
 	// Check the live database first if we have the state fully available, use that.
 	if checkLive {
-		statedb, err = AVN.blockchain.StateAt(block.Root())
+		statedb, err = avn.blockchain.StateAt(block.Root())
 		if err == nil {
 			return statedb, nil
 		}
@@ -52,14 +52,14 @@ func (AVN *Avalanria) stateAtBlock(block *types.Block, reexec uint64, base *stat
 	if base != nil {
 		// The optional base statedb is given, mark the start point as parent block
 		statedb, database, report = base, base.Database(), false
-		current = AVN.blockchain.GetBlock(block.ParentHash(), block.NumberU64()-1)
+		current = avn.blockchain.GetBlock(block.ParentHash(), block.NumberU64()-1)
 	} else {
 		// Otherwise try to reexec blocks until we find a state or reach our limit
 		current = block
 
 		// Create an ephemeral trie.Database for isolating the live one. Otherwise
 		// the internal junks created by tracing will be persisted into the disk.
-		database = state.NewDatabaseWithConfig(AVN.chainDb, &trie.Config{Cache: 16})
+		database = state.NewDatabaseWithConfig(avn.chainDb, &trie.Config{Cache: 16})
 
 		// If we didn't check the dirty database, do check the clean one, otherwise
 		// we would rewind past a persisted block (specific corner case is chain
@@ -75,7 +75,7 @@ func (AVN *Avalanria) stateAtBlock(block *types.Block, reexec uint64, base *stat
 			if current.NumberU64() == 0 {
 				return nil, errors.New("genesis state is missing")
 			}
-			parent := AVN.blockchain.GetBlock(current.ParentHash(), current.NumberU64()-1)
+			parent := avn.blockchain.GetBlock(current.ParentHash(), current.NumberU64()-1)
 			if parent == nil {
 				return nil, fmt.Errorf("missing block %v %d", current.ParentHash(), current.NumberU64()-1)
 			}
@@ -109,15 +109,15 @@ func (AVN *Avalanria) stateAtBlock(block *types.Block, reexec uint64, base *stat
 		}
 		// Retrieve the next block to regenerate and process it
 		next := current.NumberU64() + 1
-		if current = AVN.blockchain.GetBlockByNumber(next); current == nil {
+		if current = avn.blockchain.GetBlockByNumber(next); current == nil {
 			return nil, fmt.Errorf("block #%d not found", next)
 		}
-		_, _, _, err := AVN.blockchain.Processor().Process(current, statedb, vm.Config{})
+		_, _, _, err := avn.blockchain.Processor().Process(current, statedb, vm.Config{})
 		if err != nil {
 			return nil, fmt.Errorf("processing block %d failed: %v", current.NumberU64(), err)
 		}
 		// Finalize the state so any modifications are written to the trie
-		root, err := statedb.Commit(AVN.blockchain.Config().IsEIP158(current.Number()))
+		root, err := statedb.Commit(avn.blockchain.Config().IsEIP158(current.Number()))
 		if err != nil {
 			return nil, err
 		}
@@ -139,19 +139,19 @@ func (AVN *Avalanria) stateAtBlock(block *types.Block, reexec uint64, base *stat
 }
 
 // stateAtTransaction returns the execution environment of a certain transaction.
-func (AVN *Avalanria) stateAtTransaction(block *types.Block, txIndex int, reexec uint64) (core.Message, vm.BlockContext, *state.StateDB, error) {
+func (avn *Avalanria) stateAtTransaction(block *types.Block, txIndex int, reexec uint64) (core.Message, vm.BlockContext, *state.StateDB, error) {
 	// Short circuit if it's genesis block.
 	if block.NumberU64() == 0 {
 		return nil, vm.BlockContext{}, nil, errors.New("no transaction in genesis")
 	}
 	// Create the parent state database
-	parent := AVN.blockchain.GetBlock(block.ParentHash(), block.NumberU64()-1)
+	parent := avn.blockchain.GetBlock(block.ParentHash(), block.NumberU64()-1)
 	if parent == nil {
 		return nil, vm.BlockContext{}, nil, fmt.Errorf("parent %#x not found", block.ParentHash())
 	}
 	// Lookup the statedb of parent block from the live database,
 	// otherwise regenerate it on the flight.
-	statedb, err := AVN.stateAtBlock(parent, reexec, nil, true)
+	statedb, err := avn.stateAtBlock(parent, reexec, nil, true)
 	if err != nil {
 		return nil, vm.BlockContext{}, nil, err
 	}
@@ -159,17 +159,17 @@ func (AVN *Avalanria) stateAtTransaction(block *types.Block, txIndex int, reexec
 		return nil, vm.BlockContext{}, statedb, nil
 	}
 	// Recompute transactions up to the target index.
-	signer := types.MakeSigner(AVN.blockchain.Config(), block.Number())
+	signer := types.MakeSigner(avn.blockchain.Config(), block.Number())
 	for idx, tx := range block.Transactions() {
 		// Assemble the transaction call message and return if the requested offset
 		msg, _ := tx.AsMessage(signer, block.BaseFee())
 		txContext := core.NewEVMTxContext(msg)
-		context := core.NewEVMBlockContext(block.Header(), AVN.blockchain, nil)
+		context := core.NewEVMBlockContext(block.Header(), avn.blockchain, nil)
 		if idx == txIndex {
 			return msg, context, statedb, nil
 		}
 		// Not yet the searched for transaction, execute on top of the current state
-		vmenv := vm.NewEVM(context, txContext, statedb, AVN.blockchain.Config(), vm.Config{})
+		vmenv := vm.NewEVM(context, txContext, statedb, avn.blockchain.Config(), vm.Config{})
 		statedb.Prepare(tx.Hash(), idx)
 		if _, err := core.ApplyMessage(vmenv, msg, new(core.GasPool).AddGas(tx.Gas())); err != nil {
 			return nil, vm.BlockContext{}, nil, fmt.Errorf("transaction %#x failed: %v", tx.Hash(), err)

@@ -1,20 +1,20 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNclient
+package avnclient
 
 import (
 	"bytes"
@@ -26,33 +26,33 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/AVNconfig"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/avnconfig"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rpc"
 )
 
-// Verify that Client implements the AVNereum interfaces.
+// Verify that Client implements the avalanria interfaces.
 var (
-	_ = AVNereum.ChainReader(&Client{})
-	_ = AVNereum.TransactionReader(&Client{})
-	_ = AVNereum.ChainStateReader(&Client{})
-	_ = AVNereum.ChainSyncReader(&Client{})
-	_ = AVNereum.ContractCaller(&Client{})
-	_ = AVNereum.GasEstimator(&Client{})
-	_ = AVNereum.GasPricer(&Client{})
-	_ = AVNereum.LogFilterer(&Client{})
-	_ = AVNereum.PendingStateReader(&Client{})
-	// _ = AVNereum.PendingStateEventer(&Client{})
-	_ = AVNereum.PendingContractCaller(&Client{})
+	_ = avalanria.ChainReader(&Client{})
+	_ = avalanria.TransactionReader(&Client{})
+	_ = avalanria.ChainStateReader(&Client{})
+	_ = avalanria.ChainSyncReader(&Client{})
+	_ = avalanria.ContractCaller(&Client{})
+	_ = avalanria.GasEstimator(&Client{})
+	_ = avalanria.GasPricer(&Client{})
+	_ = avalanria.LogFilterer(&Client{})
+	_ = avalanria.PendingStateReader(&Client{})
+	// _ = avalanria.PendingStateEventer(&Client{})
+	_ = avalanria.PendingContractCaller(&Client{})
 )
 
 func TestToFilterArg(t *testing.T) {
@@ -66,13 +66,13 @@ func TestToFilterArg(t *testing.T) {
 
 	for _, testCase := range []struct {
 		name   string
-		input  AVNereum.FilterQuery
+		input  avalanria.FilterQuery
 		output interface{}
 		err    error
 	}{
 		{
 			"without BlockHash",
-			AVNereum.FilterQuery{
+			avalanria.FilterQuery{
 				Addresses: addresses,
 				FromBlock: big.NewInt(1),
 				ToBlock:   big.NewInt(2),
@@ -88,7 +88,7 @@ func TestToFilterArg(t *testing.T) {
 		},
 		{
 			"with nil fromBlock and nil toBlock",
-			AVNereum.FilterQuery{
+			avalanria.FilterQuery{
 				Addresses: addresses,
 				Topics:    [][]common.Hash{},
 			},
@@ -102,7 +102,7 @@ func TestToFilterArg(t *testing.T) {
 		},
 		{
 			"with negative fromBlock and negative toBlock",
-			AVNereum.FilterQuery{
+			avalanria.FilterQuery{
 				Addresses: addresses,
 				FromBlock: big.NewInt(-1),
 				ToBlock:   big.NewInt(-1),
@@ -118,7 +118,7 @@ func TestToFilterArg(t *testing.T) {
 		},
 		{
 			"with blockhash",
-			AVNereum.FilterQuery{
+			avalanria.FilterQuery{
 				Addresses: addresses,
 				BlockHash: &blockHash,
 				Topics:    [][]common.Hash{},
@@ -132,7 +132,7 @@ func TestToFilterArg(t *testing.T) {
 		},
 		{
 			"with blockhash and from block",
-			AVNereum.FilterQuery{
+			avalanria.FilterQuery{
 				Addresses: addresses,
 				BlockHash: &blockHash,
 				FromBlock: big.NewInt(1),
@@ -143,7 +143,7 @@ func TestToFilterArg(t *testing.T) {
 		},
 		{
 			"with blockhash and to block",
-			AVNereum.FilterQuery{
+			avalanria.FilterQuery{
 				Addresses: addresses,
 				BlockHash: &blockHash,
 				ToBlock:   big.NewInt(1),
@@ -154,7 +154,7 @@ func TestToFilterArg(t *testing.T) {
 		},
 		{
 			"with blockhash and both from / to block",
-			AVNereum.FilterQuery{
+			avalanria.FilterQuery{
 				Addresses: addresses,
 				BlockHash: &blockHash,
 				FromBlock: big.NewInt(1),
@@ -196,17 +196,17 @@ func newTestBackend(t *testing.T) (*node.Node, []*types.Block) {
 		t.Fatalf("can't create new node: %v", err)
 	}
 	// Create Avalanria Service
-	config := &AVNconfig.Config{Genesis: genesis}
-	config.Ethash.PowMode = AVNash.ModeFake
-	AVNservice, err := AVN.New(n, config)
+	config := &avnconfig.Config{Genesis: genesis}
+	config.Ethash.PowMode = avnash.ModeFake
+	avnservice, err := avn.New(n, config)
 	if err != nil {
-		t.Fatalf("can't create new AVNereum service: %v", err)
+		t.Fatalf("can't create new avalanria service: %v", err)
 	}
 	// Import the test chain.
 	if err := n.Start(); err != nil {
 		t.Fatalf("can't start test node: %v", err)
 	}
-	if _, err := AVNservice.BlockChain().InsertChain(blocks[1:]); err != nil {
+	if _, err := avnservice.BlockChain().InsertChain(blocks[1:]); err != nil {
 		t.Fatalf("can't import test blocks: %v", err)
 	}
 	return n, blocks
@@ -227,7 +227,7 @@ func generateTestChain() (*core.Genesis, []*types.Block) {
 		g.SetExtra([]byte("test"))
 	}
 	gblock := genesis.ToBlock(db)
-	engine := AVNash.NewFaker()
+	engine := avnash.NewFaker()
 	blocks, _ := core.GenerateChain(config, gblock, engine, db, 1, generate)
 	blocks = append([]*types.Block{gblock}, blocks...)
 	return genesis, blocks
@@ -291,7 +291,7 @@ func testHeader(t *testing.T, chain []*types.Block, client *rpc.Client) {
 		"future_block": {
 			block:   big.NewInt(1000000000),
 			want:    nil,
-			wantErr: AVNereum.NotFound,
+			wantErr: avalanria.NotFound,
 		},
 	}
 	for name, tt := range tests {
@@ -370,12 +370,12 @@ func testTransactionInBlockInterrupted(t *testing.T, client *rpc.Client) {
 	if tx != nil {
 		t.Fatal("transaction should be nil")
 	}
-	if err == nil || err == AVNereum.NotFound {
+	if err == nil || err == avalanria.NotFound {
 		t.Fatal("error should not be nil/notfound")
 	}
 	// Test tx in block not found
-	if _, err := ec.TransactionInBlock(context.Background(), block.Hash(), 1); err != AVNereum.NotFound {
-		t.Fatal("error should be AVNereum.NotFound")
+	if _, err := ec.TransactionInBlock(context.Background(), block.Hash(), 1); err != avalanria.NotFound {
+		t.Fatal("error should be avalanria.NotFound")
 	}
 }
 
@@ -475,7 +475,7 @@ func testCallContract(t *testing.T, client *rpc.Client) {
 	ec := NewClient(client)
 
 	// EstimateGas
-	msg := AVNereum.CallMsg{
+	msg := avalanria.CallMsg{
 		From:  testAddr,
 		To:    &common.Address{},
 		Gas:   21000,

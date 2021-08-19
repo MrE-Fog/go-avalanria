@@ -1,20 +1,20 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"errors"
@@ -24,20 +24,20 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/forkid"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/fetcher"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/snap"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/forkid"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/fetcher"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/avn/protocols/snap"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 const (
@@ -50,10 +50,10 @@ var (
 	syncChallengeTimeout = 15 * time.Second // Time allowance for a node to reply to the sync progress challenge
 )
 
-// txPool defines the mAVNods needed from a transaction pool implementation to
+// txPool defines the mavnods needed from a transaction pool implementation to
 // support all the operations needed by the Avalanria chain protocols.
 type txPool interface {
-	// Has returns an indicator whAVNer txpool has a transaction
+	// Has returns an indicator whavner txpool has a transaction
 	// cached with the given hash.
 	Has(hash common.Hash) bool
 
@@ -76,11 +76,11 @@ type txPool interface {
 // handlerConfig is the collection of initialization parameters to create a full
 // node network handler.
 type handlerConfig struct {
-	Database   AVNdb.Database            // Database for direct sync insertions
+	Database   avndb.Database            // Database for direct sync insertions
 	Chain      *core.BlockChain          // Blockchain to serve data from
 	TxPool     txPool                    // Transaction pool to propagate from
 	Network    uint64                    // Network identifier to adfvertise
-	Sync       downloader.SyncMode       // WhAVNer to fast or full sync
+	Sync       downloader.SyncMode       // Whavner to fast or full sync
 	BloomCache uint64                    // Megabytes to alloc for fast sync bloom
 	EventMux   *event.TypeMux            // Legacy event mux, deprecate for `feed`
 	Checkpoint *params.TrustedCheckpoint // Hard coded checkpoint for sync challenges
@@ -91,14 +91,14 @@ type handler struct {
 	networkID  uint64
 	forkFilter forkid.Filter // Fork ID filter, constant across the lifetime of the node
 
-	fastSync  uint32 // Flag whAVNer fast sync is enabled (gets disabled if we already have blocks)
-	snapSync  uint32 // Flag whAVNer fast sync should operate on top of the snap protocol
-	acceptTxs uint32 // Flag whAVNer we're considered synchronised (enables transaction processing)
+	fastSync  uint32 // Flag whavner fast sync is enabled (gets disabled if we already have blocks)
+	snapSync  uint32 // Flag whavner fast sync should operate on top of the snap protocol
+	acceptTxs uint32 // Flag whavner we're considered synchronised (enables transaction processing)
 
 	checkpointNumber uint64      // Block number for the sync progress validator to cross reference
 	checkpointHash   common.Hash // Block hash for the sync progress validator to cross reference
 
-	database AVNdb.Database
+	database avndb.Database
 	txpool   txPool
 	chain    *core.BlockChain
 	maxPeers int
@@ -207,7 +207,7 @@ func newHandler(config *handlerConfig) (*handler, error) {
 		// If fast sync is running, deny importing weird blocks. This is a problematic
 		// clause when starting up a new network, because fast-syncing miners might not
 		// accept each others' blocks until a restart. Unfortunately we haven't figured
-		// out a way yet where nodes can decide unilaterally whAVNer the network is new
+		// out a way yet where nodes can decide unilaterally whavner the network is new
 		// or not. This should be fixed if we figure out a solution.
 		if atomic.LoadUint32(&h.fastSync) == 1 {
 			log.Warn("Fast syncing, discarded propagated block", "number", blocks[0].Number(), "hash", blocks[0].Hash())
@@ -233,9 +233,9 @@ func newHandler(config *handlerConfig) (*handler, error) {
 	return h, nil
 }
 
-// runEthPeer registers an AVN peer into the joint AVN/snap peerset, adds it to
+// runEthPeer registers an avn peer into the joint avn/snap peerset, adds it to
 // various subsistems and starts handling messages.
-func (h *handler) runEthPeer(peer *AVN.Peer, handler AVN.Handler) error {
+func (h *handler) runEthPeer(peer *avn.Peer, handler avn.Handler) error {
 	// If the peer has a `snap` extension, wait for it to connect so we can have
 	// a uniform initialization/teardown mechanism
 	snap, err := h.peers.waitSnapExtension(peer)
@@ -295,7 +295,7 @@ func (h *handler) runEthPeer(peer *AVN.Peer, handler AVN.Handler) error {
 	}
 	// Register the peer in the downloader. If the downloader considers it banned, we disconnect
 	if err := h.downloader.RegisterPeer(peer.ID(), peer.Version(), peer); err != nil {
-		peer.Log().Error("Failed to register peer in AVN syncer", "err", err)
+		peer.Log().Error("Failed to register peer in avn syncer", "err", err)
 		return err
 	}
 	if snap != nil {
@@ -339,10 +339,10 @@ func (h *handler) runEthPeer(peer *AVN.Peer, handler AVN.Handler) error {
 	return handler(peer)
 }
 
-// runSnapExtension registers a `snap` peer into the joint AVN/snap peerset and
+// runSnapExtension registers a `snap` peer into the joint avn/snap peerset and
 // starts handling inbound messages. As `snap` is only a satellite protocol to
-// `AVN`, all subsystem registrations and lifecycle management will be done by
-// the main `AVN` handler to prevent strange races.
+// `avn`, all subsystem registrations and lifecycle management will be done by
+// the main `avn` handler to prevent strange races.
 func (h *handler) runSnapExtension(peer *snap.Peer, handler snap.Handler) error {
 	h.peerWG.Add(1)
 	defer h.peerWG.Done()
@@ -378,7 +378,7 @@ func (h *handler) unregisterPeer(id string) {
 		logger.Error("Avalanria peer removal failed", "err", errPeerNotRegistered)
 		return
 	}
-	// Remove the `AVN` peer if it exists
+	// Remove the `avn` peer if it exists
 	logger.Debug("Removing Avalanria peer", "snap", peer.snapExt != nil)
 
 	// Remove the `snap` extension if it exists
@@ -410,7 +410,7 @@ func (h *handler) Start(maxPeers int) {
 	// start sync handlers
 	h.wg.Add(2)
 	go h.chainSync.loop()
-	go h.txsyncLoop64() // TODO(karalabe): Legacy initial tx echange, drop with AVN/64.
+	go h.txsyncLoop64() // TODO(karalabe): Legacy initial tx echange, drop with avn/64.
 }
 
 func (h *handler) Stop() {
@@ -476,8 +476,8 @@ func (h *handler) BroadcastTransactions(txs types.Transactions) {
 		directCount int // Count of the txs sent directly to peers
 		directPeers int // Count of the peers that were sent transactions directly
 
-		txset = make(map[*AVNPeer][]common.Hash) // Set peer->hash to transfer directly
-		annos = make(map[*AVNPeer][]common.Hash) // Set peer->hash to announce
+		txset = make(map[*avnPeer][]common.Hash) // Set peer->hash to transfer directly
+		annos = make(map[*avnPeer][]common.Hash) // Set peer->hash to announce
 
 	)
 	// Broadcast transactions to a batch of peers not knowing about it

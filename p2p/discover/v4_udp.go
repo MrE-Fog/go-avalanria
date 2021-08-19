@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package discover
 
@@ -29,11 +29,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/discover/v4wire"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/netutil"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/discover/v4wire"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/netutil"
 )
 
 // Errors
@@ -100,7 +100,7 @@ type replyMatcher struct {
 	deadline time.Time
 
 	// callback is called when a matching reply arrives. If it returns matched == true, the
-	// reply was acceptable. The second return value indicates whAVNer the callback should
+	// reply was acceptable. The second return value indicates whavner the callback should
 	// be removed from the pending reply queue. If it returns false, the reply is considered
 	// incomplete and the callback will be invoked again for the next matching reply.
 	callback replyMatchFunc
@@ -121,7 +121,7 @@ type reply struct {
 	from enode.ID
 	ip   net.IP
 	data v4wire.Packet
-	// loop indicates whAVNer there was
+	// loop indicates whavner there was
 	// a matching request by sending on this channel.
 	matched chan<- bool
 }
@@ -390,7 +390,7 @@ func (t *UDPv4) pending(id enode.ID, ip net.IP, ptype byte, callback replyMatchF
 }
 
 // handleReply dispatches a reply packet, invoking reply matchers. It returns
-// whAVNer any matcher considered the packet acceptable.
+// whavner any matcher considered the packet acceptable.
 func (t *UDPv4) handleReply(from enode.ID, fromIP net.IP, req v4wire.Packet) bool {
 	matched := make(chan bool, 1)
 	select {
@@ -454,7 +454,7 @@ func (t *UDPv4) loop() {
 			plist.PushBack(p)
 
 		case r := <-t.gotreply:
-			var matched bool // whAVNer any replyMatcher considered the reply acceptable.
+			var matched bool // whavner any replyMatcher considered the reply acceptable.
 			for el := plist.Front(); el != nil; el = el.Next() {
 				p := el.Value.(*replyMatcher)
 				if p.from == r.from && p.ptype == r.data.Kind() && p.ip.Equal(r.ip) {
@@ -632,7 +632,7 @@ type packetHandlerV4 struct {
 	v4wire.Packet
 	senderKey *ecdsa.PublicKey // used for ping
 
-	// preverify checks whAVNer the packet is valid and should be handled at all.
+	// preverify checks whavner the packet is valid and should be handled at all.
 	preverify func(p *packetHandlerV4, from *net.UDPAddr, fromID enode.ID, fromKey v4wire.Pubkey) error
 	// handle handles the packet.
 	handle func(req *packetHandlerV4, from *net.UDPAddr, fromID enode.ID, mac []byte)

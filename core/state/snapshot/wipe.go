@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package snapshot
 
@@ -20,18 +20,18 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
 )
 
 // wipeSnapshot starts a goroutine to iterate over the entire key-value database
 // and delete all the data associated with the snapshot (accounts, storage,
 // metadata). After all is done, the snapshot range of the database is compacted
 // to free up unused data blocks.
-func wipeSnapshot(db AVNdb.KeyValueStore, full bool) chan struct{} {
+func wipeSnapshot(db avndb.KeyValueStore, full bool) chan struct{} {
 	// Wipe the snapshot root marker synchronously
 	if full {
 		rawdb.DeleteSnapshotRoot(db)
@@ -53,7 +53,7 @@ func wipeSnapshot(db AVNdb.KeyValueStore, full bool) chan struct{} {
 // as the wiper is meant to run on a background thread but the root needs to be
 // removed in sync to avoid data races. After all is done, the snapshot range of
 // the database is compacted to free up unused data blocks.
-func wipeContent(db AVNdb.KeyValueStore) error {
+func wipeContent(db avndb.KeyValueStore) error {
 	if err := wipeKeyRange(db, "accounts", rawdb.SnapshotAccountPrefix, nil, nil, len(rawdb.SnapshotAccountPrefix)+common.HashLength, snapWipedAccountMeter, true); err != nil {
 		return err
 	}
@@ -87,8 +87,8 @@ func wipeContent(db AVNdb.KeyValueStore) error {
 // specifying a particular key range for deletion.
 //
 // Origin is included for wiping and limit is excluded if they are specified.
-func wipeKeyRange(db AVNdb.KeyValueStore, kind string, prefix []byte, origin []byte, limit []byte, keylen int, meter metrics.Meter, report bool) error {
-	// Batch deletions togAVNer to avoid holding an iterator for too long
+func wipeKeyRange(db avndb.KeyValueStore, kind string, prefix []byte, origin []byte, limit []byte, keylen int, meter metrics.Meter, report bool) error {
+	// Batch deletions togavner to avoid holding an iterator for too long
 	var (
 		batch = db.NewBatch()
 		items int

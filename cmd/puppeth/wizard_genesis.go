@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -29,10 +29,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 // makeGenesis creates a new genesis struct based on some user input.
@@ -63,7 +63,7 @@ func (w *wizard) makeGenesis() {
 	choice := w.read()
 	switch {
 	case choice == "1":
-		// In case of AVNash, we're pretty much done
+		// In case of avnash, we're pretty much done
 		genesis.Config.Ethash = new(params.EthashConfig)
 		genesis.ExtraData = make([]byte, 32)
 
@@ -141,7 +141,7 @@ func (w *wizard) makeGenesis() {
 	w.conf.flush()
 }
 
-// importGenesis imports a GAVN genesis spec into puppAVN.
+// importGenesis imports a Gavn genesis spec into puppavn.
 func (w *wizard) importGenesis() {
 	// Request the genesis JSON spec URL from the user
 	fmt.Println()
@@ -191,7 +191,7 @@ func (w *wizard) importGenesis() {
 // manageGenesis permits the modification of chain configuration parameters in
 // a genesis config and the export of the entire genesis spec.
 func (w *wizard) manageGenesis() {
-	// Figure out whAVNer to modify or export the genesis
+	// Figure out whavner to modify or export the genesis
 	fmt.Println()
 	fmt.Println(" 1. Modify existing configurations")
 	fmt.Println(" 2. Export genesis configurations")
@@ -252,7 +252,7 @@ func (w *wizard) manageGenesis() {
 		// Save whatever genesis configuration we currently have
 		fmt.Println()
 		fmt.Printf("Which folder to save the genesis specs into? (default = current)\n")
-		fmt.Printf("  Will create %s.json, %s-alAVN.json, %s-harmony.json, %s-parity.json\n", w.network, w.network, w.network, w.network)
+		fmt.Printf("  Will create %s.json, %s-alavn.json, %s-harmony.json, %s-parity.json\n", w.network, w.network, w.network, w.network)
 
 		folder := w.readDefaultString(".")
 		if err := os.MkdirAll(folder, 0755); err != nil {
@@ -261,19 +261,19 @@ func (w *wizard) manageGenesis() {
 		}
 		out, _ := json.MarshalIndent(w.conf.Genesis, "", "  ")
 
-		// Export the native genesis spec used by puppAVN and GAVN
-		gAVNJson := filepath.Join(folder, fmt.Sprintf("%s.json", w.network))
-		if err := ioutil.WriteFile(gAVNJson, out, 0644); err != nil {
+		// Export the native genesis spec used by puppavn and Gavn
+		gavnJson := filepath.Join(folder, fmt.Sprintf("%s.json", w.network))
+		if err := ioutil.WriteFile(gavnJson, out, 0644); err != nil {
 			log.Error("Failed to save genesis file", "err", err)
 			return
 		}
-		log.Info("Saved native genesis chain spec", "path", gAVNJson)
+		log.Info("Saved native genesis chain spec", "path", gavnJson)
 
-		// Export the genesis spec used by AlAVN (formerly C++ Avalanria)
-		if spec, err := newAlAVNGenesisSpec(w.network, w.conf.Genesis); err != nil {
-			log.Error("Failed to create AlAVN chain spec", "err", err)
+		// Export the genesis spec used by Alavn (formerly C++ Avalanria)
+		if spec, err := newAlavnGenesisSpec(w.network, w.conf.Genesis); err != nil {
+			log.Error("Failed to create Alavn chain spec", "err", err)
 		} else {
-			saveGenesis(folder, w.network, "alAVN", spec)
+			saveGenesis(folder, w.network, "alavn", spec)
 		}
 		// Export the genesis spec used by Parity
 		if spec, err := newParityChainSpec(w.network, w.conf.Genesis, []string{}); err != nil {
@@ -295,7 +295,7 @@ func (w *wizard) manageGenesis() {
 		w.conf.Genesis = nil
 		w.conf.flush()
 	default:
-		log.Error("That's not somAVNing I can do")
+		log.Error("That's not somavning I can do")
 		return
 	}
 }

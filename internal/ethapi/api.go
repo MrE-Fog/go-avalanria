@@ -1,20 +1,20 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNapi
+package avnapi
 
 import (
 	"context"
@@ -25,31 +25,31 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/accounts/abi"
-	"github.com/AVNereum/go-AVNereum/accounts/keystore"
-	"github.com/AVNereum/go-AVNereum/accounts/scwallet"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/consensus/clique"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/consensus/misc"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/accounts/abi"
+	"github.com/avalanria/go-avalanria/accounts/keystore"
+	"github.com/avalanria/go-avalanria/accounts/scwallet"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/consensus/clique"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/consensus/misc"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/rpc"
 	"github.com/tyler-smith/go-bip39"
 )
 
 // PublicAvalanriaAPI provides an API to access Avalanria related information.
-// It offers only mAVNods that operate on public data that is freely available to anyone.
+// It offers only mavnods that operate on public data that is freely available to anyone.
 type PublicAvalanriaAPI struct {
 	b Backend
 }
@@ -243,7 +243,7 @@ func (s *PublicTxPoolAPI) Inspect() map[string]map[string]map[string]string {
 }
 
 // PublicAccountAPI provides an API to access accounts managed by this node.
-// It offers only mAVNods that can retrieve accounts.
+// It offers only mavnods that can retrieve accounts.
 type PublicAccountAPI struct {
 	am *accounts.Manager
 }
@@ -259,7 +259,7 @@ func (s *PublicAccountAPI) Accounts() []common.Address {
 }
 
 // PrivateAccountAPI provides an API to access accounts managed by this node.
-// It offers mAVNods to create, (un)lock en list accounts. Some mAVNods accept
+// It offers mavnods to create, (un)lock en list accounts. Some mavnods accept
 // passwords and are therefore considered private by default.
 type PrivateAccountAPI struct {
 	am        *accounts.Manager
@@ -311,7 +311,7 @@ func (s *PrivateAccountAPI) ListWallets() []rawWallet {
 
 // OpenWallet initiates a hardware wallet opening procedure, establishing a USB
 // connection and attempting to authenticate via the provided passphrase. Note,
-// the mAVNod may return an extra challenge requiring a second open (e.g. the
+// the mavnod may return an extra challenge requiring a second open (e.g. the
 // Trezor PIN matrix challenge).
 func (s *PrivateAccountAPI) OpenWallet(url string, passphrase *string) error {
 	wallet, err := s.am.Wallet(url)
@@ -502,7 +502,7 @@ func (s *PrivateAccountAPI) SignTransaction(ctx context.Context, args Transactio
 //
 // The key used to calculate the signature is decrypted with the given password.
 //
-// https://github.com/AVNereum/go-AVNereum/wiki/Management-APIs#personal_sign
+// https://github.com/avalanria/go-avalanria/wiki/Management-APIs#personal_sign
 func (s *PrivateAccountAPI) Sign(ctx context.Context, data hexutil.Bytes, addr common.Address, passwd string) (hexutil.Bytes, error) {
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: addr}
@@ -522,7 +522,7 @@ func (s *PrivateAccountAPI) Sign(ctx context.Context, data hexutil.Bytes, addr c
 }
 
 // EcRecover returns the address for the account that was used to create the signature.
-// Note, this function is compatible with AVN_sign and personal_sign. As such it recovers
+// Note, this function is compatible with avn_sign and personal_sign. As such it recovers
 // the address of:
 // hash = keccak256("\x19Avalanria Signed Message:\n"${message length}${message})
 // addr = ecrecover(hash, signature)
@@ -530,7 +530,7 @@ func (s *PrivateAccountAPI) Sign(ctx context.Context, data hexutil.Bytes, addr c
 // Note, the signature must conform to the secp256k1 curve R, S and V values, where
 // the V value must be 27 or 28 for legacy reasons.
 //
-// https://github.com/AVNereum/go-AVNereum/wiki/Management-APIs#personal_ecRecover
+// https://github.com/avalanria/go-avalanria/wiki/Management-APIs#personal_ecRecover
 func (s *PrivateAccountAPI) EcRecover(ctx context.Context, data, sig hexutil.Bytes) (common.Address, error) {
 	if len(sig) != crypto.SignatureLength {
 		return common.Address{}, fmt.Errorf("signature must be %d bytes long", crypto.SignatureLength)
@@ -547,7 +547,7 @@ func (s *PrivateAccountAPI) EcRecover(ctx context.Context, data, sig hexutil.Byt
 	return crypto.PubkeyToAddress(*rpk), nil
 }
 
-// SignAndSendTransaction was renamed to SendTransaction. This mAVNod is deprecated
+// SignAndSendTransaction was renamed to SendTransaction. This mavnod is deprecated
 // and will be removed in the future. It primary goal is to give clients time to update.
 func (s *PrivateAccountAPI) SignAndSendTransaction(ctx context.Context, args TransactionArgs, passwd string) (common.Hash, error) {
 	return s.SendTransaction(ctx, args, passwd)
@@ -580,7 +580,7 @@ func (s *PrivateAccountAPI) InitializeWallet(ctx context.Context, url string) (s
 	}
 }
 
-// Unpair deletes a pairing between wallet and gAVN.
+// Unpair deletes a pairing between wallet and gavn.
 func (s *PrivateAccountAPI) Unpair(ctx context.Context, url string, pin string) error {
 	wallet, err := s.am.Wallet(url)
 	if err != nil {
@@ -596,7 +596,7 @@ func (s *PrivateAccountAPI) Unpair(ctx context.Context, url string, pin string) 
 }
 
 // PublicBlockChainAPI provides an API to access the Avalanria blockchain.
-// It offers only mAVNods that operate on public data that is freely available to anyone.
+// It offers only mavnods that operate on public data that is freely available to anyone.
 type PublicBlockChainAPI struct {
 	b Backend
 }
@@ -606,7 +606,7 @@ func NewPublicBlockChainAPI(b Backend) *PublicBlockChainAPI {
 	return &PublicBlockChainAPI{b}
 }
 
-// ChainId is the EIP-155 replay-protection chain id for the current AVNereum chain config.
+// ChainId is the EIP-155 replay-protection chain id for the current avalanria chain config.
 func (api *PublicBlockChainAPI) ChainId() (*hexutil.Big, error) {
 	// if current block is at or past the EIP-155 replay-protection fork block, return chainID from config
 	if config := api.b.ChainConfig(); config.IsEIP155(api.b.CurrentBlock().Number()) {
@@ -955,7 +955,7 @@ type revertError struct {
 }
 
 // ErrorCode returns the JSON error code for a revertal.
-// See: https://github.com/AVNereum/wiki/wiki/JSON-RPC-Error-Codes-Improvement-Proposal
+// See: https://github.com/avalanria/wiki/wiki/JSON-RPC-Error-Codes-Improvement-Proposal
 func (e *revertError) ErrorCode() int {
 	return 3
 }
@@ -1477,14 +1477,14 @@ func AccessList(ctx context.Context, b Backend, blockNrOrHash rpc.BlockNumberOrH
 	}
 }
 
-// PublicTransactionPoolAPI exposes mAVNods for the RPC interface
+// PublicTransactionPoolAPI exposes mavnods for the RPC interface
 type PublicTransactionPoolAPI struct {
 	b         Backend
 	nonceLock *AddrLocker
 	signer    types.Signer
 }
 
-// NewPublicTransactionPoolAPI creates a new RPC service with mAVNods specific for the transaction pool.
+// NewPublicTransactionPoolAPI creates a new RPC service with mavnods specific for the transaction pool.
 func NewPublicTransactionPoolAPI(b Backend, nonceLock *AddrLocker) *PublicTransactionPoolAPI {
 	// The signer used by the API should always be the 'latest' known one because we expect
 	// signers to be backwards-compatible with old transactions.
@@ -1772,7 +1772,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, input
 //
 // The account associated with addr must be unlocked.
 //
-// https://github.com/AVNereum/wiki/wiki/JSON-RPC#AVN_sign
+// https://github.com/avalanria/wiki/wiki/JSON-RPC#avn_sign
 func (s *PublicTransactionPoolAPI) Sign(addr common.Address, data hexutil.Bytes) (hexutil.Bytes, error) {
 	// Look up the wallet containing the requested signer
 	account := accounts.Account{Address: addr}
@@ -1909,7 +1909,7 @@ type PublicDebugAPI struct {
 	b Backend
 }
 
-// NewPublicDebugAPI creates a new API definition for the public debug mAVNods
+// NewPublicDebugAPI creates a new API definition for the public debug mavnods
 // of the Avalanria service.
 func NewPublicDebugAPI(b Backend) *PublicDebugAPI {
 	return &PublicDebugAPI{b: b}
@@ -1931,8 +1931,8 @@ func (api *PublicDebugAPI) GetBlockRlp(ctx context.Context, number uint64) (stri
 // TestSignCliqueBlock fetches the given block number, and attempts to sign it as a clique header with the
 // given address, returning the address of the recovered signature
 //
-// This is a temporary mAVNod to debug the externalsigner integration,
-// TODO: Remove this mAVNod when the integration is mature
+// This is a temporary mavnod to debug the externalsigner integration,
+// TODO: Remove this mavnod when the integration is mature
 func (api *PublicDebugAPI) TestSignCliqueBlock(ctx context.Context, address common.Address, number uint64) (common.Address, error) {
 	block, _ := api.b.BlockByNumber(ctx, rpc.BlockNumber(number))
 	if block == nil {
@@ -1982,7 +1982,7 @@ func (api *PublicDebugAPI) SeedHash(ctx context.Context, number uint64) (string,
 	if block == nil {
 		return "", fmt.Errorf("block #%d not found", number)
 	}
-	return fmt.Sprintf("0x%x", AVNash.SeedHash(number)), nil
+	return fmt.Sprintf("0x%x", avnash.SeedHash(number)), nil
 }
 
 // PrivateDebugAPI is the collection of Avalanria APIs exposed over the private
@@ -1991,7 +1991,7 @@ type PrivateDebugAPI struct {
 	b Backend
 }
 
-// NewPrivateDebugAPI creates a new API definition for the private debug mAVNods
+// NewPrivateDebugAPI creates a new API definition for the private debug mavnods
 // of the Avalanria service.
 func NewPrivateDebugAPI(b Backend) *PrivateDebugAPI {
 	return &PrivateDebugAPI{b: b}
@@ -2025,7 +2025,7 @@ func (api *PrivateDebugAPI) SetHead(number hexutil.Uint64) {
 	api.b.SetHead(uint64(number))
 }
 
-// PublicNetAPI offers network related RPC mAVNods
+// PublicNetAPI offers network related RPC mavnods
 type PublicNetAPI struct {
 	net            *p2p.Server
 	networkVersion uint64
@@ -2046,12 +2046,12 @@ func (s *PublicNetAPI) PeerCount() hexutil.Uint {
 	return hexutil.Uint(s.net.PeerCount())
 }
 
-// Version returns the current AVNereum protocol version.
+// Version returns the current avalanria protocol version.
 func (s *PublicNetAPI) Version() string {
 	return fmt.Sprintf("%d", s.networkVersion)
 }
 
-// checkTxFee is an internal function used to check whAVNer the fee of
+// checkTxFee is an internal function used to check whavner the fee of
 // the given transaction is _reasonable_(under the cap).
 func checkTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
 	// Short circuit if there is no cap for transaction fee at all.
@@ -2061,7 +2061,7 @@ func checkTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
 	feeEth := new(big.Float).Quo(new(big.Float).SetInt(new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(gas))), new(big.Float).SetInt(big.NewInt(params.Ether)))
 	feeFloat, _ := feeEth.Float64()
 	if feeFloat > cap {
-		return fmt.Errorf("tx fee (%.2f AVNer) exceeds the configured cap (%.2f AVNer)", feeFloat, cap)
+		return fmt.Errorf("tx fee (%.2f avner) exceeds the configured cap (%.2f avner)", feeFloat, cap)
 	}
 	return nil
 }

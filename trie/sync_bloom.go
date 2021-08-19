@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
@@ -23,11 +23,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
 	bloomfilter "github.com/holiman/bloomfilter/v2"
 )
 
@@ -55,7 +55,7 @@ type SyncBloom struct {
 
 // NewSyncBloom creates a new bloom filter of the given size (in megabytes) and
 // initializes it from the database. The bloom is hard coded to use 3 filters.
-func NewSyncBloom(memory uint64, database AVNdb.Iteratee) *SyncBloom {
+func NewSyncBloom(memory uint64, database avndb.Iteratee) *SyncBloom {
 	// Create the bloom filter to track known trie nodes
 	bloom, err := bloomfilter.New(memory*1024*1024*8, 4)
 	if err != nil {
@@ -81,7 +81,7 @@ func NewSyncBloom(memory uint64, database AVNdb.Iteratee) *SyncBloom {
 }
 
 // init iterates over the database, pushing every trie hash into the bloom filter.
-func (b *SyncBloom) init(database AVNdb.Iteratee) {
+func (b *SyncBloom) init(database avndb.Iteratee) {
 	// Iterate over the database, but restart every now and again to avoid holding
 	// a persistent snapshot since fast sync can push a ton of data concurrently,
 	// bloating the disk.
@@ -175,7 +175,7 @@ func (b *SyncBloom) Add(hash []byte) {
 func (b *SyncBloom) Contains(hash []byte) bool {
 	bloomTestMeter.Mark(1)
 	if atomic.LoadUint32(&b.inited) == 0 {
-		// We didn't load all the trie nodes from the previous run of GAVN yet. As
+		// We didn't load all the trie nodes from the previous run of Gavn yet. As
 		// such, we can't say for sure if a hash is not present for anything. Until
 		// the init is done, we're faking "possible presence" for everything.
 		return true

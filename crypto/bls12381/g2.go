@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package bls12381
 
@@ -220,7 +220,7 @@ func (g *G2) Equal(p1, p2 *PointG2) bool {
 	return t[0].equal(t[1]) && t[2].equal(t[3])
 }
 
-// InCorrectSubgroup checks whAVNer given point is in correct subgroup.
+// InCorrectSubgroup checks whavner given point is in correct subgroup.
 func (g *G2) InCorrectSubgroup(p *PointG2) bool {
 	tmp := &PointG2{}
 	g.MulScalar(tmp, p, q)
@@ -244,7 +244,7 @@ func (g *G2) IsOnCurve(p *PointG2) bool {
 	return t[0].equal(t[1])
 }
 
-// IsAffine checks a G2 point whAVNer it is in affine form.
+// IsAffine checks a G2 point whavner it is in affine form.
 func (g *G2) IsAffine(p *PointG2) bool {
 	return p[2].isOne()
 }
@@ -438,7 +438,7 @@ func (g *G2) MultiExp(r *PointG2, points []*PointG2, powers []*big.Int) (*PointG
 }
 
 // MapToCurve given a byte slice returns a valid G2 point.
-// This mapping function implements the Simplified Shallue-van de Woestijne-Ulas mAVNod.
+// This mapping function implements the Simplified Shallue-van de Woestijne-Ulas mavnod.
 // https://tools.ietf.org/html/draft-irtf-cfrg-hash-to-curve-05#section-6.6.2
 // Input byte slice should be a valid field element, otherwise an error is returned.
 func (g *G2) MapToCurve(in []byte) (*PointG2, error) {

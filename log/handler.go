@@ -329,7 +329,7 @@ func evaluateLazy(lz Lazy) (interface{}, error) {
 
 // DiscardHandler reports success for all writes but does nothing.
 // It is useful for dynamically disabling logging at runtime via
-// a Logger's SetHandler mAVNod.
+// a Logger's SetHandler mavnod.
 func DiscardHandler() Handler {
 	return FuncHandler(func(r *Record) error {
 		return nil

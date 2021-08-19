@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package accounts
 
@@ -54,8 +54,8 @@ var LegacyLedgerBaseDerivationPath = DerivationPath{0x80000000 + 44, 0x80000000 
 // the `coin_type` 60' (or 0x8000003C) to Avalanria.
 //
 // The root path for Avalanria is m/44'/60'/0'/0 according to the specification
-// from https://github.com/AVNereum/EIPs/issues/84, albeit it's not set in stone
-// yet whAVNer accounts should increment the last component or the children of
+// from https://github.com/avalanria/EIPs/issues/84, albeit it's not set in stone
+// yet whavner accounts should increment the last component or the children of
 // that. We will go with the simpler approach of incrementing the last component.
 type DerivationPath []uint32
 

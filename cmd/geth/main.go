@@ -1,20 +1,20 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
-// gAVN is the official command-line client for Avalanria.
+// gavn is the official command-line client for Avalanria.
 package main
 
 import (
@@ -25,25 +25,25 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/accounts/keystore"
-	"github.com/AVNereum/go-AVNereum/cmd/utils"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/console/prompt"
-	"github.com/AVNereum/go-AVNereum/AVN"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVNclient"
-	"github.com/AVNereum/go-AVNereum/internal/debug"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/internal/flags"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
-	"github.com/AVNereum/go-AVNereum/node"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/accounts/keystore"
+	"github.com/avalanria/go-avalanria/cmd/utils"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/console/prompt"
+	"github.com/avalanria/go-avalanria/avn"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avnclient"
+	"github.com/avalanria/go-avalanria/internal/debug"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/internal/flags"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
+	"github.com/avalanria/go-avalanria/node"
 	"gopkg.in/urfave/cli.v1"
 )
 
 const (
-	clientIdentifier = "gAVN" // Client identifier to advertise over the network
+	clientIdentifier = "gavn" // Client identifier to advertise over the network
 )
 
 var (
@@ -51,7 +51,7 @@ var (
 	gitCommit = ""
 	gitDate   = ""
 	// The app that holds all commands and flags.
-	app = flags.NewApp(gitCommit, gitDate, "the go-AVNereum command line interface")
+	app = flags.NewApp(gitCommit, gitDate, "the go-avalanria command line interface")
 	// flags that configure the node
 	nodeFlags = []cli.Flag{
 		utils.IdentityFlag,
@@ -199,10 +199,10 @@ var (
 )
 
 func init() {
-	// Initialize the CLI app and start GAVN
-	app.Action = gAVN
+	// Initialize the CLI app and start Gavn
+	app.Action = gavn
 	app.HideVersion = true // we have a command to print the version
-	app.Copyright = "Copyright 2013-2021 The go-AVNereum Authors"
+	app.Copyright = "Copyright 2013-2021 The go-avalanria Authors"
 	app.Commands = []cli.Command{
 		// See chaincmd.go:
 		initCommand,
@@ -266,22 +266,22 @@ func prepare(ctx *cli.Context) {
 	// If we're running a known preset, log it for convenience.
 	switch {
 	case ctx.GlobalIsSet(utils.RopstenFlag.Name):
-		log.Info("Starting GAVN on Ropsten testnet...")
+		log.Info("Starting Gavn on Ropsten testnet...")
 
 	case ctx.GlobalIsSet(utils.RinkebyFlag.Name):
-		log.Info("Starting GAVN on Rinkeby testnet...")
+		log.Info("Starting Gavn on Rinkeby testnet...")
 
 	case ctx.GlobalIsSet(utils.GoerliFlag.Name):
-		log.Info("Starting GAVN on Görli testnet...")
+		log.Info("Starting Gavn on Görli testnet...")
 
 	case ctx.GlobalIsSet(utils.CalaverasFlag.Name):
-		log.Info("Starting GAVN on Calaveras testnet...")
+		log.Info("Starting Gavn on Calaveras testnet...")
 
 	case ctx.GlobalIsSet(utils.DeveloperFlag.Name):
-		log.Info("Starting GAVN in ephemeral dev mode...")
+		log.Info("Starting Gavn in ephemeral dev mode...")
 
 	case !ctx.GlobalIsSet(utils.NetworkIdFlag.Name):
-		log.Info("Starting GAVN on Avalanria mainnet...")
+		log.Info("Starting Gavn on Avalanria mainnet...")
 	}
 	// If we're a full node on mainnet without --cache specified, bump default cache allowance
 	if ctx.GlobalString(utils.SyncModeFlag.Name) != "light" && !ctx.GlobalIsSet(utils.CacheFlag.Name) && !ctx.GlobalIsSet(utils.NetworkIdFlag.Name) {
@@ -305,10 +305,10 @@ func prepare(ctx *cli.Context) {
 	go metrics.CollectProcessMetrics(3 * time.Second)
 }
 
-// gAVN is the main entry point into the system if no special subcommand is ran.
+// gavn is the main entry point into the system if no special subcommand is ran.
 // It creates a default node based on the command line arguments and runs it in
 // blocking mode, waiting for it to be shut down.
-func gAVN(ctx *cli.Context) error {
+func gavn(ctx *cli.Context) error {
 	if args := ctx.Args(); len(args) > 0 {
 		return fmt.Errorf("invalid command: %q", args[0])
 	}
@@ -325,7 +325,7 @@ func gAVN(ctx *cli.Context) error {
 // startNode boots up the system node and all registered protocols, after which
 // it unlocks any requested accounts, and starts the RPC/IPC interfaces and the
 // miner.
-func startNode(ctx *cli.Context, stack *node.Node, backend AVNapi.Backend) {
+func startNode(ctx *cli.Context, stack *node.Node, backend avnapi.Backend) {
 	debug.Memsize.Add("node", stack)
 
 	// Start up the node itself
@@ -338,12 +338,12 @@ func startNode(ctx *cli.Context, stack *node.Node, backend AVNapi.Backend) {
 	events := make(chan accounts.WalletEvent, 16)
 	stack.AccountManager().Subscribe(events)
 
-	// Create a client to interact with local gAVN node.
+	// Create a client to interact with local gavn node.
 	rpcClient, err := stack.Attach()
 	if err != nil {
 		utils.Fatalf("Failed to attach to self: %v", err)
 	}
-	AVNClient := AVNclient.NewClient(rpcClient)
+	avnClient := avnclient.NewClient(rpcClient)
 
 	go func() {
 		// Open any wallets already attached
@@ -369,7 +369,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend AVNapi.Backend) {
 				}
 				derivationPaths = append(derivationPaths, accounts.DefaultBaseDerivationPath)
 
-				event.Wallet.SelfDerive(derivationPaths, AVNClient)
+				event.Wallet.SelfDerive(derivationPaths, avnClient)
 
 			case accounts.WalletDropped:
 				log.Info("Old wallet dropped", "url", event.Wallet.URL())
@@ -408,16 +408,16 @@ func startNode(ctx *cli.Context, stack *node.Node, backend AVNapi.Backend) {
 		if ctx.GlobalString(utils.SyncModeFlag.Name) == "light" {
 			utils.Fatalf("Light clients do not support mining")
 		}
-		AVNBackend, ok := backend.(*AVN.EthAPIBackend)
+		avnBackend, ok := backend.(*avn.EthAPIBackend)
 		if !ok {
 			utils.Fatalf("Avalanria service not running: %v", err)
 		}
 		// Set the gas price to the limits from the CLI and start mining
 		gasprice := utils.GlobalBig(ctx, utils.MinerGasPriceFlag.Name)
-		AVNBackend.TxPool().SetGasPrice(gasprice)
+		avnBackend.TxPool().SetGasPrice(gasprice)
 		// start mining
 		threads := ctx.GlobalInt(utils.MinerThreadsFlag.Name)
-		if err := AVNBackend.StartMining(threads); err != nil {
+		if err := avnBackend.StartMining(threads); err != nil {
 			utils.Fatalf("Failed to start mining: %v", err)
 		}
 	}

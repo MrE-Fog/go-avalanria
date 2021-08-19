@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -22,16 +22,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN/fetcher"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn/fetcher"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/enode"
 )
 
 const (
@@ -125,12 +125,12 @@ func (fp *fetcherPeer) forwardAnno(td *big.Int) []*announce {
 }
 
 // lightFetcher implements retrieval of newly announced headers. It reuses
-// the AVN.BlockFetcher as the underlying fetcher but adding more additional
+// the avn.BlockFetcher as the underlying fetcher but adding more additional
 // rules: e.g. evict "timeout" peers.
 type lightFetcher struct {
 	// Various handlers
 	ulc     *ulc
-	chaindb AVNdb.Database
+	chaindb avndb.Database
 	reqDist *requestDistributor
 	peerset *serverPeerSet        // The global peerset of light client which shared by all components
 	chain   *light.LightChain     // The local light chain which maintains the canonical header chain.
@@ -159,7 +159,7 @@ type lightFetcher struct {
 }
 
 // newLightFetcher creates a light fetcher instance.
-func newLightFetcher(chain *light.LightChain, engine consensus.Engine, peers *serverPeerSet, ulc *ulc, chaindb AVNdb.Database, reqDist *requestDistributor, syncFn func(p *serverPeer)) *lightFetcher {
+func newLightFetcher(chain *light.LightChain, engine consensus.Engine, peers *serverPeerSet, ulc *ulc, chaindb avndb.Database, reqDist *requestDistributor, syncFn func(p *serverPeer)) *lightFetcher {
 	// Construct the fetcher by offering all necessary APIs
 	validator := func(header *types.Header) error {
 		// Disable seal verification explicitly if we are running in ulc mode.
@@ -261,7 +261,7 @@ func (f *lightFetcher) mainloop() {
 
 	var (
 		syncInterval = uint64(1) // Interval used to trigger a light resync.
-		syncing      bool        // Indicator whAVNer the client is syncing
+		syncing      bool        // Indicator whavner the client is syncing
 
 		ulc          = f.ulc != nil
 		headCh       = make(chan core.ChainHeadEvent, 100)
@@ -280,7 +280,7 @@ func (f *lightFetcher) mainloop() {
 		localHead = header
 		localTd = f.chain.GetTd(header.Hash(), header.Number.Uint64())
 	}
-	// trustedHeader returns an indicator whAVNer the header is regarded as
+	// trustedHeader returns an indicator whavner the header is regarded as
 	// trusted. If we are running in the ulc mode, only when we receive enough
 	// same announcement from trusted server, the header will be trusted.
 	trustedHeader := func(hash common.Hash, number uint64) (bool, []enode.ID) {
@@ -498,8 +498,8 @@ func (f *lightFetcher) trackRequest(peerid enode.ID, reqid uint64, hash common.H
 // requestHeaderByHash constructs a header retrieval request and sends it to
 // local request distributor.
 //
-// Note, we rely on the underlying AVN/fetcher to retrieve and validate the
-// response, so that we have to obey the rule of AVN/fetcher which only accepts
+// Note, we rely on the underlying avn/fetcher to retrieve and validate the
+// response, so that we have to obey the rule of avn/fetcher which only accepts
 // the response from given peer.
 func (f *lightFetcher) requestHeaderByHash(peerid enode.ID) func(common.Hash) error {
 	return func(hash common.Hash) error {

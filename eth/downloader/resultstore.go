@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package downloader
 
@@ -21,7 +21,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/avalanria/go-avalanria/core/types"
 )
 
 // resultStore implements a structure for maintaining fetchResults, tracking their
@@ -92,7 +92,7 @@ func (r *resultStore) AddFetch(header *types.Header, fastSync bool) (stale, thro
 }
 
 // GetDeliverySlot returns the fetchResult for the given header. If the 'stale' flag
-// is true, that means the header has already been delivered 'upstream'. This mAVNod
+// is true, that means the header has already been delivered 'upstream'. This mavnod
 // does not bubble up the 'throttle' flag, since it's moot at the point in time when
 // the item is downloaded and ready for delivery
 func (r *resultStore) GetDeliverySlot(headerNumber uint64) (*fetchResult, bool, error) {
@@ -124,7 +124,7 @@ func (r *resultStore) getFetchResult(headerNumber uint64) (item *fetchResult, in
 }
 
 // hasCompletedItems returns true if there are processable items available
-// this mAVNod is cheaper than countCompleted
+// this mavnod is cheaper than countCompleted
 func (r *resultStore) HasCompletedItems() bool {
 	r.lock.RLock()
 	defer r.lock.RUnlock()

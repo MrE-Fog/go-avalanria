@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package hexutil
 
@@ -93,7 +93,7 @@ func (b *Bytes) UnmarshalGraphQL(input interface{}) error {
 
 // UnmarshalFixedJSON decodes the input as a string with 0x prefix. The length of out
 // determines the required input length. This function is commonly used to implement the
-// UnmarshalJSON mAVNod for fixed-size types.
+// UnmarshalJSON mavnod for fixed-size types.
 func UnmarshalFixedJSON(typ reflect.Type, input, out []byte) error {
 	if !isString(input) {
 		return errNonString(typ)
@@ -103,7 +103,7 @@ func UnmarshalFixedJSON(typ reflect.Type, input, out []byte) error {
 
 // UnmarshalFixedText decodes the input as a string with 0x prefix. The length of out
 // determines the required input length. This function is commonly used to implement the
-// UnmarshalText mAVNod for fixed-size types.
+// UnmarshalText mavnod for fixed-size types.
 func UnmarshalFixedText(typname string, input, out []byte) error {
 	raw, err := checkText(input, true)
 	if err != nil {
@@ -124,7 +124,7 @@ func UnmarshalFixedText(typname string, input, out []byte) error {
 
 // UnmarshalFixedUnprefixedText decodes the input as a string with optional 0x prefix. The
 // length of out determines the required input length. This function is commonly used to
-// implement the UnmarshalText mAVNod for fixed-size types.
+// implement the UnmarshalText mavnod for fixed-size types.
 func UnmarshalFixedUnprefixedText(typname string, input, out []byte) error {
 	raw, err := checkText(input, false)
 	if err != nil {

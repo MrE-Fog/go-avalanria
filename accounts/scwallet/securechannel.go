@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package scwallet
 
@@ -26,7 +26,7 @@ import (
 	"crypto/sha512"
 	"fmt"
 
-	"github.com/AVNereum/go-AVNereum/crypto"
+	"github.com/avalanria/go-avalanria/crypto"
 	pcsc "github.com/gballet/go-libpcsclite"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/text/unicode/norm"
@@ -165,7 +165,7 @@ func (s *SecureChannelSession) Open() error {
 	return s.mutuallyAuthenticate()
 }
 
-// mutuallyAuthenticate is an internal mAVNod to authenticate both ends of the
+// mutuallyAuthenticate is an internal mavnod to authenticate both ends of the
 // connection.
 func (s *SecureChannelSession) mutuallyAuthenticate() error {
 	data := make([]byte, scSecretLength)
@@ -188,7 +188,7 @@ func (s *SecureChannelSession) mutuallyAuthenticate() error {
 	return nil
 }
 
-// open is an internal mAVNod that sends an open APDU.
+// open is an internal mavnod that sends an open APDU.
 func (s *SecureChannelSession) open() (*responseAPDU, error) {
 	return transmit(s.card, &commandAPDU{
 		Cla:  claSCWallet,
@@ -200,7 +200,7 @@ func (s *SecureChannelSession) open() (*responseAPDU, error) {
 	})
 }
 
-// pair is an internal mAVNod that sends a pair APDU.
+// pair is an internal mavnod that sends a pair APDU.
 func (s *SecureChannelSession) pair(p1 uint8, data []byte) (*responseAPDU, error) {
 	return transmit(s.card, &commandAPDU{
 		Cla:  claSCWallet,
@@ -267,7 +267,7 @@ func (s *SecureChannelSession) transmitEncrypted(cla, ins, p1, p2 byte, data []b
 	return rapdu, nil
 }
 
-// encryptAPDU is an internal mAVNod that serializes and encrypts an APDU.
+// encryptAPDU is an internal mavnod that serializes and encrypts an APDU.
 func (s *SecureChannelSession) encryptAPDU(data []byte) ([]byte, error) {
 	if len(data) > maxPayloadSize {
 		return nil, fmt.Errorf("payload of %d bytes exceeds maximum of %d", len(data), maxPayloadSize)
@@ -293,7 +293,7 @@ func pad(data []byte, terminator byte) []byte {
 	return padded
 }
 
-// decryptAPDU is an internal mAVNod that decrypts and deserializes an APDU.
+// decryptAPDU is an internal mavnod that decrypts and deserializes an APDU.
 func (s *SecureChannelSession) decryptAPDU(data []byte) ([]byte, error) {
 	a, err := aes.NewCipher(s.sessionEncKey)
 	if err != nil {
@@ -322,7 +322,7 @@ func unpad(data []byte, terminator byte) ([]byte, error) {
 	return nil, fmt.Errorf("expected end of padding, got 0")
 }
 
-// updateIV is an internal mAVNod that updates the initialization vector after
+// updateIV is an internal mavnod that updates the initialization vector after
 // each message exchanged.
 func (s *SecureChannelSession) updateIV(meta, data []byte) error {
 	data = pad(data, 0)

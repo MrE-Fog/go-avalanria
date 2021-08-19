@@ -1,31 +1,31 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/forkid"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/forkid"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
-// AVNEntry is the "AVN" ENR entry which advertises AVN protocol
+// avnEntry is the "avn" ENR entry which advertises avn protocol
 // on the discovery network.
-type AVNEntry struct {
+type avnEntry struct {
 	ForkID forkid.ID // Fork identifier per EIP-2124
 
 	// Ignore additional fields (for forward compatibility).
@@ -33,23 +33,23 @@ type AVNEntry struct {
 }
 
 // ENRKey implements enr.Entry.
-func (e AVNEntry) ENRKey() string {
-	return "AVN"
+func (e avnEntry) ENRKey() string {
+	return "avn"
 }
 
 // startEthEntryUpdate starts the ENR updater loop.
-func (AVN *Avalanria) startEthEntryUpdate(ln *enode.LocalNode) {
+func (avn *Avalanria) startEthEntryUpdate(ln *enode.LocalNode) {
 	var newHead = make(chan core.ChainHeadEvent, 10)
-	sub := AVN.blockchain.SubscribeChainHeadEvent(newHead)
+	sub := avn.blockchain.SubscribeChainHeadEvent(newHead)
 
 	go func() {
 		defer sub.Unsubscribe()
 		for {
 			select {
 			case <-newHead:
-				ln.Set(AVN.currentEthEntry())
+				ln.Set(avn.currentEthEntry())
 			case <-sub.Err():
-				// Would be nice to sync with AVN.Stop, but there is no
+				// Would be nice to sync with avn.Stop, but there is no
 				// good way to do that.
 				return
 			}
@@ -57,7 +57,7 @@ func (AVN *Avalanria) startEthEntryUpdate(ln *enode.LocalNode) {
 	}()
 }
 
-func (AVN *Avalanria) currentEthEntry() *AVNEntry {
-	return &AVNEntry{ForkID: forkid.NewID(AVN.blockchain.Config(), AVN.blockchain.Genesis().Hash(),
-		AVN.blockchain.CurrentHeader().Number.Uint64())}
+func (avn *Avalanria) currentEthEntry() *avnEntry {
+	return &avnEntry{ForkID: forkid.NewID(avn.blockchain.Config(), avn.blockchain.Genesis().Hash(),
+		avn.blockchain.CurrentHeader().Number.Uint64())}
 }

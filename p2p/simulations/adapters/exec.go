@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package adapters
 
@@ -35,11 +35,11 @@ import (
 	"time"
 
 	"github.com/docker/docker/pkg/reexec"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/node"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/rpc"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/node"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/rpc"
 	"github.com/gorilla/websocket"
 )
 
@@ -355,7 +355,7 @@ func wsCopy(wg *sync.WaitGroup, src, dst *websocket.Conn) {
 }
 
 // Snapshots creates snapshots of the services by calling the
-// simulation_snapshot RPC mAVNod
+// simulation_snapshot RPC mavnod
 func (n *ExecNode) Snapshots() (map[string][]byte, error) {
 	if n.client == nil {
 		return nil, errors.New("RPC not started")
@@ -523,7 +523,7 @@ type nodeStartupJSON struct {
 	NodeInfo   *p2p.NodeInfo
 }
 
-// SnapshotAPI provides an RPC mAVNod to create snapshots of services
+// SnapshotAPI provides an RPC mavnod to create snapshots of services
 type SnapshotAPI struct {
 	services map[string]node.Lifecycle
 }

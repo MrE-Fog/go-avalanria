@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
@@ -31,18 +31,18 @@ import (
 	"testing/quick"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb/leveldb"
-	"github.com/AVNereum/go-AVNereum/AVNdb/memorydb"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/avndb/leveldb"
+	"github.com/avalanria/go-avalanria/avndb/memorydb"
+	"github.com/avalanria/go-avalanria/rlp"
 	"golang.org/x/crypto/sha3"
 )
 
 func init() {
 	spew.Config.Indent = "    "
-	spew.Config.DisableMAVNods = false
+	spew.Config.DisableMavnods = false
 }
 
 // Used for testing
@@ -209,11 +209,11 @@ func TestDelete(t *testing.T) {
 	trie := newEmpty()
 	vals := []struct{ k, v string }{
 		{"do", "verb"},
-		{"AVNer", "wookiedoo"},
+		{"avner", "wookiedoo"},
 		{"horse", "stallion"},
 		{"shaman", "horse"},
 		{"doge", "coin"},
-		{"AVNer", ""},
+		{"avner", ""},
 		{"dog", "puppy"},
 		{"shaman", ""},
 	}
@@ -237,11 +237,11 @@ func TestEmptyValues(t *testing.T) {
 
 	vals := []struct{ k, v string }{
 		{"do", "verb"},
-		{"AVNer", "wookiedoo"},
+		{"avner", "wookiedoo"},
 		{"horse", "stallion"},
 		{"shaman", "horse"},
 		{"doge", "coin"},
-		{"AVNer", ""},
+		{"avner", ""},
 		{"dog", "puppy"},
 		{"shaman", ""},
 	}
@@ -260,12 +260,12 @@ func TestReplication(t *testing.T) {
 	trie := newEmpty()
 	vals := []struct{ k, v string }{
 		{"do", "verb"},
-		{"AVNer", "wookiedoo"},
+		{"avner", "wookiedoo"},
 		{"horse", "stallion"},
 		{"shaman", "horse"},
 		{"doge", "coin"},
 		{"dog", "puppy"},
-		{"somAVNingveryoddindeedthis is", "myothernodedata"},
+		{"somavningveryoddindeedthis is", "myothernodedata"},
 	}
 	for _, val := range vals {
 		updateString(trie, val.k, val.v)
@@ -296,13 +296,13 @@ func TestReplication(t *testing.T) {
 	// perform some insertions on the new trie.
 	vals2 := []struct{ k, v string }{
 		{"do", "verb"},
-		{"AVNer", "wookiedoo"},
+		{"avner", "wookiedoo"},
 		{"horse", "stallion"},
 		// {"shaman", "horse"},
 		// {"doge", "coin"},
-		// {"AVNer", ""},
+		// {"avner", ""},
 		// {"dog", "puppy"},
-		// {"somAVNingveryoddindeedthis is", "myothernodedata"},
+		// {"somavningveryoddindeedthis is", "myothernodedata"},
 		// {"shaman", ""},
 	}
 	for _, val := range vals2 {
@@ -680,7 +680,7 @@ type spongeDb struct {
 func (s *spongeDb) Has(key []byte) (bool, error)             { panic("implement me") }
 func (s *spongeDb) Get(key []byte) ([]byte, error)           { return nil, errors.New("no such elem") }
 func (s *spongeDb) Delete(key []byte) error                  { panic("implement me") }
-func (s *spongeDb) NewBatch() AVNdb.Batch                    { return &spongeBatch{s} }
+func (s *spongeDb) NewBatch() avndb.Batch                    { return &spongeBatch{s} }
 func (s *spongeDb) Stat(property string) (string, error)     { panic("implement me") }
 func (s *spongeDb) Compact(start []byte, limit []byte) error { panic("implement me") }
 func (s *spongeDb) Close() error                             { return nil }
@@ -694,7 +694,7 @@ func (s *spongeDb) Put(key []byte, value []byte) error {
 	s.sponge.Write(value)
 	return nil
 }
-func (s *spongeDb) NewIterator(prefix []byte, start []byte) AVNdb.Iterator { panic("implement me") }
+func (s *spongeDb) NewIterator(prefix []byte, start []byte) avndb.Iterator { panic("implement me") }
 
 // spongeBatch is a dummy batch which immediately writes to the underlying spongedb
 type spongeBatch struct {
@@ -709,12 +709,12 @@ func (b *spongeBatch) Delete(key []byte) error             { panic("implement me
 func (b *spongeBatch) ValueSize() int                      { return 100 }
 func (b *spongeBatch) Write() error                        { return nil }
 func (b *spongeBatch) Reset()                              {}
-func (b *spongeBatch) Replay(w AVNdb.KeyValueWriter) error { return nil }
+func (b *spongeBatch) Replay(w avndb.KeyValueWriter) error { return nil }
 
 // TestCommitSequence tests that the trie.Commit operation writes the elements of the trie
 // in the expected order, and calls the callbacks in the expected order.
 // The test data was based on the 'master' code, and is basically random. It can be used
-// to check whAVNer changes to the trie modifies the write order or data in any way.
+// to check whavner changes to the trie modifies the write order or data in any way.
 func TestCommitSequence(t *testing.T) {
 	for i, tc := range []struct {
 		count              int

@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rules
 
@@ -22,27 +22,27 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/signer/core"
-	"github.com/AVNereum/go-AVNereum/signer/core/apitypes"
-	"github.com/AVNereum/go-AVNereum/signer/storage"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/signer/core"
+	"github.com/avalanria/go-avalanria/signer/core/apitypes"
+	"github.com/avalanria/go-avalanria/signer/storage"
 )
 
 const JS = `
 /**
 This is an example implementation of a Javascript rule file.
 
-When the signer receives a request over the external API, the corresponding mAVNod is evaluated.
+When the signer receives a request over the external API, the corresponding mavnod is evaluated.
 Three things can happen:
 
-1. The mAVNod returns "Approve". This means the operation is permitted.
-2. The mAVNod returns "Reject". This means the operation is rejected.
-3. Anything else; other return values [*], mAVNod not implemented or exception occurred during processing. This means
-that the operation will continue to manual processing, via the regular UI mAVNod chosen by the user.
+1. The mavnod returns "Approve". This means the operation is permitted.
+2. The mavnod returns "Reject". This means the operation is rejected.
+3. Anything else; other return values [*], mavnod not implemented or exception occurred during processing. This means
+that the operation will continue to manual processing, via the regular UI mavnod chosen by the user.
 
 [*] Note: Future version of the ruleset may use more complex json-based returnvalues, making it possible to not
 only respond Approve/Reject/Manual, but also modify responses. For example, choose to list only one, but not all
@@ -108,7 +108,7 @@ func (alwaysDenyUI) ShowInfo(message string) {
 	panic("implement me")
 }
 
-func (alwaysDenyUI) OnApprovedTx(tx AVNapi.SignTransactionResult) {
+func (alwaysDenyUI) OnApprovedTx(tx avnapi.SignTransactionResult) {
 	panic("implement me")
 }
 
@@ -236,7 +236,7 @@ func (d *dummyUI) ShowInfo(message string) {
 	d.calls = append(d.calls, "ShowInfo")
 }
 
-func (d *dummyUI) OnApprovedTx(tx AVNapi.SignTransactionResult) {
+func (d *dummyUI) OnApprovedTx(tx avnapi.SignTransactionResult) {
 	d.calls = append(d.calls, "OnApprovedTx")
 }
 
@@ -264,7 +264,7 @@ func TestForwarding(t *testing.T) {
 	r.ShowInfo("test")
 
 	//This one is not forwarded
-	r.OnApprovedTx(AVNapi.SignTransactionResult{})
+	r.OnApprovedTx(avnapi.SignTransactionResult{})
 
 	expCalls := 6
 	if len(ui.calls) != expCalls {
@@ -282,18 +282,18 @@ func TestMissingFunc(t *testing.T) {
 		return
 	}
 
-	_, err = r.execute("MissingMAVNod", "test")
+	_, err = r.execute("MissingMavnod", "test")
 
 	if err == nil {
 		t.Error("Expected error")
 	}
 
-	approved, err := r.checkApproval("MissingMAVNod", nil, nil)
+	approved, err := r.checkApproval("MissingMavnod", nil, nil)
 	if err == nil {
-		t.Errorf("Expected missing mAVNod to yield error'")
+		t.Errorf("Expected missing mavnod to yield error'")
 	}
 	if approved {
-		t.Errorf("Expected missing mAVNod to cause non-approval")
+		t.Errorf("Expected missing mavnod to cause non-approval")
 	}
 	t.Logf("Err %v", err)
 
@@ -360,7 +360,7 @@ const ExampleTxWindow = `
 	// Time window: 1 week
 	var window = 1000* 3600*24*7;
 
-	// Limit : 1 AVNer
+	// Limit : 1 avner
 	var limit = new BigNumber("1e18");
 
 	function isLimitOk(transaction){
@@ -401,14 +401,14 @@ const ExampleTxWindow = `
 	/**
 	* OnApprovedTx(str) is called when a transaction has been approved and signed. The parameter
  	* 'response_str' contains the return value that will be sent to the external caller.
-	* The return value from this mAVNod is ignore - the reason for having this callback is to allow the
+	* The return value from this mavnod is ignore - the reason for having this callback is to allow the
 	* ruleset to keep track of approved transactions.
 	*
 	* When implementing rate-limited rules, this callback should be used.
 	* If a rule responds with neither 'Approve' nor 'Reject' - the tx goes to manual processing. If the user
-	* then accepts the transaction, this mAVNod will be called.
+	* then accepts the transaction, this mavnod will be called.
 	*
-	* TLDR; Use this mAVNod to keep track of signed transactions, instead of using the data in ApproveTx.
+	* TLDR; Use this mavnod to keep track of signed transactions, instead of using the data in ApproveTx.
 	*/
  	function OnApprovedTx(resp){
 		var value = big(resp.tx.value)
@@ -468,7 +468,7 @@ func TestLimitWindow(t *testing.T) {
 		t.Errorf("Couldn't create evaluator %v", err)
 		return
 	}
-	// 0.3 AVNer: 429D069189E0000 wei
+	// 0.3 avner: 429D069189E0000 wei
 	v := big.NewInt(0).SetBytes(common.Hex2Bytes("0429D069189E0000"))
 	h := hexutil.Big(*v)
 	// The first three should succeed
@@ -483,7 +483,7 @@ func TestLimitWindow(t *testing.T) {
 		}
 		// Create a dummy signed transaction
 
-		response := AVNapi.SignTransactionResult{
+		response := avnapi.SignTransactionResult{
 			Tx:  dummySigned(v),
 			Raw: common.Hex2Bytes("deadbeef"),
 		}
@@ -540,7 +540,7 @@ func (d *dontCallMe) ShowInfo(message string) {
 	d.t.Fatalf("Did not expect next-handler to be called")
 }
 
-func (d *dontCallMe) OnApprovedTx(tx AVNapi.SignTransactionResult) {
+func (d *dontCallMe) OnApprovedTx(tx avnapi.SignTransactionResult) {
 	d.t.Fatalf("Did not expect next-handler to be called")
 }
 

@@ -1,32 +1,32 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVNash
+package avnash
 
 import (
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/avalanria/go-avalanria/core/types"
 	"github.com/holiman/uint256"
 )
 
 const (
 	// frontierDurationLimit is for Frontier:
 	// The decision boundary on the blocktime duration used to determine
-	// whAVNer difficulty should go up or down.
+	// whavner difficulty should go up or down.
 	frontierDurationLimit = 13
 	// minimumDifficulty The minimum that the difficulty may ever be.
 	minimumDifficulty = 131072
@@ -81,7 +81,7 @@ func CalcDifficultyFrontierU256(time uint64, parent *types.Header) *big.Int {
 // parent block's time and difficulty. The calculation uses the Homestead rules.
 func CalcDifficultyHomesteadU256(time uint64, parent *types.Header) *big.Int {
 	/*
-		https://github.com/AVNereum/EIPs/blob/master/EIPS/eip-2.md
+		https://github.com/avalanria/EIPs/blob/master/EIPS/eip-2.md
 		Algorithm:
 		block_diff = pdiff + pdiff / 2048 * max(1 - (time - ptime) / 10, -99) + 2 ^ int((num / 100000) - 2))
 
@@ -137,7 +137,7 @@ func MakeDifficultyCalculatorU256(bombDelay *big.Int) func(time uint64, parent *
 	bombDelayFromParent := bombDelay.Uint64() - 1
 	return func(time uint64, parent *types.Header) *big.Int {
 		/*
-			https://github.com/AVNereum/EIPs/issues/100
+			https://github.com/avalanria/EIPs/issues/100
 			pDiff = parent.difficulty
 			BLOCK_DIFF_FACTOR = 9
 			a = pDiff + (pDiff // BLOCK_DIFF_FACTOR) * adj_factor
@@ -177,7 +177,7 @@ func MakeDifficultyCalculatorU256(bombDelay *big.Int) func(time uint64, parent *
 			y.SetUint64(minimumDifficulty)
 		}
 		// calculate a fake block number for the ice-age delay
-		// Specification: https://eips.AVNereum.org/EIPS/eip-1234
+		// Specification: https://eips.avalanria.org/EIPS/eip-1234
 		var pNum = parent.Number.Uint64()
 		if pNum >= bombDelayFromParent {
 			if fakeBlockNumber := pNum - bombDelayFromParent; fakeBlockNumber >= 2*expDiffPeriodUint {

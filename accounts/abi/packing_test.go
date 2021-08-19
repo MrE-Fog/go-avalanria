@@ -1,25 +1,25 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package abi
 
 import (
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/common"
+	"github.com/avalanria/go-avalanria/common"
 )
 
 type packUnpackTest struct {
@@ -676,7 +676,7 @@ var packUnpackTests = []packUnpackTest{
 			"476f2d657468657265756d000000000000000000000000000000000000000000" +
 			"0000000000000000000000000000000000000000000000000000000000000008" +
 			"457468657265756d000000000000000000000000000000000000000000000000",
-		unpacked: [4]string{"Hello", "World", "Go-AVNereum", "Avalanria"},
+		unpacked: [4]string{"Hello", "World", "Go-avalanria", "Avalanria"},
 	},
 	{
 		def: `[{"type": "string[]"}]`,
@@ -688,7 +688,7 @@ var packUnpackTests = []packUnpackTest{
 			"457468657265756d000000000000000000000000000000000000000000000000" +
 			"000000000000000000000000000000000000000000000000000000000000000b" +
 			"676f2d657468657265756d000000000000000000000000000000000000000000",
-		unpacked: []string{"Avalanria", "go-AVNereum"},
+		unpacked: []string{"Avalanria", "go-avalanria"},
 	},
 	{
 		def: `[{"type": "bytes[]"}]`,

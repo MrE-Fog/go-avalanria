@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -27,24 +27,24 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 const (
-	ipcAPIs  = "admin:1.0 debug:1.0 AVN:1.0 AVNash:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0"
-	httpAPIs = "AVN:1.0 net:1.0 rpc:1.0 web3:1.0"
+	ipcAPIs  = "admin:1.0 debug:1.0 avn:1.0 avnash:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0"
+	httpAPIs = "avn:1.0 net:1.0 rpc:1.0 web3:1.0"
 )
 
-// spawns gAVN with the given command line args, using a set of flags to minimise
+// spawns gavn with the given command line args, using a set of flags to minimise
 // memory and disk IO. If the args don't set --datadir, the
 // child g gets a temporary data directory.
-func runMinimalGAVN(t *testing.T, args ...string) *testgAVN {
+func runMinimalGavn(t *testing.T, args ...string) *testgavn {
 	// --ropsten to make the 'writing genesis to disk' faster (no accounts)
 	// --networkid=1337 to avoid cache bump
 	// --syncmode=full to avoid allocating fast sync bloom
 	allArgs := []string{"--ropsten", "--networkid", "1337", "--syncmode=full", "--port", "0",
 		"--nat", "none", "--nodiscover", "--maxpeers", "0", "--cache", "64"}
-	return runGAVN(t, append(allArgs, args...)...)
+	return runGavn(t, append(allArgs, args...)...)
 }
 
 // Tests that a node embedded within a console can be started up properly and
@@ -52,24 +52,24 @@ func runMinimalGAVN(t *testing.T, args ...string) *testgAVN {
 func TestConsoleWelcome(t *testing.T) {
 	coinbase := "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182"
 
-	// Start a gAVN console, make sure it's cleaned up and terminate the console
-	gAVN := runMinimalGAVN(t, "--miner.AVNerbase", coinbase, "console")
+	// Start a gavn console, make sure it's cleaned up and terminate the console
+	gavn := runMinimalGavn(t, "--miner.avnerbase", coinbase, "console")
 
 	// Gather all the infos the welcome message needs to contain
-	gAVN.SetTemplateFunc("goos", func() string { return runtime.GOOS })
-	gAVN.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
-	gAVN.SetTemplateFunc("gover", runtime.Version)
-	gAVN.SetTemplateFunc("gAVNver", func() string { return params.VersionWithCommit("", "") })
-	gAVN.SetTemplateFunc("niltime", func() string {
+	gavn.SetTemplateFunc("goos", func() string { return runtime.GOOS })
+	gavn.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
+	gavn.SetTemplateFunc("gover", runtime.Version)
+	gavn.SetTemplateFunc("gavnver", func() string { return params.VersionWithCommit("", "") })
+	gavn.SetTemplateFunc("niltime", func() string {
 		return time.Unix(0, 0).Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 	})
-	gAVN.SetTemplateFunc("apis", func() string { return ipcAPIs })
+	gavn.SetTemplateFunc("apis", func() string { return ipcAPIs })
 
 	// Verify the actual welcome message to the required template
-	gAVN.Expect(`
-Welcome to the GAVN JavaScript console!
+	gavn.Expect(`
+Welcome to the Gavn JavaScript console!
 
-instance: GAVN/v{{gAVNver}}/{{goos}}-{{goarch}}/{{gover}}
+instance: Gavn/v{{gavnver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Etherbase}}
 at block: 0 ({{niltime}})
  datadir: {{.Datadir}}
@@ -78,7 +78,7 @@ at block: 0 ({{niltime}})
 To exit, press ctrl-d
 > {{.InputLine "exit"}}
 `)
-	gAVN.ExpectExit()
+	gavn.ExpectExit()
 }
 
 // Tests that a console can be attached to a running node via various means.
@@ -90,39 +90,39 @@ func TestAttachWelcome(t *testing.T) {
 	)
 	// Configure the instance for IPC attachment
 	if runtime.GOOS == "windows" {
-		ipc = `\\.\pipe\gAVN` + strconv.Itoa(trulyRandInt(100000, 999999))
+		ipc = `\\.\pipe\gavn` + strconv.Itoa(trulyRandInt(100000, 999999))
 	} else {
 		ws := tmpdir(t)
 		defer os.RemoveAll(ws)
-		ipc = filepath.Join(ws, "gAVN.ipc")
+		ipc = filepath.Join(ws, "gavn.ipc")
 	}
 	// And HTTP + WS attachment
 	p := trulyRandInt(1024, 65533) // Yeah, sometimes this will fail, sorry :P
 	httpPort = strconv.Itoa(p)
 	wsPort = strconv.Itoa(p + 1)
-	gAVN := runMinimalGAVN(t, "--miner.AVNerbase", "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182",
+	gavn := runMinimalGavn(t, "--miner.avnerbase", "0x8605cdbbdb6d264aa742e77020dcbc58fcdce182",
 		"--ipcpath", ipc,
 		"--http", "--http.port", httpPort,
 		"--ws", "--ws.port", wsPort)
 	t.Run("ipc", func(t *testing.T) {
 		waitForEndpoint(t, ipc, 3*time.Second)
-		testAttachWelcome(t, gAVN, "ipc:"+ipc, ipcAPIs)
+		testAttachWelcome(t, gavn, "ipc:"+ipc, ipcAPIs)
 	})
 	t.Run("http", func(t *testing.T) {
 		endpoint := "http://127.0.0.1:" + httpPort
 		waitForEndpoint(t, endpoint, 3*time.Second)
-		testAttachWelcome(t, gAVN, endpoint, httpAPIs)
+		testAttachWelcome(t, gavn, endpoint, httpAPIs)
 	})
 	t.Run("ws", func(t *testing.T) {
 		endpoint := "ws://127.0.0.1:" + wsPort
 		waitForEndpoint(t, endpoint, 3*time.Second)
-		testAttachWelcome(t, gAVN, endpoint, httpAPIs)
+		testAttachWelcome(t, gavn, endpoint, httpAPIs)
 	})
 }
 
-func testAttachWelcome(t *testing.T, gAVN *testgAVN, endpoint, apis string) {
-	// Attach to a running gAVN note and terminate immediately
-	attach := runGAVN(t, "attach", endpoint)
+func testAttachWelcome(t *testing.T, gavn *testgavn, endpoint, apis string) {
+	// Attach to a running gavn note and terminate immediately
+	attach := runGavn(t, "attach", endpoint)
 	defer attach.ExpectExit()
 	attach.CloseStdin()
 
@@ -130,21 +130,21 @@ func testAttachWelcome(t *testing.T, gAVN *testgAVN, endpoint, apis string) {
 	attach.SetTemplateFunc("goos", func() string { return runtime.GOOS })
 	attach.SetTemplateFunc("goarch", func() string { return runtime.GOARCH })
 	attach.SetTemplateFunc("gover", runtime.Version)
-	attach.SetTemplateFunc("gAVNver", func() string { return params.VersionWithCommit("", "") })
-	attach.SetTemplateFunc("AVNerbase", func() string { return gAVN.Etherbase })
+	attach.SetTemplateFunc("gavnver", func() string { return params.VersionWithCommit("", "") })
+	attach.SetTemplateFunc("avnerbase", func() string { return gavn.Etherbase })
 	attach.SetTemplateFunc("niltime", func() string {
 		return time.Unix(0, 0).Format("Mon Jan 02 2006 15:04:05 GMT-0700 (MST)")
 	})
 	attach.SetTemplateFunc("ipc", func() bool { return strings.HasPrefix(endpoint, "ipc") })
-	attach.SetTemplateFunc("datadir", func() string { return gAVN.Datadir })
+	attach.SetTemplateFunc("datadir", func() string { return gavn.Datadir })
 	attach.SetTemplateFunc("apis", func() string { return apis })
 
 	// Verify the actual welcome message to the required template
 	attach.Expect(`
-Welcome to the GAVN JavaScript console!
+Welcome to the Gavn JavaScript console!
 
-instance: GAVN/v{{gAVNver}}/{{goos}}-{{goarch}}/{{gover}}
-coinbase: {{AVNerbase}}
+instance: Gavn/v{{gavnver}}/{{goos}}-{{goarch}}/{{gover}}
+coinbase: {{avnerbase}}
 at block: 0 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}
  modules: {{apis}}

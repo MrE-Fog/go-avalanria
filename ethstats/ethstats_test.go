@@ -1,4 +1,4 @@
-package AVNstats
+package avnstats
 
 import (
 	"strconv"

@@ -1,24 +1,24 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 /*
 Package rlp implements the RLP serialization format.
 
 The purpose of RLP (Recursive Linear Prefix) is to encode arbitrarily nested arrays of
-binary data, and RLP is the main encoding mAVNod used to serialize objects in Avalanria.
+binary data, and RLP is the main encoding mavnod used to serialize objects in Avalanria.
 The only purpose of RLP is to encode structure; encoding specific atomic data types (eg.
 strings, ints, floats) is left up to higher-order protocols. In Avalanria integers must be
 represented in big endian binary form with no leading zeroes (thus making the integer

@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package checkpointoracle is a an on-chain light client checkpoint oracle.
 package checkpointoracle
@@ -23,10 +23,10 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/contracts/checkpointoracle/contract"
-	"github.com/AVNereum/go-AVNereum/core/types"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/contracts/checkpointoracle/contract"
+	"github.com/avalanria/go-avalanria/core/types"
 )
 
 // CheckpointOracle is a Go wrapper around an on-chain checkpoint oracle contract.
@@ -76,7 +76,7 @@ func (oracle *CheckpointOracle) LookupCheckpointEvents(blockLogs [][]*types.Log,
 // RegisterCheckpoint registers the checkpoint with a batch of associated signatures
 // that are collected off-chain and sorted by lexicographical order.
 //
-// Notably all signatures given should be transformed to "AVNereum style" which transforms
+// Notably all signatures given should be transformed to "avalanria style" which transforms
 // v from 0/1 to 27/28 according to the yellow paper.
 func (oracle *CheckpointOracle) RegisterCheckpoint(opts *bind.TransactOpts, index uint64, hash []byte, rnum *big.Int, rhash [32]byte, sigs [][]byte) (*types.Transaction, error) {
 	var (

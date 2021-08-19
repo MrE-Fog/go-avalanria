@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package snapshot
 
@@ -23,12 +23,12 @@ import (
 	"testing"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/AVNdb/leveldb"
-	"github.com/AVNereum/go-AVNereum/AVNdb/memorydb"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/avndb/leveldb"
+	"github.com/avalanria/go-avalanria/avndb/memorydb"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 // reverse reverses the contents of a byte slice. It's used to update random accs
@@ -41,7 +41,7 @@ func reverse(blob []byte) []byte {
 	return res
 }
 
-// Tests that merging somAVNing into a disk layer persists it into the database
+// Tests that merging somavning into a disk layer persists it into the database
 // and invalidates any previously written and cached values.
 func TestDiskMerge(t *testing.T) {
 	// Create some accounts in the disk layer
@@ -215,7 +215,7 @@ func TestDiskMerge(t *testing.T) {
 	assertDatabaseStorage(conNukeCache, conNukeCacheSlot, nil)
 }
 
-// Tests that merging somAVNing into a disk layer persists it into the database
+// Tests that merging somavning into a disk layer persists it into the database
 // and invalidates any previously written and cached values, discarding anything
 // after the in-progress generation marker.
 func TestDiskPartialMerge(t *testing.T) {
@@ -431,7 +431,7 @@ func TestDiskPartialMerge(t *testing.T) {
 }
 
 // Tests that when the bottom-most diff layer is merged into the disk
-// layer whAVNer the corresponding generator is persisted correctly.
+// layer whavner the corresponding generator is persisted correctly.
 func TestDiskGeneratorPersistence(t *testing.T) {
 	var (
 		accOne        = randomHash()
@@ -505,7 +505,7 @@ func TestDiskGeneratorPersistence(t *testing.T) {
 	}
 }
 
-// Tests that merging somAVNing into a disk layer persists it into the database
+// Tests that merging somavning into a disk layer persists it into the database
 // and invalidates any previously written and cached values, discarding anything
 // after the in-progress generation marker.
 //
@@ -518,7 +518,7 @@ func TestDiskMidAccountPartialMerge(t *testing.T) {
 // TestDiskSeek tests that seek-operations work on the disk layer
 func TestDiskSeek(t *testing.T) {
 	// Create some accounts in the disk layer
-	var db AVNdb.Database
+	var db avndb.Database
 
 	if dir, err := ioutil.TempDir("", "disklayer-test"); err != nil {
 		t.Fatal(err)

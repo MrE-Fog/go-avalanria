@@ -1,18 +1,18 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // handler handles JSON-RPC messages. There is one handler per connection. Note that
@@ -233,7 +233,7 @@ func (h *handler) handleImmediate(msg *jsonrpcMessage) bool {
 	start := time.Now()
 	switch {
 	case msg.isNotification():
-		if strings.HasSuffix(msg.MAVNod, notificationMAVNodSuffix) {
+		if strings.HasSuffix(msg.Mavnod, notificationMavnodSuffix) {
 			h.handleSubscriptionResult(msg)
 			return true
 		}
@@ -259,7 +259,7 @@ func (h *handler) handleSubscriptionResult(msg *jsonrpcMessage) {
 	}
 }
 
-// handleResponse processes mAVNod call responses.
+// handleResponse processes mavnod call responses.
 func (h *handler) handleResponse(msg *jsonrpcMessage) {
 	op := h.respWait[string(msg.ID)]
 	if op == nil {
@@ -292,7 +292,7 @@ func (h *handler) handleCallMsg(ctx *callProc, msg *jsonrpcMessage) *jsonrpcMess
 	switch {
 	case msg.isNotification():
 		h.handleCall(ctx, msg)
-		h.log.Debug("Served "+msg.MAVNod, "t", time.Since(start))
+		h.log.Debug("Served "+msg.Mavnod, "t", time.Since(start))
 		return nil
 	case msg.isCall():
 		resp := h.handleCall(ctx, msg)
@@ -303,9 +303,9 @@ func (h *handler) handleCallMsg(ctx *callProc, msg *jsonrpcMessage) *jsonrpcMess
 			if resp.Error.Data != nil {
 				ctx = append(ctx, "errdata", resp.Error.Data)
 			}
-			h.log.Warn("Served "+msg.MAVNod, ctx...)
+			h.log.Warn("Served "+msg.Mavnod, ctx...)
 		} else {
-			h.log.Debug("Served "+msg.MAVNod, ctx...)
+			h.log.Debug("Served "+msg.Mavnod, ctx...)
 		}
 		return resp
 	case msg.hasValidID():
@@ -315,7 +315,7 @@ func (h *handler) handleCallMsg(ctx *callProc, msg *jsonrpcMessage) *jsonrpcMess
 	}
 }
 
-// handleCall processes mAVNod calls.
+// handleCall processes mavnod calls.
 func (h *handler) handleCall(cp *callProc, msg *jsonrpcMessage) *jsonrpcMessage {
 	if msg.isSubscribe() {
 		return h.handleSubscribe(cp, msg)
@@ -324,17 +324,17 @@ func (h *handler) handleCall(cp *callProc, msg *jsonrpcMessage) *jsonrpcMessage 
 	if msg.isUnsubscribe() {
 		callb = h.unsubscribeCb
 	} else {
-		callb = h.reg.callback(msg.MAVNod)
+		callb = h.reg.callback(msg.Mavnod)
 	}
 	if callb == nil {
-		return msg.errorResponse(&mAVNodNotFoundError{mAVNod: msg.MAVNod})
+		return msg.errorResponse(&mavnodNotFoundError{mavnod: msg.Mavnod})
 	}
 	args, err := parsePositionalArguments(msg.Params, callb.argTypes)
 	if err != nil {
 		return msg.errorResponse(&invalidParamsError{err.Error()})
 	}
 	start := time.Now()
-	answer := h.runMAVNod(cp.ctx, msg, callb, args)
+	answer := h.runMavnod(cp.ctx, msg, callb, args)
 
 	// Collect the statistics for RPC calls if metrics is enabled.
 	// We only care about pure rpc call. Filter out subscription.
@@ -346,18 +346,18 @@ func (h *handler) handleCall(cp *callProc, msg *jsonrpcMessage) *jsonrpcMessage 
 			successfulRequestGauge.Inc(1)
 		}
 		rpcServingTimer.UpdateSince(start)
-		newRPCServingTimer(msg.MAVNod, answer.Error == nil).UpdateSince(start)
+		newRPCServingTimer(msg.Mavnod, answer.Error == nil).UpdateSince(start)
 	}
 	return answer
 }
 
-// handleSubscribe processes *_subscribe mAVNod calls.
+// handleSubscribe processes *_subscribe mavnod calls.
 func (h *handler) handleSubscribe(cp *callProc, msg *jsonrpcMessage) *jsonrpcMessage {
 	if !h.allowSubscribe {
 		return msg.errorResponse(ErrNotificationsUnsupported)
 	}
 
-	// Subscription mAVNod name is first argument.
+	// Subscription mavnod name is first argument.
 	name, err := parseSubscriptionName(msg.Params)
 	if err != nil {
 		return msg.errorResponse(&invalidParamsError{err.Error()})
@@ -381,12 +381,12 @@ func (h *handler) handleSubscribe(cp *callProc, msg *jsonrpcMessage) *jsonrpcMes
 	cp.notifiers = append(cp.notifiers, n)
 	ctx := context.WithValue(cp.ctx, notifierKey{}, n)
 
-	return h.runMAVNod(ctx, msg, callb, args)
+	return h.runMavnod(ctx, msg, callb, args)
 }
 
-// runMAVNod runs the Go callback for an RPC mAVNod.
-func (h *handler) runMAVNod(ctx context.Context, msg *jsonrpcMessage, callb *callback, args []reflect.Value) *jsonrpcMessage {
-	result, err := callb.call(ctx, msg.MAVNod, args)
+// runMavnod runs the Go callback for an RPC mavnod.
+func (h *handler) runMavnod(ctx context.Context, msg *jsonrpcMessage, callb *callback, args []reflect.Value) *jsonrpcMessage {
+	result, err := callb.call(ctx, msg.Mavnod, args)
 	if err != nil {
 		return msg.errorResponse(err)
 	}

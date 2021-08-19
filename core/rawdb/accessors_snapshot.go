@@ -1,44 +1,44 @@
-// Copyright 2019 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2019 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rawdb
 
 import (
 	"encoding/binary"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // ReadSnapshotDisabled retrieves if the snapshot maintenance is disabled.
-func ReadSnapshotDisabled(db AVNdb.KeyValueReader) bool {
+func ReadSnapshotDisabled(db avndb.KeyValueReader) bool {
 	disabled, _ := db.Has(snapshotDisabledKey)
 	return disabled
 }
 
 // WriteSnapshotDisabled stores the snapshot pause flag.
-func WriteSnapshotDisabled(db AVNdb.KeyValueWriter) {
+func WriteSnapshotDisabled(db avndb.KeyValueWriter) {
 	if err := db.Put(snapshotDisabledKey, []byte("42")); err != nil {
 		log.Crit("Failed to store snapshot disabled flag", "err", err)
 	}
 }
 
 // DeleteSnapshotDisabled deletes the flag keeping the snapshot maintenance disabled.
-func DeleteSnapshotDisabled(db AVNdb.KeyValueWriter) {
+func DeleteSnapshotDisabled(db avndb.KeyValueWriter) {
 	if err := db.Delete(snapshotDisabledKey); err != nil {
 		log.Crit("Failed to remove snapshot disabled flag", "err", err)
 	}
@@ -46,7 +46,7 @@ func DeleteSnapshotDisabled(db AVNdb.KeyValueWriter) {
 
 // ReadSnapshotRoot retrieves the root of the block whose state is contained in
 // the persisted snapshot.
-func ReadSnapshotRoot(db AVNdb.KeyValueReader) common.Hash {
+func ReadSnapshotRoot(db avndb.KeyValueReader) common.Hash {
 	data, _ := db.Get(snapshotRootKey)
 	if len(data) != common.HashLength {
 		return common.Hash{}
@@ -56,57 +56,57 @@ func ReadSnapshotRoot(db AVNdb.KeyValueReader) common.Hash {
 
 // WriteSnapshotRoot stores the root of the block whose state is contained in
 // the persisted snapshot.
-func WriteSnapshotRoot(db AVNdb.KeyValueWriter, root common.Hash) {
+func WriteSnapshotRoot(db avndb.KeyValueWriter, root common.Hash) {
 	if err := db.Put(snapshotRootKey, root[:]); err != nil {
 		log.Crit("Failed to store snapshot root", "err", err)
 	}
 }
 
 // DeleteSnapshotRoot deletes the hash of the block whose state is contained in
-// the persisted snapshot. Since snapshots are not immutable, this  mAVNod can
+// the persisted snapshot. Since snapshots are not immutable, this  mavnod can
 // be used during updates, so a crash or failure will mark the entire snapshot
 // invalid.
-func DeleteSnapshotRoot(db AVNdb.KeyValueWriter) {
+func DeleteSnapshotRoot(db avndb.KeyValueWriter) {
 	if err := db.Delete(snapshotRootKey); err != nil {
 		log.Crit("Failed to remove snapshot root", "err", err)
 	}
 }
 
 // ReadAccountSnapshot retrieves the snapshot entry of an account trie leaf.
-func ReadAccountSnapshot(db AVNdb.KeyValueReader, hash common.Hash) []byte {
+func ReadAccountSnapshot(db avndb.KeyValueReader, hash common.Hash) []byte {
 	data, _ := db.Get(accountSnapshotKey(hash))
 	return data
 }
 
 // WriteAccountSnapshot stores the snapshot entry of an account trie leaf.
-func WriteAccountSnapshot(db AVNdb.KeyValueWriter, hash common.Hash, entry []byte) {
+func WriteAccountSnapshot(db avndb.KeyValueWriter, hash common.Hash, entry []byte) {
 	if err := db.Put(accountSnapshotKey(hash), entry); err != nil {
 		log.Crit("Failed to store account snapshot", "err", err)
 	}
 }
 
 // DeleteAccountSnapshot removes the snapshot entry of an account trie leaf.
-func DeleteAccountSnapshot(db AVNdb.KeyValueWriter, hash common.Hash) {
+func DeleteAccountSnapshot(db avndb.KeyValueWriter, hash common.Hash) {
 	if err := db.Delete(accountSnapshotKey(hash)); err != nil {
 		log.Crit("Failed to delete account snapshot", "err", err)
 	}
 }
 
 // ReadStorageSnapshot retrieves the snapshot entry of an storage trie leaf.
-func ReadStorageSnapshot(db AVNdb.KeyValueReader, accountHash, storageHash common.Hash) []byte {
+func ReadStorageSnapshot(db avndb.KeyValueReader, accountHash, storageHash common.Hash) []byte {
 	data, _ := db.Get(storageSnapshotKey(accountHash, storageHash))
 	return data
 }
 
 // WriteStorageSnapshot stores the snapshot entry of an storage trie leaf.
-func WriteStorageSnapshot(db AVNdb.KeyValueWriter, accountHash, storageHash common.Hash, entry []byte) {
+func WriteStorageSnapshot(db avndb.KeyValueWriter, accountHash, storageHash common.Hash, entry []byte) {
 	if err := db.Put(storageSnapshotKey(accountHash, storageHash), entry); err != nil {
 		log.Crit("Failed to store storage snapshot", "err", err)
 	}
 }
 
 // DeleteStorageSnapshot removes the snapshot entry of an storage trie leaf.
-func DeleteStorageSnapshot(db AVNdb.KeyValueWriter, accountHash, storageHash common.Hash) {
+func DeleteStorageSnapshot(db avndb.KeyValueWriter, accountHash, storageHash common.Hash) {
 	if err := db.Delete(storageSnapshotKey(accountHash, storageHash)); err != nil {
 		log.Crit("Failed to delete storage snapshot", "err", err)
 	}
@@ -114,20 +114,20 @@ func DeleteStorageSnapshot(db AVNdb.KeyValueWriter, accountHash, storageHash com
 
 // IterateStorageSnapshots returns an iterator for walking the entire storage
 // space of a specific account.
-func IterateStorageSnapshots(db AVNdb.Iteratee, accountHash common.Hash) AVNdb.Iterator {
+func IterateStorageSnapshots(db avndb.Iteratee, accountHash common.Hash) avndb.Iterator {
 	return db.NewIterator(storageSnapshotsKey(accountHash), nil)
 }
 
 // ReadSnapshotJournal retrieves the serialized in-memory diff layers saved at
 // the last shutdown. The blob is expected to be max a few 10s of megabytes.
-func ReadSnapshotJournal(db AVNdb.KeyValueReader) []byte {
+func ReadSnapshotJournal(db avndb.KeyValueReader) []byte {
 	data, _ := db.Get(snapshotJournalKey)
 	return data
 }
 
 // WriteSnapshotJournal stores the serialized in-memory diff layers to save at
 // shutdown. The blob is expected to be max a few 10s of megabytes.
-func WriteSnapshotJournal(db AVNdb.KeyValueWriter, journal []byte) {
+func WriteSnapshotJournal(db avndb.KeyValueWriter, journal []byte) {
 	if err := db.Put(snapshotJournalKey, journal); err != nil {
 		log.Crit("Failed to store snapshot journal", "err", err)
 	}
@@ -135,7 +135,7 @@ func WriteSnapshotJournal(db AVNdb.KeyValueWriter, journal []byte) {
 
 // DeleteSnapshotJournal deletes the serialized in-memory diff layers saved at
 // the last shutdown
-func DeleteSnapshotJournal(db AVNdb.KeyValueWriter) {
+func DeleteSnapshotJournal(db avndb.KeyValueWriter) {
 	if err := db.Delete(snapshotJournalKey); err != nil {
 		log.Crit("Failed to remove snapshot journal", "err", err)
 	}
@@ -143,14 +143,14 @@ func DeleteSnapshotJournal(db AVNdb.KeyValueWriter) {
 
 // ReadSnapshotGenerator retrieves the serialized snapshot generator saved at
 // the last shutdown.
-func ReadSnapshotGenerator(db AVNdb.KeyValueReader) []byte {
+func ReadSnapshotGenerator(db avndb.KeyValueReader) []byte {
 	data, _ := db.Get(snapshotGeneratorKey)
 	return data
 }
 
 // WriteSnapshotGenerator stores the serialized snapshot generator to save at
 // shutdown.
-func WriteSnapshotGenerator(db AVNdb.KeyValueWriter, generator []byte) {
+func WriteSnapshotGenerator(db avndb.KeyValueWriter, generator []byte) {
 	if err := db.Put(snapshotGeneratorKey, generator); err != nil {
 		log.Crit("Failed to store snapshot generator", "err", err)
 	}
@@ -158,7 +158,7 @@ func WriteSnapshotGenerator(db AVNdb.KeyValueWriter, generator []byte) {
 
 // DeleteSnapshotGenerator deletes the serialized snapshot generator saved at
 // the last shutdown
-func DeleteSnapshotGenerator(db AVNdb.KeyValueWriter) {
+func DeleteSnapshotGenerator(db avndb.KeyValueWriter) {
 	if err := db.Delete(snapshotGeneratorKey); err != nil {
 		log.Crit("Failed to remove snapshot generator", "err", err)
 	}
@@ -166,7 +166,7 @@ func DeleteSnapshotGenerator(db AVNdb.KeyValueWriter) {
 
 // ReadSnapshotRecoveryNumber retrieves the block number of the last persisted
 // snapshot layer.
-func ReadSnapshotRecoveryNumber(db AVNdb.KeyValueReader) *uint64 {
+func ReadSnapshotRecoveryNumber(db avndb.KeyValueReader) *uint64 {
 	data, _ := db.Get(snapshotRecoveryKey)
 	if len(data) == 0 {
 		return nil
@@ -180,7 +180,7 @@ func ReadSnapshotRecoveryNumber(db AVNdb.KeyValueReader) *uint64 {
 
 // WriteSnapshotRecoveryNumber stores the block number of the last persisted
 // snapshot layer.
-func WriteSnapshotRecoveryNumber(db AVNdb.KeyValueWriter, number uint64) {
+func WriteSnapshotRecoveryNumber(db avndb.KeyValueWriter, number uint64) {
 	var buf [8]byte
 	binary.BigEndian.PutUint64(buf[:], number)
 	if err := db.Put(snapshotRecoveryKey, buf[:]); err != nil {
@@ -190,20 +190,20 @@ func WriteSnapshotRecoveryNumber(db AVNdb.KeyValueWriter, number uint64) {
 
 // DeleteSnapshotRecoveryNumber deletes the block number of the last persisted
 // snapshot layer.
-func DeleteSnapshotRecoveryNumber(db AVNdb.KeyValueWriter) {
+func DeleteSnapshotRecoveryNumber(db avndb.KeyValueWriter) {
 	if err := db.Delete(snapshotRecoveryKey); err != nil {
 		log.Crit("Failed to remove snapshot recovery number", "err", err)
 	}
 }
 
 // ReadSnapshotSyncStatus retrieves the serialized sync status saved at shutdown.
-func ReadSnapshotSyncStatus(db AVNdb.KeyValueReader) []byte {
+func ReadSnapshotSyncStatus(db avndb.KeyValueReader) []byte {
 	data, _ := db.Get(snapshotSyncStatusKey)
 	return data
 }
 
 // WriteSnapshotSyncStatus stores the serialized sync status to save at shutdown.
-func WriteSnapshotSyncStatus(db AVNdb.KeyValueWriter, status []byte) {
+func WriteSnapshotSyncStatus(db avndb.KeyValueWriter, status []byte) {
 	if err := db.Put(snapshotSyncStatusKey, status); err != nil {
 		log.Crit("Failed to store snapshot sync status", "err", err)
 	}
@@ -211,7 +211,7 @@ func WriteSnapshotSyncStatus(db AVNdb.KeyValueWriter, status []byte) {
 
 // DeleteSnapshotSyncStatus deletes the serialized sync status saved at the last
 // shutdown
-func DeleteSnapshotSyncStatus(db AVNdb.KeyValueWriter) {
+func DeleteSnapshotSyncStatus(db avndb.KeyValueWriter) {
 	if err := db.Delete(snapshotSyncStatusKey); err != nil {
 		log.Crit("Failed to remove snapshot sync status", "err", err)
 	}

@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package apitypes
 
@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
 )
 
 type ValidationInfo struct {
@@ -66,7 +66,7 @@ func (v *ValidationMessages) GetWarnings() error {
 }
 
 // SendTxArgs represents the arguments to submit a transaction
-// This struct is identical to AVNapi.TransactionArgs, except for the usage of
+// This struct is identical to avnapi.TransactionArgs, except for the usage of
 // common.MixedcaseAddress in From and To
 type SendTxArgs struct {
 	From                 common.MixedcaseAddress  `json:"from"`
@@ -80,7 +80,7 @@ type SendTxArgs struct {
 
 	// We accept "data" and "input" for backwards-compatibility reasons.
 	// "input" is the newer name and should be preferred by clients.
-	// Issue detail: https://github.com/AVNereum/go-AVNereum/issues/15628
+	// Issue detail: https://github.com/avalanria/go-avalanria/issues/15628
 	Data  *hexutil.Bytes `json:"data"`
 	Input *hexutil.Bytes `json:"input,omitempty"`
 
@@ -98,7 +98,7 @@ func (args SendTxArgs) String() string {
 }
 
 func (args *SendTxArgs) ToTransaction() *types.Transaction {
-	txArgs := AVNapi.TransactionArgs{
+	txArgs := avnapi.TransactionArgs{
 		Gas:                  &args.Gas,
 		GasPrice:             args.GasPrice,
 		MaxFeePerGas:         args.MaxFeePerGas,

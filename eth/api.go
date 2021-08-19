@@ -1,20 +1,20 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"compress/gzip"
@@ -28,16 +28,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/hexutil"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/internal/AVNapi"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/rpc"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/hexutil"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/internal/avnapi"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/rpc"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 // PublicAvalanriaAPI provides an API to access Avalanria full node-related
@@ -67,7 +67,7 @@ func (api *PublicAvalanriaAPI) Hashrate() hexutil.Uint64 {
 }
 
 // PublicMinerAPI provides an API to control the miner.
-// It offers only mAVNods that operate on data that pose no security risk when it is publicly accessible.
+// It offers only mavnods that operate on data that pose no security risk when it is publicly accessible.
 type PublicMinerAPI struct {
 	e *Avalanria
 }
@@ -82,8 +82,8 @@ func (api *PublicMinerAPI) Mining() bool {
 	return api.e.IsMining()
 }
 
-// PrivateMinerAPI provides private RPC mAVNods to control the miner.
-// These mAVNods can be abused by external users and must be considered insecure for use by untrusted users.
+// PrivateMinerAPI provides private RPC mavnods to control the miner.
+// These mavnods can be abused by external users and must be considered insecure for use by untrusted users.
 type PrivateMinerAPI struct {
 	e *Avalanria
 }
@@ -95,7 +95,7 @@ func NewPrivateMinerAPI(e *Avalanria) *PrivateMinerAPI {
 
 // Start starts the miner with the given number of threads. If threads is nil,
 // the number of workers started is equal to the number of logical CPUs that are
-// usable by this process. If mining is already running, this mAVNod adjust the
+// usable by this process. If mining is already running, this mavnod adjust the
 // number of threads allowed to use and updates the minimum price required by the
 // transaction pool.
 func (api *PrivateMinerAPI) Start(threads *int) error {
@@ -135,9 +135,9 @@ func (api *PrivateMinerAPI) SetGasLimit(gasLimit hexutil.Uint64) bool {
 	return true
 }
 
-// SetEtherbase sets the AVNerbase of the miner
-func (api *PrivateMinerAPI) SetEtherbase(AVNerbase common.Address) bool {
-	api.e.SetEtherbase(AVNerbase)
+// SetEtherbase sets the avnerbase of the miner
+func (api *PrivateMinerAPI) SetEtherbase(avnerbase common.Address) bool {
+	api.e.SetEtherbase(avnerbase)
 	return true
 }
 
@@ -149,13 +149,13 @@ func (api *PrivateMinerAPI) SetRecommitInterval(interval int) {
 // PrivateAdminAPI is the collection of Avalanria full node-related APIs
 // exposed over the private admin endpoint.
 type PrivateAdminAPI struct {
-	AVN *Avalanria
+	avn *Avalanria
 }
 
 // NewPrivateAdminAPI creates a new API definition for the full node private
-// admin mAVNods of the Avalanria service.
-func NewPrivateAdminAPI(AVN *Avalanria) *PrivateAdminAPI {
-	return &PrivateAdminAPI{AVN: AVN}
+// admin mavnods of the Avalanria service.
+func NewPrivateAdminAPI(avn *Avalanria) *PrivateAdminAPI {
+	return &PrivateAdminAPI{avn: avn}
 }
 
 // ExportChain exports the current blockchain into a local file,
@@ -165,7 +165,7 @@ func (api *PrivateAdminAPI) ExportChain(file string, first *uint64, last *uint64
 		return false, errors.New("last cannot be specified without first")
 	}
 	if first != nil && last == nil {
-		head := api.AVN.BlockChain().CurrentHeader().Number.Uint64()
+		head := api.avn.BlockChain().CurrentHeader().Number.Uint64()
 		last = &head
 	}
 	if _, err := os.Stat(file); err == nil {
@@ -188,10 +188,10 @@ func (api *PrivateAdminAPI) ExportChain(file string, first *uint64, last *uint64
 
 	// Export the blockchain
 	if first != nil {
-		if err := api.AVN.BlockChain().ExportN(writer, *first, *last); err != nil {
+		if err := api.avn.BlockChain().ExportN(writer, *first, *last); err != nil {
 			return false, err
 		}
-	} else if err := api.AVN.BlockChain().Export(writer); err != nil {
+	} else if err := api.avn.BlockChain().Export(writer); err != nil {
 		return false, err
 	}
 	return true, nil
@@ -243,12 +243,12 @@ func (api *PrivateAdminAPI) ImportChain(file string) (bool, error) {
 			break
 		}
 
-		if hasAllBlocks(api.AVN.BlockChain(), blocks) {
+		if hasAllBlocks(api.avn.BlockChain(), blocks) {
 			blocks = blocks[:0]
 			continue
 		}
 		// Import the batch and reset the buffer
-		if _, err := api.AVN.BlockChain().InsertChain(blocks); err != nil {
+		if _, err := api.avn.BlockChain().InsertChain(blocks); err != nil {
 			return false, fmt.Errorf("batch %d: failed to insert: %v", batch, err)
 		}
 		blocks = blocks[:0]
@@ -259,13 +259,13 @@ func (api *PrivateAdminAPI) ImportChain(file string) (bool, error) {
 // PublicDebugAPI is the collection of Avalanria full node APIs exposed
 // over the public debugging endpoint.
 type PublicDebugAPI struct {
-	AVN *Avalanria
+	avn *Avalanria
 }
 
 // NewPublicDebugAPI creates a new API definition for the full node-
-// related public debug mAVNods of the Avalanria service.
-func NewPublicDebugAPI(AVN *Avalanria) *PublicDebugAPI {
-	return &PublicDebugAPI{AVN: AVN}
+// related public debug mavnods of the Avalanria service.
+func NewPublicDebugAPI(avn *Avalanria) *PublicDebugAPI {
+	return &PublicDebugAPI{avn: avn}
 }
 
 // DumpBlock retrieves the entire state of the database at a given block.
@@ -278,19 +278,19 @@ func (api *PublicDebugAPI) DumpBlock(blockNr rpc.BlockNumber) (state.Dump, error
 		// If we're dumping the pending state, we need to request
 		// both the pending block as well as the pending state from
 		// the miner and operate on those
-		_, stateDb := api.AVN.miner.Pending()
+		_, stateDb := api.avn.miner.Pending()
 		return stateDb.RawDump(opts), nil
 	}
 	var block *types.Block
 	if blockNr == rpc.LatestBlockNumber {
-		block = api.AVN.blockchain.CurrentBlock()
+		block = api.avn.blockchain.CurrentBlock()
 	} else {
-		block = api.AVN.blockchain.GetBlockByNumber(uint64(blockNr))
+		block = api.avn.blockchain.GetBlockByNumber(uint64(blockNr))
 	}
 	if block == nil {
 		return state.Dump{}, fmt.Errorf("block #%d not found", blockNr)
 	}
-	stateDb, err := api.AVN.BlockChain().StateAt(block.Root())
+	stateDb, err := api.avn.BlockChain().StateAt(block.Root())
 	if err != nil {
 		return state.Dump{}, err
 	}
@@ -300,18 +300,18 @@ func (api *PublicDebugAPI) DumpBlock(blockNr rpc.BlockNumber) (state.Dump, error
 // PrivateDebugAPI is the collection of Avalanria full node APIs exposed over
 // the private debugging endpoint.
 type PrivateDebugAPI struct {
-	AVN *Avalanria
+	avn *Avalanria
 }
 
 // NewPrivateDebugAPI creates a new API definition for the full node-related
-// private debug mAVNods of the Avalanria service.
-func NewPrivateDebugAPI(AVN *Avalanria) *PrivateDebugAPI {
-	return &PrivateDebugAPI{AVN: AVN}
+// private debug mavnods of the Avalanria service.
+func NewPrivateDebugAPI(avn *Avalanria) *PrivateDebugAPI {
+	return &PrivateDebugAPI{avn: avn}
 }
 
 // Preimage is a debug API function that returns the preimage for a sha3 hash, if known.
 func (api *PrivateDebugAPI) Preimage(ctx context.Context, hash common.Hash) (hexutil.Bytes, error) {
-	if preimage := rawdb.ReadPreimage(api.AVN.ChainDb(), hash); preimage != nil {
+	if preimage := rawdb.ReadPreimage(api.avn.ChainDb(), hash); preimage != nil {
 		return preimage, nil
 	}
 	return nil, errors.New("unknown preimage")
@@ -329,7 +329,7 @@ type BadBlockArgs struct {
 func (api *PrivateDebugAPI) GetBadBlocks(ctx context.Context) ([]*BadBlockArgs, error) {
 	var (
 		err     error
-		blocks  = rawdb.ReadAllBadBlocks(api.AVN.chainDb)
+		blocks  = rawdb.ReadAllBadBlocks(api.avn.chainDb)
 		results = make([]*BadBlockArgs, 0, len(blocks))
 	)
 	for _, block := range blocks {
@@ -342,7 +342,7 @@ func (api *PrivateDebugAPI) GetBadBlocks(ctx context.Context) ([]*BadBlockArgs, 
 		} else {
 			blockRlp = fmt.Sprintf("0x%x", rlpBytes)
 		}
-		if blockJSON, err = AVNapi.RPCMarshalBlock(block, true, true); err != nil {
+		if blockJSON, err = avnapi.RPCMarshalBlock(block, true, true); err != nil {
 			blockJSON = map[string]interface{}{"error": err.Error()}
 		}
 		results = append(results, &BadBlockArgs{
@@ -367,28 +367,28 @@ func (api *PublicDebugAPI) AccountRange(blockNrOrHash rpc.BlockNumberOrHash, sta
 			// If we're dumping the pending state, we need to request
 			// both the pending block as well as the pending state from
 			// the miner and operate on those
-			_, stateDb = api.AVN.miner.Pending()
+			_, stateDb = api.avn.miner.Pending()
 		} else {
 			var block *types.Block
 			if number == rpc.LatestBlockNumber {
-				block = api.AVN.blockchain.CurrentBlock()
+				block = api.avn.blockchain.CurrentBlock()
 			} else {
-				block = api.AVN.blockchain.GetBlockByNumber(uint64(number))
+				block = api.avn.blockchain.GetBlockByNumber(uint64(number))
 			}
 			if block == nil {
 				return state.IteratorDump{}, fmt.Errorf("block #%d not found", number)
 			}
-			stateDb, err = api.AVN.BlockChain().StateAt(block.Root())
+			stateDb, err = api.avn.BlockChain().StateAt(block.Root())
 			if err != nil {
 				return state.IteratorDump{}, err
 			}
 		}
 	} else if hash, ok := blockNrOrHash.Hash(); ok {
-		block := api.AVN.blockchain.GetBlockByHash(hash)
+		block := api.avn.blockchain.GetBlockByHash(hash)
 		if block == nil {
 			return state.IteratorDump{}, fmt.Errorf("block %s not found", hash.Hex())
 		}
-		stateDb, err = api.AVN.BlockChain().StateAt(block.Root())
+		stateDb, err = api.avn.BlockChain().StateAt(block.Root())
 		if err != nil {
 			return state.IteratorDump{}, err
 		}
@@ -425,11 +425,11 @@ type storageEntry struct {
 // StorageRangeAt returns the storage at the given block height and transaction index.
 func (api *PrivateDebugAPI) StorageRangeAt(blockHash common.Hash, txIndex int, contractAddress common.Address, keyStart hexutil.Bytes, maxResult int) (StorageRangeResult, error) {
 	// Retrieve the block
-	block := api.AVN.blockchain.GetBlockByHash(blockHash)
+	block := api.avn.blockchain.GetBlockByHash(blockHash)
 	if block == nil {
 		return StorageRangeResult{}, fmt.Errorf("block %#x not found", blockHash)
 	}
-	_, _, statedb, err := api.AVN.stateAtTransaction(block, txIndex, 0)
+	_, _, statedb, err := api.avn.stateAtTransaction(block, txIndex, 0)
 	if err != nil {
 		return StorageRangeResult{}, err
 	}
@@ -471,19 +471,19 @@ func storageRangeAt(st state.Trie, start []byte, maxResult int) (StorageRangeRes
 func (api *PrivateDebugAPI) GetModifiedAccountsByNumber(startNum uint64, endNum *uint64) ([]common.Address, error) {
 	var startBlock, endBlock *types.Block
 
-	startBlock = api.AVN.blockchain.GetBlockByNumber(startNum)
+	startBlock = api.avn.blockchain.GetBlockByNumber(startNum)
 	if startBlock == nil {
 		return nil, fmt.Errorf("start block %x not found", startNum)
 	}
 
 	if endNum == nil {
 		endBlock = startBlock
-		startBlock = api.AVN.blockchain.GetBlockByHash(startBlock.ParentHash())
+		startBlock = api.avn.blockchain.GetBlockByHash(startBlock.ParentHash())
 		if startBlock == nil {
 			return nil, fmt.Errorf("block %x has no parent", endBlock.Number())
 		}
 	} else {
-		endBlock = api.AVN.blockchain.GetBlockByNumber(*endNum)
+		endBlock = api.avn.blockchain.GetBlockByNumber(*endNum)
 		if endBlock == nil {
 			return nil, fmt.Errorf("end block %d not found", *endNum)
 		}
@@ -498,19 +498,19 @@ func (api *PrivateDebugAPI) GetModifiedAccountsByNumber(startNum uint64, endNum 
 // With one parameter, returns the list of accounts modified in the specified block.
 func (api *PrivateDebugAPI) GetModifiedAccountsByHash(startHash common.Hash, endHash *common.Hash) ([]common.Address, error) {
 	var startBlock, endBlock *types.Block
-	startBlock = api.AVN.blockchain.GetBlockByHash(startHash)
+	startBlock = api.avn.blockchain.GetBlockByHash(startHash)
 	if startBlock == nil {
 		return nil, fmt.Errorf("start block %x not found", startHash)
 	}
 
 	if endHash == nil {
 		endBlock = startBlock
-		startBlock = api.AVN.blockchain.GetBlockByHash(startBlock.ParentHash())
+		startBlock = api.avn.blockchain.GetBlockByHash(startBlock.ParentHash())
 		if startBlock == nil {
 			return nil, fmt.Errorf("block %x has no parent", endBlock.Number())
 		}
 	} else {
-		endBlock = api.AVN.blockchain.GetBlockByHash(*endHash)
+		endBlock = api.avn.blockchain.GetBlockByHash(*endHash)
 		if endBlock == nil {
 			return nil, fmt.Errorf("end block %x not found", *endHash)
 		}
@@ -522,7 +522,7 @@ func (api *PrivateDebugAPI) getModifiedAccounts(startBlock, endBlock *types.Bloc
 	if startBlock.Number().Uint64() >= endBlock.Number().Uint64() {
 		return nil, fmt.Errorf("start block height (%d) must be less than end block height (%d)", startBlock.Number().Uint64(), endBlock.Number().Uint64())
 	}
-	triedb := api.AVN.BlockChain().StateCache().TrieDB()
+	triedb := api.avn.BlockChain().StateCache().TrieDB()
 
 	oldTrie, err := trie.NewSecure(startBlock.Root(), triedb)
 	if err != nil {

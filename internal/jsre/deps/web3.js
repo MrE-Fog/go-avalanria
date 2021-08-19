@@ -619,7 +619,7 @@ module.exports = SolidityTypeBytes;
 */
 /**
  * @file coder.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -648,9 +648,9 @@ var SolidityCoder = function (types) {
 };
 
 /**
- * This mAVNod should be used to transform type to SolidityType
+ * This mavnod should be used to transform type to SolidityType
  *
- * @mAVNod _requireType
+ * @mavnod _requireType
  * @param {String} type
  * @returns {SolidityType}
  * @throws {Error} throws if no matching type is found
@@ -670,7 +670,7 @@ SolidityCoder.prototype._requireType = function (type) {
 /**
  * Should be used to encode plain param
  *
- * @mAVNod encodeParam
+ * @mavnod encodeParam
  * @param {String} type
  * @param {Object} plain param
  * @return {String} encoded plain param
@@ -682,7 +682,7 @@ SolidityCoder.prototype.encodeParam = function (type, param) {
 /**
  * Should be used to encode list of params
  *
- * @mAVNod encodeParams
+ * @mavnod encodeParams
  * @param {Array} types
  * @param {Array} params
  * @return {String} encoded list of params
@@ -801,7 +801,7 @@ SolidityCoder.prototype.encodeWithOffset = function (type, solidityType, encoded
 /**
  * Should be used to decode bytes to plain param
  *
- * @mAVNod decodeParam
+ * @mavnod decodeParam
  * @param {String} type
  * @param {String} bytes
  * @return {Object} plain param
@@ -813,7 +813,7 @@ SolidityCoder.prototype.decodeParam = function (type, bytes) {
 /**
  * Should be used to decode list of params
  *
- * @mAVNod decodeParam
+ * @mavnod decodeParam
  * @param {Array} types
  * @param {String} bytes
  * @return {Array} array of plain params
@@ -906,7 +906,7 @@ module.exports = SolidityTypeDynamicBytes;
 */
 /**
  * @file formatters.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -921,7 +921,7 @@ var SolidityParam = require('./param');
  * If value is negative, return it's two's complement
  * If the value is floating point, round it down
  *
- * @mAVNod formatInputInt
+ * @mavnod formatInputInt
  * @param {String|Number|BigNumber} value that needs to be formatted
  * @returns {SolidityParam}
  */
@@ -934,7 +934,7 @@ var formatInputInt = function (value) {
 /**
  * Formats input bytes
  *
- * @mAVNod formatInputBytes
+ * @mavnod formatInputBytes
  * @param {String}
  * @returns {SolidityParam}
  */
@@ -948,7 +948,7 @@ var formatInputBytes = function (value) {
 /**
  * Formats input bytes
  *
- * @mAVNod formatDynamicInputBytes
+ * @mavnod formatDynamicInputBytes
  * @param {String}
  * @returns {SolidityParam}
  */
@@ -963,7 +963,7 @@ var formatInputDynamicBytes = function (value) {
 /**
  * Formats input value to byte representation of string
  *
- * @mAVNod formatInputString
+ * @mavnod formatInputString
  * @param {String}
  * @returns {SolidityParam}
  */
@@ -978,7 +978,7 @@ var formatInputString = function (value) {
 /**
  * Formats input value to byte representation of bool
  *
- * @mAVNod formatInputBool
+ * @mavnod formatInputBool
  * @param {Boolean}
  * @returns {SolidityParam}
  */
@@ -991,7 +991,7 @@ var formatInputBool = function (value) {
  * Formats input value to byte representation of real
  * Values are multiplied by 2^m and encoded as integers
  *
- * @mAVNod formatInputReal
+ * @mavnod formatInputReal
  * @param {String|Number|BigNumber}
  * @returns {SolidityParam}
  */
@@ -1002,7 +1002,7 @@ var formatInputReal = function (value) {
 /**
  * Check if input value is negative
  *
- * @mAVNod signedIsNegative
+ * @mavnod signedIsNegative
  * @param {String} value is hex format
  * @returns {Boolean} true if it is negative, otherwise false
  */
@@ -1013,7 +1013,7 @@ var signedIsNegative = function (value) {
 /**
  * Formats right-aligned output bytes to int
  *
- * @mAVNod formatOutputInt
+ * @mavnod formatOutputInt
  * @param {SolidityParam} param
  * @returns {BigNumber} right-aligned output bytes formatted to big number
  */
@@ -1031,7 +1031,7 @@ var formatOutputInt = function (param) {
 /**
  * Formats right-aligned output bytes to uint
  *
- * @mAVNod formatOutputUInt
+ * @mavnod formatOutputUInt
  * @param {SolidityParam}
  * @returns {BigNumeber} right-aligned output bytes formatted to uint
  */
@@ -1043,7 +1043,7 @@ var formatOutputUInt = function (param) {
 /**
  * Formats right-aligned output bytes to real
  *
- * @mAVNod formatOutputReal
+ * @mavnod formatOutputReal
  * @param {SolidityParam}
  * @returns {BigNumber} input bytes formatted to real
  */
@@ -1054,7 +1054,7 @@ var formatOutputReal = function (param) {
 /**
  * Formats right-aligned output bytes to ureal
  *
- * @mAVNod formatOutputUReal
+ * @mavnod formatOutputUReal
  * @param {SolidityParam}
  * @returns {BigNumber} input bytes formatted to ureal
  */
@@ -1065,7 +1065,7 @@ var formatOutputUReal = function (param) {
 /**
  * Should be used to format output bool
  *
- * @mAVNod formatOutputBool
+ * @mavnod formatOutputBool
  * @param {SolidityParam}
  * @returns {Boolean} right-aligned input bytes formatted to bool
  */
@@ -1076,7 +1076,7 @@ var formatOutputBool = function (param) {
 /**
  * Should be used to format output bytes
  *
- * @mAVNod formatOutputBytes
+ * @mavnod formatOutputBytes
  * @param {SolidityParam} left-aligned hex representation of string
  * @param {String} name type name
  * @returns {String} hex string
@@ -1090,7 +1090,7 @@ var formatOutputBytes = function (param, name) {
 /**
  * Should be used to format output bytes
  *
- * @mAVNod formatOutputDynamicBytes
+ * @mavnod formatOutputDynamicBytes
  * @param {SolidityParam} left-aligned hex representation of string
  * @returns {String} hex string
  */
@@ -1102,7 +1102,7 @@ var formatOutputDynamicBytes = function (param) {
 /**
  * Should be used to format output string
  *
- * @mAVNod formatOutputString
+ * @mavnod formatOutputString
  * @param {SolidityParam} left-aligned hex representation of string
  * @returns {String} ascii string
  */
@@ -1114,7 +1114,7 @@ var formatOutputString = function (param) {
 /**
  * Should be used to format output address
  *
- * @mAVNod formatOutputAddress
+ * @mavnod formatOutputAddress
  * @param {SolidityParam} right-aligned input bytes
  * @returns {String} address
  */
@@ -1194,7 +1194,7 @@ module.exports = SolidityTypeInt;
 */
 /** 
  * @file param.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -1210,9 +1210,9 @@ var SolidityParam = function (value, offset) {
 };
 
 /**
- * This mAVNod should be used to get length of params's dynamic part
+ * This mavnod should be used to get length of params's dynamic part
  * 
- * @mAVNod dynamicPartLength
+ * @mavnod dynamicPartLength
  * @returns {Number} length of dynamic part (in bytes)
  */
 SolidityParam.prototype.dynamicPartLength = function () {
@@ -1220,9 +1220,9 @@ SolidityParam.prototype.dynamicPartLength = function () {
 };
 
 /**
- * This mAVNod should be used to create copy of solidity param with different offset
+ * This mavnod should be used to create copy of solidity param with different offset
  *
- * @mAVNod withOffset
+ * @mavnod withOffset
  * @param {Number} offset length in bytes
  * @returns {SolidityParam} new solidity param with applied offset
  */
@@ -1231,10 +1231,10 @@ SolidityParam.prototype.withOffset = function (offset) {
 };
 
 /**
- * This mAVNod should be used to combine solidity params togAVNer
+ * This mavnod should be used to combine solidity params togavner
  * eg. when appending an array
  *
- * @mAVNod combine
+ * @mavnod combine
  * @param {SolidityParam} param with which we should combine
  * @param {SolidityParam} result of combination
  */
@@ -1243,10 +1243,10 @@ SolidityParam.prototype.combine = function (param) {
 };
 
 /**
- * This mAVNod should be called to check if param has dynamic size.
+ * This mavnod should be called to check if param has dynamic size.
  * If it has, it returns true, otherwise false
  *
- * @mAVNod isDynamic
+ * @mavnod isDynamic
  * @returns {Boolean}
  */
 SolidityParam.prototype.isDynamic = function () {
@@ -1254,9 +1254,9 @@ SolidityParam.prototype.isDynamic = function () {
 };
 
 /**
- * This mAVNod should be called to transform offset to bytes
+ * This mavnod should be called to transform offset to bytes
  *
- * @mAVNod offsetAsBytes
+ * @mavnod offsetAsBytes
  * @returns {String} bytes representation of offset
  */
 SolidityParam.prototype.offsetAsBytes = function () {
@@ -1264,9 +1264,9 @@ SolidityParam.prototype.offsetAsBytes = function () {
 };
 
 /**
- * This mAVNod should be called to get static part of param
+ * This mavnod should be called to get static part of param
  *
- * @mAVNod staticPart
+ * @mavnod staticPart
  * @returns {String} offset if it is a dynamic param, otherwise value
  */
 SolidityParam.prototype.staticPart = function () {
@@ -1277,9 +1277,9 @@ SolidityParam.prototype.staticPart = function () {
 };
 
 /**
- * This mAVNod should be called to get dynamic part of param
+ * This mavnod should be called to get dynamic part of param
  *
- * @mAVNod dynamicPart
+ * @mavnod dynamicPart
  * @returns {String} returns a value if it is a dynamic param, otherwise empty string
  */
 SolidityParam.prototype.dynamicPart = function () {
@@ -1287,9 +1287,9 @@ SolidityParam.prototype.dynamicPart = function () {
 };
 
 /**
- * This mAVNod should be called to encode param
+ * This mavnod should be called to encode param
  *
- * @mAVNod encode
+ * @mavnod encode
  * @returns {String}
  */
 SolidityParam.prototype.encode = function () {
@@ -1297,9 +1297,9 @@ SolidityParam.prototype.encode = function () {
 };
 
 /**
- * This mAVNod should be called to encode array of params
+ * This mavnod should be called to encode array of params
  *
- * @mAVNod encodeList
+ * @mavnod encodeList
  * @param {Array[SolidityParam]} params
  * @returns {String}
  */
@@ -1400,18 +1400,18 @@ var SolidityType = function (config) {
 /**
  * Should be used to determine if this SolidityType do match given name
  *
- * @mAVNod isType
+ * @mavnod isType
  * @param {String} name
  * @return {Bool} true if type match this SolidityType, otherwise false
  */
 SolidityType.prototype.isType = function (name) {
-    throw "this mAVNod should be overrwritten for type " + name;
+    throw "this mavnod should be overrwritten for type " + name;
 };
 
 /**
  * Should be used to determine what is the length of static part in given type
  *
- * @mAVNod staticPartLength
+ * @mavnod staticPartLength
  * @param {String} name
  * @return {Number} length of static part in bytes
  */
@@ -1434,7 +1434,7 @@ SolidityType.prototype.staticPartLength = function (name) {
  * "type[]" => true
  * "type[4]" => false
  *
- * @mAVNod isDynamicArray
+ * @mavnod isDynamicArray
  * @param {String} name
  * @return {Bool} true if the type is dynamic array
  */
@@ -1449,7 +1449,7 @@ SolidityType.prototype.isDynamicArray = function (name) {
  * "type[]" => false
  * "type[4]" => true
  *
- * @mAVNod isStaticArray
+ * @mavnod isStaticArray
  * @param {String} name
  * @return {Bool} true if the type is static array
  */
@@ -1468,7 +1468,7 @@ SolidityType.prototype.isStaticArray = function (name) {
  * "int[1]" => 1
  * "int[]" => 1
  *
- * @mAVNod staticArrayLength
+ * @mavnod staticArrayLength
  * @param {String} name
  * @return {Number} static array length
  */
@@ -1489,7 +1489,7 @@ SolidityType.prototype.staticArrayLength = function (name) {
  * "int" => "int"
  * "int[]" => "int"
  *
- * @mAVNod nestedName
+ * @mavnod nestedName
  * @param {String} name
  * @return {String} nested name
  */
@@ -1507,7 +1507,7 @@ SolidityType.prototype.nestedName = function (name) {
  * Should return true if type has dynamic size by default
  * such types are "string", "bytes"
  *
- * @mAVNod isDynamicType
+ * @mavnod isDynamicType
  * @param {String} name
  * @return {Bool} true if is dynamic, otherwise false
  */
@@ -1522,7 +1522,7 @@ SolidityType.prototype.isDynamicType = function () {
  * "int[] => ["[]"]
  * "int" => null
  *
- * @mAVNod nestedTypes
+ * @mavnod nestedTypes
  * @param {String} name
  * @return {Array} array of nested types
  */
@@ -1534,7 +1534,7 @@ SolidityType.prototype.nestedTypes = function (name) {
 /**
  * Should be used to encode the value
  *
- * @mAVNod encode
+ * @mavnod encode
  * @param {Object} value
  * @param {String} name
  * @return {String} encoded value
@@ -1579,7 +1579,7 @@ SolidityType.prototype.encode = function (value, name) {
 /**
  * Should be used to decode value from bytes
  *
- * @mAVNod decode
+ * @mavnod decode
  * @param {String} bytes
  * @param {Number} offset in bytes
  * @param {String} name type name
@@ -1740,7 +1740,7 @@ if (typeof XMLHttpRequest === 'undefined') {
 */
 /** @file config.js
  * @authors:
- *   Marek Kotewicz <marek@AVNdev.com>
+ *   Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -1768,27 +1768,27 @@ var AVN_UNITS = [
     'Gwei',
     'szabo',
     'finney',
-    'femtoAVNer',
-    'picoAVNer',
-    'nanoAVNer',
-    'microAVNer',
-    'milliAVNer',
+    'femtoavner',
+    'picoavner',
+    'nanoavner',
+    'microavner',
+    'milliavner',
     'nano',
     'micro',
     'milli',
-    'AVNer',
+    'avner',
     'grand',
-    'MAVNer',
-    'GAVNer',
-    'TAVNer',
-    'PAVNer',
-    'EAVNer',
-    'ZAVNer',
-    'YAVNer',
-    'NAVNer',
-    'DAVNer',
-    'VAVNer',
-    'UAVNer'
+    'Mavner',
+    'Gavner',
+    'Tavner',
+    'Pavner',
+    'Eavner',
+    'Zavner',
+    'Yavner',
+    'Navner',
+    'Davner',
+    'Vavner',
+    'Uavner'
 ];
 
 module.exports = {
@@ -1821,7 +1821,7 @@ module.exports = {
 */
 /** 
  * @file sha3.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -1861,7 +1861,7 @@ module.exports = function (value, options) {
 */
 /**
  * @file utils.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -1884,39 +1884,39 @@ var sha3 = require('./sha3.js');
 var utf8 = require('utf8');
 
 var unitMap = {
-    'noAVNer':      '0',
+    'noavner':      '0',
     'wei':          '1',
     'kwei':         '1000',
     'Kwei':         '1000',
     'babbage':      '1000',
-    'femtoAVNer':   '1000',
+    'femtoavner':   '1000',
     'mwei':         '1000000',
     'Mwei':         '1000000',
     'lovelace':     '1000000',
-    'picoAVNer':    '1000000',
+    'picoavner':    '1000000',
     'gwei':         '1000000000',
     'Gwei':         '1000000000',
     'shannon':      '1000000000',
-    'nanoAVNer':    '1000000000',
+    'nanoavner':    '1000000000',
     'nano':         '1000000000',
     'szabo':        '1000000000000',
-    'microAVNer':   '1000000000000',
+    'microavner':   '1000000000000',
     'micro':        '1000000000000',
     'finney':       '1000000000000000',
-    'milliAVNer':    '1000000000000000',
+    'milliavner':    '1000000000000000',
     'milli':         '1000000000000000',
-    'AVNer':        '1000000000000000000',
-    'kAVNer':       '1000000000000000000000',
+    'avner':        '1000000000000000000',
+    'kavner':       '1000000000000000000000',
     'grand':        '1000000000000000000000',
-    'mAVNer':       '1000000000000000000000000',
-    'gAVNer':       '1000000000000000000000000000',
-    'tAVNer':       '1000000000000000000000000000000'
+    'mavner':       '1000000000000000000000000',
+    'gavner':       '1000000000000000000000000000',
+    'tavner':       '1000000000000000000000000000000'
 };
 
 /**
  * Should be called to pad string to expected length
  *
- * @mAVNod padLeft
+ * @mavnod padLeft
  * @param {String} string to be padded
  * @param {Number} characters that result string should have
  * @param {String} sign, by default 0
@@ -1929,7 +1929,7 @@ var padLeft = function (string, chars, sign) {
 /**
  * Should be called to pad string to expected length
  *
- * @mAVNod padRight
+ * @mavnod padRight
  * @param {String} string to be padded
  * @param {Number} characters that result string should have
  * @param {String} sign, by default 0
@@ -1942,7 +1942,7 @@ var padRight = function (string, chars, sign) {
 /**
  * Should be called to get utf8 from it's hex representation
  *
- * @mAVNod toUtf8
+ * @mavnod toUtf8
  * @param {String} string in hex
  * @returns {String} ascii string representation of hex value
  */
@@ -1966,7 +1966,7 @@ var toUtf8 = function(hex) {
 /**
  * Should be called to get ascii from it's hex representation
  *
- * @mAVNod toAscii
+ * @mavnod toAscii
  * @param {String} string in hex
  * @returns {String} ascii string representation of hex value
  */
@@ -1988,7 +1988,7 @@ var toAscii = function(hex) {
 /**
  * Should be called to get hex representation (prefixed by 0x) of utf8 string
  *
- * @mAVNod fromUtf8
+ * @mavnod fromUtf8
  * @param {String} string
  * @param {Number} optional padding
  * @returns {String} hex representation of input string
@@ -2010,7 +2010,7 @@ var fromUtf8 = function(str) {
 /**
  * Should be called to get hex representation (prefixed by 0x) of ascii string
  *
- * @mAVNod fromAscii
+ * @mavnod fromAscii
  * @param {String} string
  * @param {Number} optional padding
  * @returns {String} hex representation of input string
@@ -2029,7 +2029,7 @@ var fromAscii = function(str) {
 /**
  * Should be used to create full function/event name from json abi
  *
- * @mAVNod transformToFullName
+ * @mavnod transformToFullName
  * @param {Object} json-abi
  * @return {String} full fnction/event name
  */
@@ -2045,7 +2045,7 @@ var transformToFullName = function (json) {
 /**
  * Should be called to get display name of contract function
  *
- * @mAVNod extractDisplayName
+ * @mavnod extractDisplayName
  * @param {String} name of function/event
  * @returns {String} display name for function/event eg. multiply(uint256) -> multiply
  */
@@ -2064,7 +2064,7 @@ var extractTypeName = function (name) {
 /**
  * Converts value to it's decimal representation in string
  *
- * @mAVNod toDecimal
+ * @mavnod toDecimal
  * @param {String|Number|BigNumber}
  * @return {String}
  */
@@ -2075,7 +2075,7 @@ var toDecimal = function (value) {
 /**
  * Converts value to it's hex representation
  *
- * @mAVNod fromDecimal
+ * @mavnod fromDecimal
  * @param {String|Number|BigNumber}
  * @return {String}
  */
@@ -2091,7 +2091,7 @@ var fromDecimal = function (value) {
  *
  * And even stringifys objects before.
  *
- * @mAVNod toHex
+ * @mavnod toHex
  * @param {String|Number|BigNumber|Object}
  * @return {String}
  */
@@ -2123,13 +2123,13 @@ var toHex = function (val) {
 /**
  * Returns value of unit in Wei
  *
- * @mAVNod getValueOfUnit
- * @param {String} unit the unit to convert to, default AVNer
+ * @mavnod getValueOfUnit
+ * @param {String} unit the unit to convert to, default avner
  * @returns {BigNumber} value of the unit (in Wei)
  * @throws error if the unit is not correct:w
  */
 var getValueOfUnit = function (unit) {
-    unit = unit ? unit.toLowerCase() : 'AVNer';
+    unit = unit ? unit.toLowerCase() : 'avner';
     var unitValue = unitMap[unit];
     if (unitValue === undefined) {
         throw new Error('This unit doesn\'t exists, please use the one of the following units' + JSON.stringify(unitMap, null, 2));
@@ -2138,24 +2138,24 @@ var getValueOfUnit = function (unit) {
 };
 
 /**
- * Takes a number of wei and converts it to any other AVNer unit.
+ * Takes a number of wei and converts it to any other avner unit.
  *
  * Possible units are:
  *   SI Short   SI Full        Effigy       Other
- * - kwei       femtoAVNer     babbage
- * - mwei       picoAVNer      lovelace
- * - gwei       nanoAVNer      shannon      nano
- * - --         microAVNer     szabo        micro
- * - --         milliAVNer     finney       milli
- * - AVNer      --             --
- * - kAVNer                    --           grand
- * - mAVNer
- * - gAVNer
- * - tAVNer
+ * - kwei       femtoavner     babbage
+ * - mwei       picoavner      lovelace
+ * - gwei       nanoavner      shannon      nano
+ * - --         microavner     szabo        micro
+ * - --         milliavner     finney       milli
+ * - avner      --             --
+ * - kavner                    --           grand
+ * - mavner
+ * - gavner
+ * - tavner
  *
- * @mAVNod fromWei
+ * @mavnod fromWei
  * @param {Number|String} number can be a number, number string or a HEX of a decimal
- * @param {String} unit the unit to convert to, default AVNer
+ * @param {String} unit the unit to convert to, default avner
  * @return {String|Object} When given a BigNumber object it returns one as well, otherwise a number
 */
 var fromWei = function(number, unit) {
@@ -2169,21 +2169,21 @@ var fromWei = function(number, unit) {
  *
  * Possible units are:
  *   SI Short   SI Full        Effigy       Other
- * - kwei       femtoAVNer     babbage
- * - mwei       picoAVNer      lovelace
- * - gwei       nanoAVNer      shannon      nano
- * - --         microAVNer     szabo        micro
- * - --         microAVNer     szabo        micro
- * - --         milliAVNer     finney       milli
- * - AVNer      --             --
- * - kAVNer                    --           grand
- * - mAVNer
- * - gAVNer
- * - tAVNer
+ * - kwei       femtoavner     babbage
+ * - mwei       picoavner      lovelace
+ * - gwei       nanoavner      shannon      nano
+ * - --         microavner     szabo        micro
+ * - --         microavner     szabo        micro
+ * - --         milliavner     finney       milli
+ * - avner      --             --
+ * - kavner                    --           grand
+ * - mavner
+ * - gavner
+ * - tavner
  *
- * @mAVNod toWei
+ * @mavnod toWei
  * @param {Number|String|BigNumber} number can be a number, number string or a HEX of a decimal
- * @param {String} unit the unit to convert from, default AVNer
+ * @param {String} unit the unit to convert from, default avner
  * @return {String|Object} When given a BigNumber object it returns one as well, otherwise a number
 */
 var toWei = function(number, unit) {
@@ -2195,7 +2195,7 @@ var toWei = function(number, unit) {
 /**
  * Takes an input and transforms it into a bignumber
  *
- * @mAVNod toBigNumber
+ * @mavnod toBigNumber
  * @param {Number|String|BigNumber} a number, string, HEX string or BigNumber
  * @return {BigNumber} BigNumber
 */
@@ -2215,7 +2215,7 @@ var toBigNumber = function(number) {
 /**
  * Takes and input transforms it into bignumber and if it is negative value, into two's complement
  *
- * @mAVNod toTwosComplement
+ * @mavnod toTwosComplement
  * @param {Number|String|BigNumber}
  * @return {BigNumber}
  */
@@ -2230,7 +2230,7 @@ var toTwosComplement = function (number) {
 /**
  * Checks if the given string is strictly an address
  *
- * @mAVNod isStrictAddress
+ * @mavnod isStrictAddress
  * @param {String} address the given HEX address
  * @return {Boolean}
 */
@@ -2241,7 +2241,7 @@ var isStrictAddress = function (address) {
 /**
  * Checks if the given string is an address
  *
- * @mAVNod isAddress
+ * @mavnod isAddress
  * @param {String} address the given HEX address
  * @return {Boolean}
 */
@@ -2261,7 +2261,7 @@ var isAddress = function (address) {
 /**
  * Checks if the given string is a checksummed address
  *
- * @mAVNod isChecksumAddress
+ * @mavnod isChecksumAddress
  * @param {String} address the given HEX address
  * @return {Boolean}
 */
@@ -2284,7 +2284,7 @@ var isChecksumAddress = function (address) {
 /**
  * Makes a checksum address
  *
- * @mAVNod toChecksumAddress
+ * @mavnod toChecksumAddress
  * @param {String} address the given HEX address
  * @return {String}
 */
@@ -2309,7 +2309,7 @@ var toChecksumAddress = function (address) {
 /**
  * Transforms given string to valid 20 bytes-length addres with 0x prefix
  *
- * @mAVNod toAddress
+ * @mavnod toAddress
  * @param {String} address
  * @return {String} formatted address
  */
@@ -2328,7 +2328,7 @@ var toAddress = function (address) {
 /**
  * Returns true if object is BigNumber, otherwise false
  *
- * @mAVNod isBigNumber
+ * @mavnod isBigNumber
  * @param {Object}
  * @return {Boolean}
  */
@@ -2340,7 +2340,7 @@ var isBigNumber = function (object) {
 /**
  * Returns true if object is string, otherwise false
  *
- * @mAVNod isString
+ * @mavnod isString
  * @param {Object}
  * @return {Boolean}
  */
@@ -2352,7 +2352,7 @@ var isString = function (object) {
 /**
  * Returns true if object is function, otherwise false
  *
- * @mAVNod isFunction
+ * @mavnod isFunction
  * @param {Object}
  * @return {Boolean}
  */
@@ -2363,7 +2363,7 @@ var isFunction = function (object) {
 /**
  * Returns true if object is Objet, otherwise false
  *
- * @mAVNod isObject
+ * @mavnod isObject
  * @param {Object}
  * @return {Boolean}
  */
@@ -2374,7 +2374,7 @@ var isObject = function (object) {
 /**
  * Returns true if object is boolean, otherwise false
  *
- * @mAVNod isBoolean
+ * @mavnod isBoolean
  * @param {Object}
  * @return {Boolean}
  */
@@ -2385,7 +2385,7 @@ var isBoolean = function (object) {
 /**
  * Returns true if object is array, otherwise false
  *
- * @mAVNod isArray
+ * @mavnod isArray
  * @param {Object}
  * @return {Boolean}
  */
@@ -2396,7 +2396,7 @@ var isArray = function (object) {
 /**
  * Returns true if given string is valid json object
  *
- * @mAVNod isJson
+ * @mavnod isJson
  * @param {String}
  * @return {Boolean}
  */
@@ -2411,7 +2411,7 @@ var isJson = function (str) {
 /**
  * Returns true if given string is a valid Avalanria block header bloom.
  *
- * @mAVNod isBloom
+ * @mavnod isBloom
  * @param {String} hex encoded bloom filter
  * @return {Boolean}
  */
@@ -2427,7 +2427,7 @@ var isBloom = function (bloom) {
 /**
  * Returns true if given string is a valid log topic.
  *
- * @mAVNod isTopic
+ * @mavnod isTopic
  * @param {String} hex encoded topic
  * @return {Boolean}
  */
@@ -2498,22 +2498,22 @@ module.exports={
 /**
  * @file web3.js
  * @authors:
- *   Jeffrey Wilcke <jeff@AVNdev.com>
- *   Marek Kotewicz <marek@AVNdev.com>
- *   Marian Oancea <marian@AVNdev.com>
- *   Fabian Vogelsteller <fabian@AVNdev.com>
- *   Gav Wood <g@AVNdev.com>
+ *   Jeffrey Wilcke <jeff@avndev.com>
+ *   Marek Kotewicz <marek@avndev.com>
+ *   Marian Oancea <marian@avndev.com>
+ *   Fabian Vogelsteller <fabian@avndev.com>
+ *   Gav Wood <g@avndev.com>
  * @date 2014
  */
 
 var RequestManager = require('./web3/requestmanager');
 var Iban = require('./web3/iban');
-var Eth = require('./web3/mAVNods/AVN');
-var DB = require('./web3/mAVNods/db');
-var Shh = require('./web3/mAVNods/shh');
-var Net = require('./web3/mAVNods/net');
-var Personal = require('./web3/mAVNods/personal');
-var Swarm = require('./web3/mAVNods/swarm');
+var Eth = require('./web3/mavnods/avn');
+var DB = require('./web3/mavnods/db');
+var Shh = require('./web3/mavnods/shh');
+var Net = require('./web3/mavnods/net');
+var Personal = require('./web3/mavnods/personal');
+var Swarm = require('./web3/mavnods/swarm');
 var Settings = require('./web3/settings');
 var version = require('./version.json');
 var utils = require('./utils/utils');
@@ -2530,7 +2530,7 @@ var BigNumber = require('bignumber.js');
 function Web3 (provider) {
     this._requestManager = new RequestManager(provider);
     this.currentProvider = provider;
-    this.AVN = new Eth(this);
+    this.avn = new Eth(this);
     this.db = new DB(this);
     this.shh = new Shh(this);
     this.net = new Net(this);
@@ -2609,8 +2609,8 @@ var properties = function () {
             inputFormatter: utils.toDecimal
         }),
         new Property({
-            name: 'version.AVNereum',
-            getter: 'AVN_protocolVersion',
+            name: 'version.avalanria',
+            getter: 'avn_protocolVersion',
             inputFormatter: utils.toDecimal
         }),
         new Property({
@@ -2632,7 +2632,7 @@ Web3.prototype.createBatch = function () {
 module.exports = Web3;
 
 
-},{"./utils/sha3":19,"./utils/utils":20,"./version.json":21,"./web3/batch":24,"./web3/extend":28,"./web3/httpprovider":32,"./web3/iban":33,"./web3/ipcprovider":34,"./web3/mAVNods/db":37,"./web3/mAVNods/AVN":38,"./web3/mAVNods/net":39,"./web3/mAVNods/personal":40,"./web3/mAVNods/shh":41,"./web3/mAVNods/swarm":42,"./web3/property":45,"./web3/requestmanager":46,"./web3/settings":47,"bignumber.js":"bignumber.js"}],23:[function(require,module,exports){
+},{"./utils/sha3":19,"./utils/utils":20,"./version.json":21,"./web3/batch":24,"./web3/extend":28,"./web3/httpprovider":32,"./web3/iban":33,"./web3/ipcprovider":34,"./web3/mavnods/db":37,"./web3/mavnods/avn":38,"./web3/mavnods/net":39,"./web3/mavnods/personal":40,"./web3/mavnods/shh":41,"./web3/mavnods/swarm":42,"./web3/property":45,"./web3/requestmanager":46,"./web3/settings":47,"bignumber.js":"bignumber.js"}],23:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -2651,7 +2651,7 @@ module.exports = Web3;
 */
 /**
  * @file allevents.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2014
  */
 
@@ -2660,7 +2660,7 @@ var SolidityEvent = require('./event');
 var formatters = require('./formatters');
 var utils = require('../utils/utils');
 var Filter = require('./filter');
-var watches = require('./mAVNods/watches');
+var watches = require('./mavnods/watches');
 
 var AllSolidityEvents = function (requestManager, json, address) {
     this._requestManager = requestManager;
@@ -2711,7 +2711,7 @@ AllSolidityEvents.prototype.execute = function (options, callback) {
 
     var o = this.encode(options);
     var formatter = this.decode.bind(this);
-    return new Filter(o, 'AVN', this._requestManager, watches.AVN(), formatter, callback);
+    return new Filter(o, 'avn', this._requestManager, watches.avn(), formatter, callback);
 };
 
 AllSolidityEvents.prototype.attachToContract = function (contract) {
@@ -2722,7 +2722,7 @@ AllSolidityEvents.prototype.attachToContract = function (contract) {
 module.exports = AllSolidityEvents;
 
 
-},{"../utils/sha3":19,"../utils/utils":20,"./event":27,"./filter":29,"./formatters":30,"./mAVNods/watches":43}],24:[function(require,module,exports){
+},{"../utils/sha3":19,"../utils/utils":20,"./event":27,"./filter":29,"./formatters":30,"./mavnods/watches":43}],24:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -2741,7 +2741,7 @@ module.exports = AllSolidityEvents;
 */
 /** 
  * @file batch.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -2756,7 +2756,7 @@ var Batch = function (web3) {
 /**
  * Should be called to add create new request to batch request
  *
- * @mAVNod add
+ * @mavnod add
  * @param {Object} jsonrpc requet object
  */
 Batch.prototype.add = function (request) {
@@ -2766,7 +2766,7 @@ Batch.prototype.add = function (request) {
 /**
  * Should be called to execute batch request
  *
- * @mAVNod execute
+ * @mavnod execute
  */
 Batch.prototype.execute = function () {
     var requests = this.requests;
@@ -2809,7 +2809,7 @@ module.exports = Batch;
 */
 /**
  * @file contract.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2014
  */
 
@@ -2822,7 +2822,7 @@ var AllEvents = require('./allevents');
 /**
  * Should be called to encode constructor params
  *
- * @mAVNod encodeConstructorParams
+ * @mavnod encodeConstructorParams
  * @param {Array} abi
  * @param {Array} constructor params
  */
@@ -2841,7 +2841,7 @@ var encodeConstructorParams = function (abi, params) {
 /**
  * Should be called to add functions to contract object
  *
- * @mAVNod addFunctionsToContract
+ * @mavnod addFunctionsToContract
  * @param {Contract} contract
  * @param {Array} abi
  */
@@ -2849,7 +2849,7 @@ var addFunctionsToContract = function (contract) {
     contract.abi.filter(function (json) {
         return json.type === 'function';
     }).map(function (json) {
-        return new SolidityFunction(contract._AVN, json, contract.address);
+        return new SolidityFunction(contract._avn, json, contract.address);
     }).forEach(function (f) {
         f.attachToContract(contract);
     });
@@ -2858,7 +2858,7 @@ var addFunctionsToContract = function (contract) {
 /**
  * Should be called to add events to contract object
  *
- * @mAVNod addEventsToContract
+ * @mavnod addEventsToContract
  * @param {Contract} contract
  * @param {Array} abi
  */
@@ -2867,11 +2867,11 @@ var addEventsToContract = function (contract) {
         return json.type === 'event';
     });
 
-    var All = new AllEvents(contract._AVN._requestManager, events, contract.address);
+    var All = new AllEvents(contract._avn._requestManager, events, contract.address);
     All.attachToContract(contract);
 
     events.map(function (json) {
-        return new SolidityEvent(contract._AVN._requestManager, json, contract.address);
+        return new SolidityEvent(contract._avn._requestManager, json, contract.address);
     }).forEach(function (e) {
         e.attachToContract(contract);
     });
@@ -2881,7 +2881,7 @@ var addEventsToContract = function (contract) {
 /**
  * Should be called to check if the contract gets properly deployed on the blockchain.
  *
- * @mAVNod checkForContractAddress
+ * @mavnod checkForContractAddress
  * @param {Object} contract
  * @param {Function} callback
  * @returns {Undefined}
@@ -2891,7 +2891,7 @@ var checkForContractAddress = function(contract, callback){
         callbackFired = false;
 
     // wait for receipt
-    var filter = contract._AVN.filter('latest', function(e){
+    var filter = contract._avn.filter('latest', function(e){
         if (!e && !callbackFired) {
             count++;
 
@@ -2909,10 +2909,10 @@ var checkForContractAddress = function(contract, callback){
 
             } else {
 
-                contract._AVN.getTransactionReceipt(contract.transactionHash, function(e, receipt){
+                contract._avn.getTransactionReceipt(contract.transactionHash, function(e, receipt){
                     if(receipt && !callbackFired) {
 
-                        contract._AVN.getCode(receipt.contractAddress, function(e, code){
+                        contract._avn.getCode(receipt.contractAddress, function(e, code){
                             /*jshint maxcomplexity: 6 */
 
                             if(callbackFired || !code)
@@ -2927,7 +2927,7 @@ var checkForContractAddress = function(contract, callback){
 
                                 contract.address = receipt.contractAddress;
 
-                                // attach events and mAVNods again after we have
+                                // attach events and mavnods again after we have
                                 addFunctionsToContract(contract);
                                 addEventsToContract(contract);
 
@@ -2952,17 +2952,17 @@ var checkForContractAddress = function(contract, callback){
 /**
  * Should be called to create new ContractFactory instance
  *
- * @mAVNod ContractFactory
+ * @mavnod ContractFactory
  * @param {Array} abi
  */
-var ContractFactory = function (AVN, abi) {
-    this.AVN = AVN;
+var ContractFactory = function (avn, abi) {
+    this.avn = avn;
     this.abi = abi;
 
     /**
      * Should be called to create new contract on a blockchain
      *
-     * @mAVNod new
+     * @mavnod new
      * @param {Any} contract constructor param1 (optional)
      * @param {Any} contract constructor param2 (optional)
      * @param {Object} contract transaction object (required)
@@ -2972,7 +2972,7 @@ var ContractFactory = function (AVN, abi) {
     this.new = function () {
         /*jshint maxcomplexity: 7 */
         
-        var contract = new Contract(this.AVN, this.abi);
+        var contract = new Contract(this.avn, this.abi);
 
         // parse arguments
         var options = {}; // required!
@@ -3004,7 +3004,7 @@ var ContractFactory = function (AVN, abi) {
         if (callback) {
 
             // wait for the contract address and check if the code was deployed
-            this.AVN.sendTransaction(options, function (err, hash) {
+            this.avn.sendTransaction(options, function (err, hash) {
                 if (err) {
                     callback(err);
                 } else {
@@ -3018,7 +3018,7 @@ var ContractFactory = function (AVN, abi) {
                 }
             });
         } else {
-            var hash = this.AVN.sendTransaction(options);
+            var hash = this.avn.sendTransaction(options);
             // add the transaction hash
             contract.transactionHash = hash;
             checkForContractAddress(contract);
@@ -3033,7 +3033,7 @@ var ContractFactory = function (AVN, abi) {
 /**
  * Should be called to create new ContractFactory
  *
- * @mAVNod contract
+ * @mavnod contract
  * @param {Array} abi
  * @returns {ContractFactory} new contract factory
  */
@@ -3046,14 +3046,14 @@ var ContractFactory = function (AVN, abi) {
 /**
  * Should be called to get access to existing contract on a blockchain
  *
- * @mAVNod at
+ * @mavnod at
  * @param {Address} contract address (required)
  * @param {Function} callback {optional)
  * @returns {Contract} returns contract if no callback was passed,
  * otherwise calls callback function (err, contract)
  */
 ContractFactory.prototype.at = function (address, callback) {
-    var contract = new Contract(this.AVN, this.abi, address);
+    var contract = new Contract(this.avn, this.abi, address);
 
     // this functions are not part of prototype,
     // because we don't want to spoil the interface
@@ -3069,7 +3069,7 @@ ContractFactory.prototype.at = function (address, callback) {
 /**
  * Gets the data, which is data to deploy plus constructor params
  *
- * @mAVNod getData
+ * @mavnod getData
  */
 ContractFactory.prototype.getData = function () {
     var options = {}; // required!
@@ -3089,12 +3089,12 @@ ContractFactory.prototype.getData = function () {
 /**
  * Should be called to create new contract instance
  *
- * @mAVNod Contract
+ * @mavnod Contract
  * @param {Array} abi
  * @param {Address} contract address
  */
-var Contract = function (AVN, abi, address) {
-    this._AVN = AVN;
+var Contract = function (avn, abi, address) {
+    this._avn = avn;
     this.transactionHash = null;
     this.address = address;
     this.abi = abi;
@@ -3121,7 +3121,7 @@ module.exports = ContractFactory;
 */
 /** 
  * @file errors.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -3130,7 +3130,7 @@ module.exports = {
         return new Error('Invalid number of arguments to Solidity function');
     },
     InvalidNumberOfRPCParams: function () {
-        return new Error('Invalid number of input parameters to RPC mAVNod');
+        return new Error('Invalid number of input parameters to RPC mavnod');
     },
     InvalidConnection: function (host){
         return new Error('CONNECTION ERROR: Couldn\'t connect to node '+ host +'.');
@@ -3166,7 +3166,7 @@ module.exports = {
 */
 /**
  * @file event.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2014
  */
 
@@ -3175,7 +3175,7 @@ var coder = require('../solidity/coder');
 var formatters = require('./formatters');
 var sha3 = require('../utils/sha3');
 var Filter = require('./filter');
-var watches = require('./mAVNods/watches');
+var watches = require('./mavnods/watches');
 
 /**
  * This prototype should be used to create event filters
@@ -3191,7 +3191,7 @@ var SolidityEvent = function (requestManager, json, address) {
 /**
  * Should be used to get filtered param types
  *
- * @mAVNod types
+ * @mavnod types
  * @param {Bool} decide if returned typed should be indexed
  * @return {Array} array of types
  */
@@ -3206,7 +3206,7 @@ SolidityEvent.prototype.types = function (indexed) {
 /**
  * Should be used to get event display name
  *
- * @mAVNod displayName
+ * @mavnod displayName
  * @return {String} event display name
  */
 SolidityEvent.prototype.displayName = function () {
@@ -3216,7 +3216,7 @@ SolidityEvent.prototype.displayName = function () {
 /**
  * Should be used to get event type name
  *
- * @mAVNod typeName
+ * @mavnod typeName
  * @return {String} event type name
  */
 SolidityEvent.prototype.typeName = function () {
@@ -3226,7 +3226,7 @@ SolidityEvent.prototype.typeName = function () {
 /**
  * Should be used to get event signature
  *
- * @mAVNod signature
+ * @mavnod signature
  * @return {String} event signature
  */
 SolidityEvent.prototype.signature = function () {
@@ -3236,10 +3236,10 @@ SolidityEvent.prototype.signature = function () {
 /**
  * Should be used to encode indexed params and options to one final object
  *
- * @mAVNod encode
+ * @mavnod encode
  * @param {Object} indexed
  * @param {Object} options
- * @return {Object} everything combined togAVNer and encoded
+ * @return {Object} everything combined togavner and encoded
  */
 SolidityEvent.prototype.encode = function (indexed, options) {
     indexed = indexed || {};
@@ -3283,7 +3283,7 @@ SolidityEvent.prototype.encode = function (indexed, options) {
 /**
  * Should be used to decode indexed params and options
  *
- * @mAVNod decode
+ * @mavnod decode
  * @param {Object} data
  * @return {Object} result object with decoded indexed && not indexed params
  */
@@ -3317,7 +3317,7 @@ SolidityEvent.prototype.decode = function (data) {
 /**
  * Should be used to create new filter object from event
  *
- * @mAVNod execute
+ * @mavnod execute
  * @param {Object} indexed
  * @param {Object} options
  * @return {Object} filter object
@@ -3336,13 +3336,13 @@ SolidityEvent.prototype.execute = function (indexed, options, callback) {
 
     var o = this.encode(indexed, options);
     var formatter = this.decode.bind(this);
-    return new Filter(o, 'AVN', this._requestManager, watches.AVN(), formatter, callback);
+    return new Filter(o, 'avn', this._requestManager, watches.avn(), formatter, callback);
 };
 
 /**
  * Should be used to attach event to contract object
  *
- * @mAVNod attachToContract
+ * @mavnod attachToContract
  * @param {Contract}
  */
 SolidityEvent.prototype.attachToContract = function (contract) {
@@ -3357,10 +3357,10 @@ SolidityEvent.prototype.attachToContract = function (contract) {
 module.exports = SolidityEvent;
 
 
-},{"../solidity/coder":7,"../utils/sha3":19,"../utils/utils":20,"./filter":29,"./formatters":30,"./mAVNods/watches":43}],28:[function(require,module,exports){
+},{"../solidity/coder":7,"../utils/sha3":19,"../utils/utils":20,"./filter":29,"./formatters":30,"./mavnods/watches":43}],28:[function(require,module,exports){
 var formatters = require('./formatters');
 var utils = require('./../utils/utils');
-var MAVNod = require('./mAVNod');
+var Mavnod = require('./mavnod');
 var Property = require('./property');
 
 // TODO: refactor, so the input params are not altered.
@@ -3379,10 +3379,10 @@ var extend = function (web3) {
             extendedObject = web3;
         }
 
-        if (extension.mAVNods) {
-            extension.mAVNods.forEach(function (mAVNod) {
-                mAVNod.attachToObject(extendedObject);
-                mAVNod.setRequestManager(web3._requestManager);
+        if (extension.mavnods) {
+            extension.mavnods.forEach(function (mavnod) {
+                mavnod.attachToObject(extendedObject);
+                mavnod.setRequestManager(web3._requestManager);
             });
         }
 
@@ -3396,7 +3396,7 @@ var extend = function (web3) {
 
     ex.formatters = formatters; 
     ex.utils = utils;
-    ex.MAVNod = MAVNod;
+    ex.Mavnod = Mavnod;
     ex.Property = Property;
 
     return ex;
@@ -3407,7 +3407,7 @@ var extend = function (web3) {
 module.exports = extend;
 
 
-},{"./../utils/utils":20,"./formatters":30,"./mAVNod":36,"./property":45}],29:[function(require,module,exports){
+},{"./../utils/utils":20,"./formatters":30,"./mavnod":36,"./property":45}],29:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -3426,11 +3426,11 @@ module.exports = extend;
 */
 /** @file filter.js
  * @authors:
- *   Jeffrey Wilcke <jeff@AVNdev.com>
- *   Marek Kotewicz <marek@AVNdev.com>
- *   Marian Oancea <marian@AVNdev.com>
- *   Fabian Vogelsteller <fabian@AVNdev.com>
- *   Gav Wood <g@AVNdev.com>
+ *   Jeffrey Wilcke <jeff@avndev.com>
+ *   Marek Kotewicz <marek@avndev.com>
+ *   Marian Oancea <marian@avndev.com>
+ *   Fabian Vogelsteller <fabian@avndev.com>
+ *   Gav Wood <g@avndev.com>
  * @date 2014
  */
 
@@ -3456,7 +3456,7 @@ var toTopic = function(value){
         return utils.fromUtf8(value);
 };
 
-/// This mAVNod should be called on options object, to verify deprecated properties && lazy load dynamic ones
+/// This mavnod should be called on options object, to verify deprecated properties && lazy load dynamic ones
 /// @param should be string or object
 /// @returns options string or object
 var getOptions = function (options, type) {
@@ -3470,7 +3470,7 @@ var getOptions = function (options, type) {
 
 
     switch(type) {
-        case 'AVN':
+        case 'avn':
 
             // make sure topics, get converted to hex
             options.topics = options.topics || [];
@@ -3492,9 +3492,9 @@ var getOptions = function (options, type) {
 };
 
 /**
-Adds the callback and sets up the mAVNods, to iterate over the results.
+Adds the callback and sets up the mavnods, to iterate over the results.
 
-@mAVNod getLogsAtStart
+@mavnod getLogsAtStart
 @param {Object} self
 @param {function} callback
 */
@@ -3517,9 +3517,9 @@ var getLogsAtStart = function(self, callback){
 };
 
 /**
-Adds the callback and sets up the mAVNods, to iterate over the results.
+Adds the callback and sets up the mavnods, to iterate over the results.
 
-@mAVNod pollFilter
+@mavnod pollFilter
 @param {Object} self
 */
 var pollFilter = function(self) {
@@ -3542,18 +3542,18 @@ var pollFilter = function(self) {
     };
 
     self.requestManager.startPolling({
-        mAVNod: self.implementation.poll.call,
+        mavnod: self.implementation.poll.call,
         params: [self.filterId],
     }, self.filterId, onMessage, self.stopWatching.bind(self));
 
 };
 
-var Filter = function (options, type, requestManager, mAVNods, formatter, callback, filterCreationErrorCallback) {
+var Filter = function (options, type, requestManager, mavnods, formatter, callback, filterCreationErrorCallback) {
     var self = this;
     var implementation = {};
-    mAVNods.forEach(function (mAVNod) {
-        mAVNod.setRequestManager(requestManager);
-        mAVNod.attachToObject(implementation);
+    mavnods.forEach(function (mavnod) {
+        mavnod.setRequestManager(requestManager);
+        mavnod.attachToObject(implementation);
     });
     this.requestManager = requestManager;
     this.options = getOptions(options, type);
@@ -3640,7 +3640,7 @@ Filter.prototype.get = function (callback) {
         }
     } else {
         if (this.filterId === null) {
-            throw new Error('Filter ID Error: filter().get() can\'t be chained synchronous, please provide a callback for the get() mAVNod.');
+            throw new Error('Filter ID Error: filter().get() can\'t be chained synchronous, please provide a callback for the get() mavnod.');
         }
         var logs = this.implementation.getLogs(this.filterId);
         return logs.map(function (log) {
@@ -3675,8 +3675,8 @@ module.exports = Filter;
 */
 /**
  * @file formatters.js
- * @author Marek Kotewicz <marek@AVNdev.com>
- * @author Fabian Vogelsteller <fabian@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
+ * @author Fabian Vogelsteller <fabian@avndev.com>
  * @date 2015
  */
 
@@ -3687,7 +3687,7 @@ var Iban = require('./iban');
 /**
  * Should the format output to a big number
  *
- * @mAVNod outputBigNumberFormatter
+ * @mavnod outputBigNumberFormatter
  * @param {String|Number|BigNumber}
  * @returns {BigNumber} object
  */
@@ -3718,7 +3718,7 @@ var inputBlockNumberFormatter = function (blockNumber) {
 /**
  * Formats the input of a transaction and converts all values to HEX
  *
- * @mAVNod inputCallFormatter
+ * @mavnod inputCallFormatter
  * @param {Object} transaction options
  * @returns object
 */
@@ -3746,7 +3746,7 @@ var inputCallFormatter = function (options){
 /**
  * Formats the input of a transaction and converts all values to HEX
  *
- * @mAVNod inputTransactionFormatter
+ * @mavnod inputTransactionFormatter
  * @param {Object} transaction options
  * @returns object
 */
@@ -3771,7 +3771,7 @@ var inputTransactionFormatter = function (options){
 /**
  * Formats the output of a transaction to its proper values
  *
- * @mAVNod outputTransactionFormatter
+ * @mavnod outputTransactionFormatter
  * @param {Object} tx
  * @returns {Object}
 */
@@ -3796,7 +3796,7 @@ var outputTransactionFormatter = function (tx){
 /**
  * Formats the output of a transaction receipt to its proper values
  *
- * @mAVNod outputTransactionReceiptFormatter
+ * @mavnod outputTransactionReceiptFormatter
  * @param {Object} receipt
  * @returns {Object}
 */
@@ -3822,7 +3822,7 @@ var outputTransactionReceiptFormatter = function (receipt){
 /**
  * Formats the output of a block to its proper values
  *
- * @mAVNod outputBlockFormatter
+ * @mavnod outputBlockFormatter
  * @param {Object} block
  * @returns {Object}
 */
@@ -3854,7 +3854,7 @@ var outputBlockFormatter = function(block) {
 /**
  * Formats the output of a log
  *
- * @mAVNod outputLogFormatter
+ * @mavnod outputLogFormatter
  * @param {Object} log object
  * @returns {Object} log
 */
@@ -3872,7 +3872,7 @@ var outputLogFormatter = function(log) {
 /**
  * Formats the input of a whisper post and converts all values to HEX
  *
- * @mAVNod inputPostFormatter
+ * @mavnod inputPostFormatter
  * @param {Object} transaction object
  * @returns {Object}
 */
@@ -3900,7 +3900,7 @@ var inputPostFormatter = function(post) {
 /**
  * Formats the output of a received post message
  *
- * @mAVNod outputPostFormatter
+ * @mavnod outputPostFormatter
  * @param {Object}
  * @returns {Object}
  */
@@ -3993,7 +3993,7 @@ module.exports = {
 */
 /**
  * @file function.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -4006,8 +4006,8 @@ var sha3 = require('../utils/sha3');
 /**
  * This prototype should be used to call/sendTransaction to solidity functions
  */
-var SolidityFunction = function (AVN, json, address) {
-    this._AVN = AVN;
+var SolidityFunction = function (avn, json, address) {
+    this._avn = avn;
     this._inputTypes = json.inputs.map(function (i) {
         return i.type;
     });
@@ -4035,7 +4035,7 @@ SolidityFunction.prototype.extractDefaultBlock = function (args) {
 /**
  * Should be called to check if the number of arguments is correct
  *
- * @mAVNod validateArgs
+ * @mavnod validateArgs
  * @param {Array} arguments
  * @throws {Error} if it is not
  */
@@ -4055,7 +4055,7 @@ SolidityFunction.prototype.validateArgs = function (args) {
 /**
  * Should be used to create payload from arguments
  *
- * @mAVNod toPayload
+ * @mavnod toPayload
  * @param {Array} solidity function params
  * @param {Object} optional payload options
  */
@@ -4073,7 +4073,7 @@ SolidityFunction.prototype.toPayload = function (args) {
 /**
  * Should be used to get function signature
  *
- * @mAVNod signature
+ * @mavnod signature
  * @return {String} function signature
  */
 SolidityFunction.prototype.signature = function () {
@@ -4094,7 +4094,7 @@ SolidityFunction.prototype.unpackOutput = function (output) {
 /**
  * Calls a contract function.
  *
- * @mAVNod call
+ * @mavnod call
  * @param {...Object} Contract function arguments
  * @param {function} If the last argument is a function, the contract function
  *   call will be asynchronous, and the callback will be passed the
@@ -4109,12 +4109,12 @@ SolidityFunction.prototype.call = function () {
 
 
     if (!callback) {
-        var output = this._AVN.call(payload, defaultBlock);
+        var output = this._avn.call(payload, defaultBlock);
         return this.unpackOutput(output);
     }
 
     var self = this;
-    this._AVN.call(payload, defaultBlock, function (error, output) {
+    this._avn.call(payload, defaultBlock, function (error, output) {
         if (error) return callback(error, null);
 
         var unpacked = null;
@@ -4132,7 +4132,7 @@ SolidityFunction.prototype.call = function () {
 /**
  * Should be used to sendTransaction to solidity function
  *
- * @mAVNod sendTransaction
+ * @mavnod sendTransaction
  */
 SolidityFunction.prototype.sendTransaction = function () {
     var args = Array.prototype.slice.call(arguments).filter(function (a) {return a !== undefined; });
@@ -4144,16 +4144,16 @@ SolidityFunction.prototype.sendTransaction = function () {
     }
 
     if (!callback) {
-        return this._AVN.sendTransaction(payload);
+        return this._avn.sendTransaction(payload);
     }
 
-    this._AVN.sendTransaction(payload, callback);
+    this._avn.sendTransaction(payload, callback);
 };
 
 /**
  * Should be used to estimateGas of solidity function
  *
- * @mAVNod estimateGas
+ * @mavnod estimateGas
  */
 SolidityFunction.prototype.estimateGas = function () {
     var args = Array.prototype.slice.call(arguments);
@@ -4161,16 +4161,16 @@ SolidityFunction.prototype.estimateGas = function () {
     var payload = this.toPayload(args);
 
     if (!callback) {
-        return this._AVN.estimateGas(payload);
+        return this._avn.estimateGas(payload);
     }
 
-    this._AVN.estimateGas(payload, callback);
+    this._avn.estimateGas(payload, callback);
 };
 
 /**
  * Return the encoded data of the call
  *
- * @mAVNod getData
+ * @mavnod getData
  * @return {String} the encoded data
  */
 SolidityFunction.prototype.getData = function () {
@@ -4183,7 +4183,7 @@ SolidityFunction.prototype.getData = function () {
 /**
  * Should be used to get function display name
  *
- * @mAVNod displayName
+ * @mavnod displayName
  * @return {String} display name of the function
  */
 SolidityFunction.prototype.displayName = function () {
@@ -4193,7 +4193,7 @@ SolidityFunction.prototype.displayName = function () {
 /**
  * Should be used to get function type name
  *
- * @mAVNod typeName
+ * @mavnod typeName
  * @return {String} type name of the function
  */
 SolidityFunction.prototype.typeName = function () {
@@ -4203,7 +4203,7 @@ SolidityFunction.prototype.typeName = function () {
 /**
  * Should be called to get rpc requests from solidity function
  *
- * @mAVNod request
+ * @mavnod request
  * @returns {Object}
  */
 SolidityFunction.prototype.request = function () {
@@ -4213,7 +4213,7 @@ SolidityFunction.prototype.request = function () {
     var format = this.unpackOutput.bind(this);
 
     return {
-        mAVNod: this._constant ? 'AVN_call' : 'AVN_sendTransaction',
+        mavnod: this._constant ? 'avn_call' : 'avn_sendTransaction',
         callback: callback,
         params: [payload],
         format: format
@@ -4223,7 +4223,7 @@ SolidityFunction.prototype.request = function () {
 /**
  * Should be called to execute function
  *
- * @mAVNod execute
+ * @mavnod execute
  */
 SolidityFunction.prototype.execute = function () {
     var transaction = !this._constant;
@@ -4240,7 +4240,7 @@ SolidityFunction.prototype.execute = function () {
 /**
  * Should be called to attach function to contract
  *
- * @mAVNod attachToContract
+ * @mavnod attachToContract
  * @param {Contract}
  */
 SolidityFunction.prototype.attachToContract = function (contract) {
@@ -4278,9 +4278,9 @@ module.exports = SolidityFunction;
 */
 /** @file httpprovider.js
  * @authors:
- *   Marek Kotewicz <marek@AVNdev.com>
- *   Marian Oancea <marian@AVNdev.com>
- *   Fabian Vogelsteller <fabian@AVNdev.com>
+ *   Marek Kotewicz <marek@avndev.com>
+ *   Marian Oancea <marian@avndev.com>
+ *   Fabian Vogelsteller <fabian@avndev.com>
  * @date 2015
  */
 
@@ -4311,7 +4311,7 @@ var HttpProvider = function (host, timeout, user, password) {
 /**
  * Should be called to prepare new XMLHttpRequest
  *
- * @mAVNod prepareRequest
+ * @mavnod prepareRequest
  * @param {Boolean} true if request should be async
  * @return {XMLHttpRequest} object
  */
@@ -4336,7 +4336,7 @@ HttpProvider.prototype.prepareRequest = function (async) {
 /**
  * Should be called to make sync request
  *
- * @mAVNod send
+ * @mavnod send
  * @param {Object} payload
  * @return {Object} result
  */
@@ -4363,7 +4363,7 @@ HttpProvider.prototype.send = function (payload) {
 /**
  * Should be used to make async request
  *
- * @mAVNod sendAsync
+ * @mavnod sendAsync
  * @param {Object} payload
  * @param {Function} callback triggered on end with (err, result)
  */
@@ -4399,7 +4399,7 @@ HttpProvider.prototype.sendAsync = function (payload, callback) {
 /**
  * Synchronously tries to make Http request
  *
- * @mAVNod isConnected
+ * @mavnod isConnected
  * @return {Boolean} returns true if request haven't failed. Otherwise false
  */
 HttpProvider.prototype.isConnected = function () {
@@ -4407,7 +4407,7 @@ HttpProvider.prototype.isConnected = function () {
     this.send({
       id: 9999999999,
       jsonrpc: '2.0',
-      mAVNod: 'net_listening',
+      mavnod: 'net_listening',
       params: []
     });
     return true;
@@ -4437,7 +4437,7 @@ module.exports = HttpProvider;
 */
 /** 
  * @file iban.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -4455,7 +4455,7 @@ var padLeft = function (string, bytes) {
  * Prepare an IBAN for mod 97 computation by moving the first 4 chars to the end and transforming the letters to
  * numbers (A = 10, B = 11, ..., Z = 35), as specified in ISO13616.
  *
- * @mAVNod iso13616Prepare
+ * @mavnod iso13616Prepare
  * @param {String} iban the IBAN
  * @returns {String} the prepared IBAN
  */
@@ -4480,7 +4480,7 @@ var iso13616Prepare = function (iban) {
 /**
  * Calculates the MOD 97 10 of the passed IBAN as specified in ISO7064.
  *
- * @mAVNod mod9710
+ * @mavnod mod9710
  * @param {String} iban
  * @returns {Number}
  */
@@ -4506,9 +4506,9 @@ var Iban = function (iban) {
 };
 
 /**
- * This mAVNod should be used to create iban object from AVNereum address
+ * This mavnod should be used to create iban object from avalanria address
  *
- * @mAVNod fromAddress
+ * @mavnod fromAddress
  * @param {String} address
  * @return {Iban} the IBAN object
  */
@@ -4522,9 +4522,9 @@ Iban.fromAddress = function (address) {
 /**
  * Convert the passed BBAN to an IBAN for this country specification.
  * Please note that <i>"generation of the IBAN shall be the exclusive responsibility of the bank/branch servicing the account"</i>.
- * This mAVNod implements the preferred algorithm described in http://en.wikipedia.org/wiki/International_Bank_Account_Number#Generating_IBAN_check_digits
+ * This mavnod implements the preferred algorithm described in http://en.wikipedia.org/wiki/International_Bank_Account_Number#Generating_IBAN_check_digits
  *
- * @mAVNod fromBban
+ * @mavnod fromBban
  * @param {String} bban the BBAN to convert to IBAN
  * @returns {Iban} the IBAN object
  */
@@ -4540,7 +4540,7 @@ Iban.fromBban = function (bban) {
 /**
  * Should be used to create IBAN object for given institution and identifier
  *
- * @mAVNod createIndirect
+ * @mavnod createIndirect
  * @param {Object} options, required options are "institution" and "identifier"
  * @return {Iban} the IBAN object
  */
@@ -4549,9 +4549,9 @@ Iban.createIndirect = function (options) {
 };
 
 /**
- * Thos mAVNod should be used to check if given string is valid iban object
+ * Thos mavnod should be used to check if given string is valid iban object
  *
- * @mAVNod isValid
+ * @mavnod isValid
  * @param {String} iban string
  * @return {Boolean} true if it is valid IBAN
  */
@@ -4563,7 +4563,7 @@ Iban.isValid = function (iban) {
 /**
  * Should be called to check if iban is correct
  *
- * @mAVNod isValid
+ * @mavnod isValid
  * @returns {Boolean} true if it is, otherwise false
  */
 Iban.prototype.isValid = function () {
@@ -4574,7 +4574,7 @@ Iban.prototype.isValid = function () {
 /**
  * Should be called to check if iban number is direct
  *
- * @mAVNod isDirect
+ * @mavnod isDirect
  * @returns {Boolean} true if it is, otherwise false
  */
 Iban.prototype.isDirect = function () {
@@ -4584,7 +4584,7 @@ Iban.prototype.isDirect = function () {
 /**
  * Should be called to check if iban number if indirect
  *
- * @mAVNod isIndirect
+ * @mavnod isIndirect
  * @returns {Boolean} true if it is, otherwise false
  */
 Iban.prototype.isIndirect = function () {
@@ -4595,7 +4595,7 @@ Iban.prototype.isIndirect = function () {
  * Should be called to get iban checksum
  * Uses the mod-97-10 checksumming protocol (ISO/IEC 7064:2003)
  *
- * @mAVNod checksum
+ * @mavnod checksum
  * @returns {String} checksum
  */
 Iban.prototype.checksum = function () {
@@ -4606,7 +4606,7 @@ Iban.prototype.checksum = function () {
  * Should be called to get institution identifier
  * eg. XREG
  *
- * @mAVNod institution
+ * @mavnod institution
  * @returns {String} institution identifier
  */
 Iban.prototype.institution = function () {
@@ -4617,7 +4617,7 @@ Iban.prototype.institution = function () {
  * Should be called to get client identifier within institution
  * eg. GAVOFYORK
  *
- * @mAVNod client
+ * @mavnod client
  * @returns {String} client identifier
  */
 Iban.prototype.client = function () {
@@ -4627,7 +4627,7 @@ Iban.prototype.client = function () {
 /**
  * Should be called to get client direct address
  *
- * @mAVNod address
+ * @mavnod address
  * @returns {String} client direct address
  */
 Iban.prototype.address = function () {
@@ -4666,7 +4666,7 @@ module.exports = Iban;
 */
 /** @file ipcprovider.js
  * @authors:
- *   Fabian Vogelsteller <fabian@AVNdev.com>
+ *   Fabian Vogelsteller <fabian@avndev.com>
  * @date 2015
  */
 
@@ -4723,7 +4723,7 @@ var IpcProvider = function (path, net) {
 /**
 Will parse the response and make an array out of it.
 
-@mAVNod _parseResponse
+@mavnod _parseResponse
 @param {String} data
 */
 IpcProvider.prototype._parseResponse = function(data) {
@@ -4779,20 +4779,20 @@ IpcProvider.prototype._parseResponse = function(data) {
 Get the adds a callback to the responseCallbacks object,
 which will be called if a response matching the response Id will arrive.
 
-@mAVNod _addResponseCallback
+@mavnod _addResponseCallback
 */
 IpcProvider.prototype._addResponseCallback = function(payload, callback) {
     var id = payload.id || payload[0].id;
-    var mAVNod = payload.mAVNod || payload[0].mAVNod;
+    var mavnod = payload.mavnod || payload[0].mavnod;
 
     this.responseCallbacks[id] = callback;
-    this.responseCallbacks[id].mAVNod = mAVNod;
+    this.responseCallbacks[id].mavnod = mavnod;
 };
 
 /**
 Timeout all requests when the end/error event is fired
 
-@mAVNod _timeout
+@mavnod _timeout
 */
 IpcProvider.prototype._timeout = function() {
     for(var key in this.responseCallbacks) {
@@ -4807,7 +4807,7 @@ IpcProvider.prototype._timeout = function() {
 /**
 Check if the current connection is still valid.
 
-@mAVNod isConnected
+@mavnod isConnected
 */
 IpcProvider.prototype.isConnected = function() {
     var _this = this;
@@ -4839,7 +4839,7 @@ IpcProvider.prototype.send = function (payload) {
         return result;
 
     } else {
-        throw new Error('You tried to send "'+ payload.mAVNod +'" synchronously. Synchronous requests are not supported by the IPC provider.');
+        throw new Error('You tried to send "'+ payload.mavnod +'" synchronously. Synchronous requests are not supported by the IPC provider.');
     }
 };
 
@@ -4875,7 +4875,7 @@ module.exports = IpcProvider;
 */
 /** @file jsonrpc.js
  * @authors:
- *   Marek Kotewicz <marek@AVNdev.com>
+ *   Marek Kotewicz <marek@avndev.com>
  *   Aaron Kumavis <aaron@kumavis.me>
  * @date 2015
  */
@@ -4888,14 +4888,14 @@ var Jsonrpc = {
 /**
  * Should be called to valid json create payload object
  *
- * @mAVNod toPayload
- * @param {Function} mAVNod of jsonrpc call, required
- * @param {Array} params, an array of mAVNod params, optional
+ * @mavnod toPayload
+ * @param {Function} mavnod of jsonrpc call, required
+ * @param {Array} params, an array of mavnod params, optional
  * @returns {Object} valid jsonrpc payload object
  */
-Jsonrpc.toPayload = function (mAVNod, params) {
-    if (!mAVNod)
-        console.error('jsonrpc mAVNod should be specified!');
+Jsonrpc.toPayload = function (mavnod, params) {
+    if (!mavnod)
+        console.error('jsonrpc mavnod should be specified!');
 
     // advance message ID
     Jsonrpc.messageId++;
@@ -4903,7 +4903,7 @@ Jsonrpc.toPayload = function (mAVNod, params) {
     return {
         jsonrpc: '2.0',
         id: Jsonrpc.messageId,
-        mAVNod: mAVNod,
+        mavnod: mavnod,
         params: params || []
     };
 };
@@ -4911,7 +4911,7 @@ Jsonrpc.toPayload = function (mAVNod, params) {
 /**
  * Should be called to check if jsonrpc response is valid
  *
- * @mAVNod isValidResponse
+ * @mavnod isValidResponse
  * @param {Object}
  * @returns {Boolean} true if response is valid, otherwise false
  */
@@ -4930,13 +4930,13 @@ Jsonrpc.isValidResponse = function (response) {
 /**
  * Should be called to create batch payload object
  *
- * @mAVNod toBatchPayload
- * @param {Array} messages, an array of objects with mAVNod (required) and params (optional) fields
+ * @mavnod toBatchPayload
+ * @param {Array} messages, an array of objects with mavnod (required) and params (optional) fields
  * @returns {Array} batch payload
  */
 Jsonrpc.toBatchPayload = function (messages) {
     return messages.map(function (message) {
-        return Jsonrpc.toPayload(message.mAVNod, message.params);
+        return Jsonrpc.toPayload(message.mavnod, message.params);
     });
 };
 
@@ -4961,15 +4961,15 @@ module.exports = Jsonrpc;
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * @file mAVNod.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @file mavnod.js
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
 var utils = require('../utils/utils');
 var errors = require('./errors');
 
-var MAVNod = function (options) {
+var Mavnod = function (options) {
     this.name = options.name;
     this.call = options.call;
     this.params = options.params || 0;
@@ -4978,29 +4978,29 @@ var MAVNod = function (options) {
     this.requestManager = null;
 };
 
-MAVNod.prototype.setRequestManager = function (rm) {
+Mavnod.prototype.setRequestManager = function (rm) {
     this.requestManager = rm;
 };
 
 /**
- * Should be used to determine name of the jsonrpc mAVNod based on arguments
+ * Should be used to determine name of the jsonrpc mavnod based on arguments
  *
- * @mAVNod getCall
+ * @mavnod getCall
  * @param {Array} arguments
- * @return {String} name of jsonrpc mAVNod
+ * @return {String} name of jsonrpc mavnod
  */
-MAVNod.prototype.getCall = function (args) {
+Mavnod.prototype.getCall = function (args) {
     return utils.isFunction(this.call) ? this.call(args) : this.call;
 };
 
 /**
  * Should be used to extract callback from array of arguments. Modifies input param
  *
- * @mAVNod extractCallback
+ * @mavnod extractCallback
  * @param {Array} arguments
  * @return {Function|Null} callback, if exists
  */
-MAVNod.prototype.extractCallback = function (args) {
+Mavnod.prototype.extractCallback = function (args) {
     if (utils.isFunction(args[args.length - 1])) {
         return args.pop(); // modify the args array!
     }
@@ -5009,24 +5009,24 @@ MAVNod.prototype.extractCallback = function (args) {
 /**
  * Should be called to check if the number of arguments is correct
  * 
- * @mAVNod validateArgs
+ * @mavnod validateArgs
  * @param {Array} arguments
  * @throws {Error} if it is not
  */
-MAVNod.prototype.validateArgs = function (args) {
+Mavnod.prototype.validateArgs = function (args) {
     if (args.length !== this.params) {
         throw errors.InvalidNumberOfRPCParams();
     }
 };
 
 /**
- * Should be called to format input args of mAVNod
+ * Should be called to format input args of mavnod
  * 
- * @mAVNod formatInput
+ * @mavnod formatInput
  * @param {Array}
  * @return {Array}
  */
-MAVNod.prototype.formatInput = function (args) {
+Mavnod.prototype.formatInput = function (args) {
     if (!this.inputFormatter) {
         return args;
     }
@@ -5037,37 +5037,37 @@ MAVNod.prototype.formatInput = function (args) {
 };
 
 /**
- * Should be called to format output(result) of mAVNod
+ * Should be called to format output(result) of mavnod
  *
- * @mAVNod formatOutput
+ * @mavnod formatOutput
  * @param {Object}
  * @return {Object}
  */
-MAVNod.prototype.formatOutput = function (result) {
+Mavnod.prototype.formatOutput = function (result) {
     return this.outputFormatter && result ? this.outputFormatter(result) : result;
 };
 
 /**
  * Should create payload from given input args
  *
- * @mAVNod toPayload
+ * @mavnod toPayload
  * @param {Array} args
  * @return {Object}
  */
-MAVNod.prototype.toPayload = function (args) {
+Mavnod.prototype.toPayload = function (args) {
     var call = this.getCall(args);
     var callback = this.extractCallback(args);
     var params = this.formatInput(args);
     this.validateArgs(params);
 
     return {
-        mAVNod: call,
+        mavnod: call,
         params: params,
         callback: callback
     };
 };
 
-MAVNod.prototype.attachToObject = function (obj) {
+Mavnod.prototype.attachToObject = function (obj) {
     var func = this.buildCall();
     func.call = this.call; // TODO!!! that's ugly. filter.js uses it
     var name = this.name.split('.');
@@ -5079,16 +5079,16 @@ MAVNod.prototype.attachToObject = function (obj) {
     }
 };
 
-MAVNod.prototype.buildCall = function() {
-    var mAVNod = this;
+Mavnod.prototype.buildCall = function() {
+    var mavnod = this;
     var send = function () {
-        var payload = mAVNod.toPayload(Array.prototype.slice.call(arguments));
+        var payload = mavnod.toPayload(Array.prototype.slice.call(arguments));
         if (payload.callback) {
-            return mAVNod.requestManager.sendAsync(payload, function (err, result) {
-                payload.callback(err, mAVNod.formatOutput(result));
+            return mavnod.requestManager.sendAsync(payload, function (err, result) {
+                payload.callback(err, mavnod.formatOutput(result));
             });
         }
-        return mAVNod.formatOutput(mAVNod.requestManager.send(payload));
+        return mavnod.formatOutput(mavnod.requestManager.send(payload));
     };
     send.request = this.request.bind(this);
     return send;
@@ -5097,17 +5097,17 @@ MAVNod.prototype.buildCall = function() {
 /**
  * Should be called to create pure JSONRPC request which can be used in batch request
  *
- * @mAVNod request
+ * @mavnod request
  * @param {...} params
  * @return {Object} jsonrpc request
  */
-MAVNod.prototype.request = function () {
+Mavnod.prototype.request = function () {
     var payload = this.toPayload(Array.prototype.slice.call(arguments));
     payload.format = this.formatOutput.bind(this);
     return payload;
 };
 
-module.exports = MAVNod;
+module.exports = Mavnod;
 
 },{"../utils/utils":20,"./errors":26}],37:[function(require,module,exports){
 /*
@@ -5128,43 +5128,43 @@ module.exports = MAVNod;
 */
 /** @file db.js
  * @authors:
- *   Marek Kotewicz <marek@AVNdev.com>
+ *   Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
-var MAVNod = require('../mAVNod');
+var Mavnod = require('../mavnod');
 
 var DB = function (web3) {
     this._requestManager = web3._requestManager;
 
     var self = this;
     
-    mAVNods().forEach(function(mAVNod) { 
-        mAVNod.attachToObject(self);
-        mAVNod.setRequestManager(web3._requestManager);
+    mavnods().forEach(function(mavnod) { 
+        mavnod.attachToObject(self);
+        mavnod.setRequestManager(web3._requestManager);
     });
 };
 
-var mAVNods = function () {
-    var putString = new MAVNod({
+var mavnods = function () {
+    var putString = new Mavnod({
         name: 'putString',
         call: 'db_putString',
         params: 3
     });
 
-    var getString = new MAVNod({
+    var getString = new Mavnod({
         name: 'getString',
         call: 'db_getString',
         params: 2
     });
 
-    var putHex = new MAVNod({
+    var putHex = new Mavnod({
         name: 'putHex',
         call: 'db_putHex',
         params: 3
     });
 
-    var getHex = new MAVNod({
+    var getHex = new Mavnod({
         name: 'getHex',
         call: 'db_getHex',
         params: 2
@@ -5177,7 +5177,7 @@ var mAVNods = function () {
 
 module.exports = DB;
 
-},{"../mAVNod":36}],38:[function(require,module,exports){
+},{"../mavnod":36}],38:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -5195,9 +5195,9 @@ module.exports = DB;
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * @file AVN.js
- * @author Marek Kotewicz <marek@AVNdev.com>
- * @author Fabian Vogelsteller <fabian@AVNdev.com>
+ * @file avn.js
+ * @author Marek Kotewicz <marek@avndev.com>
+ * @author Fabian Vogelsteller <fabian@avndev.com>
  * @date 2015
  */
 
@@ -5205,7 +5205,7 @@ module.exports = DB;
 
 var formatters = require('../formatters');
 var utils = require('../../utils/utils');
-var MAVNod = require('../mAVNod');
+var Mavnod = require('../mavnod');
 var Property = require('../property');
 var c = require('../../utils/config');
 var Contract = require('../contract');
@@ -5217,23 +5217,23 @@ var Iban = require('../iban');
 var transfer = require('../transfer');
 
 var blockCall = function (args) {
-    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? "AVN_getBlockByHash" : "AVN_getBlockByNumber";
+    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? "avn_getBlockByHash" : "avn_getBlockByNumber";
 };
 
 var transactionFromBlockCall = function (args) {
-    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'AVN_getTransactionByBlockHashAndIndex' : 'AVN_getTransactionByBlockNumberAndIndex';
+    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'avn_getTransactionByBlockHashAndIndex' : 'avn_getTransactionByBlockNumberAndIndex';
 };
 
 var uncleCall = function (args) {
-    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'AVN_getUncleByBlockHashAndIndex' : 'AVN_getUncleByBlockNumberAndIndex';
+    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'avn_getUncleByBlockHashAndIndex' : 'avn_getUncleByBlockNumberAndIndex';
 };
 
 var getBlockTransactionCountCall = function (args) {
-    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'AVN_getBlockTransactionCountByHash' : 'AVN_getBlockTransactionCountByNumber';
+    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'avn_getBlockTransactionCountByHash' : 'avn_getBlockTransactionCountByNumber';
 };
 
 var uncleCountCall = function (args) {
-    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'AVN_getUncleCountByBlockHash' : 'AVN_getUncleCountByBlockNumber';
+    return (utils.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'avn_getUncleCountByBlockHash' : 'avn_getUncleCountByBlockNumber';
 };
 
 function Eth(web3) {
@@ -5241,9 +5241,9 @@ function Eth(web3) {
 
     var self = this;
 
-    mAVNods().forEach(function(mAVNod) {
-        mAVNod.attachToObject(self);
-        mAVNod.setRequestManager(self._requestManager);
+    mavnods().forEach(function(mavnod) {
+        mavnod.attachToObject(self);
+        mavnod.setRequestManager(self._requestManager);
     });
 
     properties().forEach(function(p) {
@@ -5276,30 +5276,30 @@ Object.defineProperty(Eth.prototype, 'defaultAccount', {
     }
 });
 
-var mAVNods = function () {
-    var getBalance = new MAVNod({
+var mavnods = function () {
+    var getBalance = new Mavnod({
         name: 'getBalance',
-        call: 'AVN_getBalance',
+        call: 'avn_getBalance',
         params: 2,
         inputFormatter: [formatters.inputAddressFormatter, formatters.inputDefaultBlockNumberFormatter],
         outputFormatter: formatters.outputBigNumberFormatter
     });
 
-    var getStorageAt = new MAVNod({
+    var getStorageAt = new Mavnod({
         name: 'getStorageAt',
-        call: 'AVN_getStorageAt',
+        call: 'avn_getStorageAt',
         params: 3,
         inputFormatter: [null, utils.toHex, formatters.inputDefaultBlockNumberFormatter]
     });
 
-    var getCode = new MAVNod({
+    var getCode = new Mavnod({
         name: 'getCode',
-        call: 'AVN_getCode',
+        call: 'avn_getCode',
         params: 2,
         inputFormatter: [formatters.inputAddressFormatter, formatters.inputDefaultBlockNumberFormatter]
     });
 
-    var getBlock = new MAVNod({
+    var getBlock = new Mavnod({
         name: 'getBlock',
         call: blockCall,
         params: 2,
@@ -5307,7 +5307,7 @@ var mAVNods = function () {
         outputFormatter: formatters.outputBlockFormatter
     });
 
-    var getUncle = new MAVNod({
+    var getUncle = new Mavnod({
         name: 'getUncle',
         call: uncleCall,
         params: 2,
@@ -5316,13 +5316,13 @@ var mAVNods = function () {
 
     });
 
-    var getCompilers = new MAVNod({
+    var getCompilers = new Mavnod({
         name: 'getCompilers',
-        call: 'AVN_getCompilers',
+        call: 'avn_getCompilers',
         params: 0
     });
 
-    var getBlockTransactionCount = new MAVNod({
+    var getBlockTransactionCount = new Mavnod({
         name: 'getBlockTransactionCount',
         call: getBlockTransactionCountCall,
         params: 1,
@@ -5330,7 +5330,7 @@ var mAVNods = function () {
         outputFormatter: utils.toDecimal
     });
 
-    var getBlockUncleCount = new MAVNod({
+    var getBlockUncleCount = new Mavnod({
         name: 'getBlockUncleCount',
         call: uncleCountCall,
         params: 1,
@@ -5338,14 +5338,14 @@ var mAVNods = function () {
         outputFormatter: utils.toDecimal
     });
 
-    var getTransaction = new MAVNod({
+    var getTransaction = new Mavnod({
         name: 'getTransaction',
-        call: 'AVN_getTransactionByHash',
+        call: 'avn_getTransactionByHash',
         params: 1,
         outputFormatter: formatters.outputTransactionFormatter
     });
 
-    var getTransactionFromBlock = new MAVNod({
+    var getTransactionFromBlock = new Mavnod({
         name: 'getTransactionFromBlock',
         call: transactionFromBlockCall,
         params: 2,
@@ -5353,91 +5353,91 @@ var mAVNods = function () {
         outputFormatter: formatters.outputTransactionFormatter
     });
 
-    var getTransactionReceipt = new MAVNod({
+    var getTransactionReceipt = new Mavnod({
         name: 'getTransactionReceipt',
-        call: 'AVN_getTransactionReceipt',
+        call: 'avn_getTransactionReceipt',
         params: 1,
         outputFormatter: formatters.outputTransactionReceiptFormatter
     });
 
-    var getTransactionCount = new MAVNod({
+    var getTransactionCount = new Mavnod({
         name: 'getTransactionCount',
-        call: 'AVN_getTransactionCount',
+        call: 'avn_getTransactionCount',
         params: 2,
         inputFormatter: [null, formatters.inputDefaultBlockNumberFormatter],
         outputFormatter: utils.toDecimal
     });
 
-    var sendRawTransaction = new MAVNod({
+    var sendRawTransaction = new Mavnod({
         name: 'sendRawTransaction',
-        call: 'AVN_sendRawTransaction',
+        call: 'avn_sendRawTransaction',
         params: 1,
         inputFormatter: [null]
     });
 
-    var sendTransaction = new MAVNod({
+    var sendTransaction = new Mavnod({
         name: 'sendTransaction',
-        call: 'AVN_sendTransaction',
+        call: 'avn_sendTransaction',
         params: 1,
         inputFormatter: [formatters.inputTransactionFormatter]
     });
 
-    var signTransaction = new MAVNod({
+    var signTransaction = new Mavnod({
         name: 'signTransaction',
-        call: 'AVN_signTransaction',
+        call: 'avn_signTransaction',
         params: 1,
         inputFormatter: [formatters.inputTransactionFormatter]
     });
 
-    var sign = new MAVNod({
+    var sign = new Mavnod({
         name: 'sign',
-        call: 'AVN_sign',
+        call: 'avn_sign',
         params: 2,
         inputFormatter: [formatters.inputAddressFormatter, null]
     });
 
-    var call = new MAVNod({
+    var call = new Mavnod({
         name: 'call',
-        call: 'AVN_call',
+        call: 'avn_call',
         params: 2,
         inputFormatter: [formatters.inputCallFormatter, formatters.inputDefaultBlockNumberFormatter]
     });
 
-    var estimateGas = new MAVNod({
+    var estimateGas = new Mavnod({
         name: 'estimateGas',
-        call: 'AVN_estimateGas',
+        call: 'avn_estimateGas',
         params: 1,
         inputFormatter: [formatters.inputCallFormatter],
         outputFormatter: utils.toDecimal
     });
 
-    var compileSolidity = new MAVNod({
+    var compileSolidity = new Mavnod({
         name: 'compile.solidity',
-        call: 'AVN_compileSolidity',
+        call: 'avn_compileSolidity',
         params: 1
     });
 
-    var compileLLL = new MAVNod({
+    var compileLLL = new Mavnod({
         name: 'compile.lll',
-        call: 'AVN_compileLLL',
+        call: 'avn_compileLLL',
         params: 1
     });
 
-    var compileSerpent = new MAVNod({
+    var compileSerpent = new Mavnod({
         name: 'compile.serpent',
-        call: 'AVN_compileSerpent',
+        call: 'avn_compileSerpent',
         params: 1
     });
 
-    var submitWork = new MAVNod({
+    var submitWork = new Mavnod({
         name: 'submitWork',
-        call: 'AVN_submitWork',
+        call: 'avn_submitWork',
         params: 3
     });
 
-    var getWork = new MAVNod({
+    var getWork = new Mavnod({
         name: 'getWork',
-        call: 'AVN_getWork',
+        call: 'avn_getWork',
         params: 0
     });
 
@@ -5473,39 +5473,39 @@ var properties = function () {
     return [
         new Property({
             name: 'coinbase',
-            getter: 'AVN_coinbase'
+            getter: 'avn_coinbase'
         }),
         new Property({
             name: 'mining',
-            getter: 'AVN_mining'
+            getter: 'avn_mining'
         }),
         new Property({
             name: 'hashrate',
-            getter: 'AVN_hashrate',
+            getter: 'avn_hashrate',
             outputFormatter: utils.toDecimal
         }),
         new Property({
             name: 'syncing',
-            getter: 'AVN_syncing',
+            getter: 'avn_syncing',
             outputFormatter: formatters.outputSyncingFormatter
         }),
         new Property({
             name: 'gasPrice',
-            getter: 'AVN_gasPrice',
+            getter: 'avn_gasPrice',
             outputFormatter: formatters.outputBigNumberFormatter
         }),
         new Property({
             name: 'accounts',
-            getter: 'AVN_accounts'
+            getter: 'avn_accounts'
         }),
         new Property({
             name: 'blockNumber',
-            getter: 'AVN_blockNumber',
+            getter: 'avn_blockNumber',
             outputFormatter: utils.toDecimal
         }),
         new Property({
             name: 'protocolVersion',
-            getter: 'AVN_protocolVersion'
+            getter: 'avn_protocolVersion'
         })
     ];
 };
@@ -5516,7 +5516,7 @@ Eth.prototype.contract = function (abi) {
 };
 
 Eth.prototype.filter = function (options, callback, filterCreationErrorCallback) {
-    return new Filter(options, 'AVN', this._requestManager, watches.AVN(), formatters.outputLogFormatter, callback, filterCreationErrorCallback);
+    return new Filter(options, 'avn', this._requestManager, watches.avn(), formatters.outputLogFormatter, callback, filterCreationErrorCallback);
 };
 
 Eth.prototype.namereg = function () {
@@ -5533,7 +5533,7 @@ Eth.prototype.isSyncing = function (callback) {
 
 module.exports = Eth;
 
-},{"../../utils/config":18,"../../utils/utils":20,"../contract":25,"../filter":29,"../formatters":30,"../iban":33,"../mAVNod":36,"../namereg":44,"../property":45,"../syncing":48,"../transfer":49,"./watches":43}],39:[function(require,module,exports){
+},{"../../utils/config":18,"../../utils/utils":20,"../contract":25,"../filter":29,"../formatters":30,"../iban":33,"../mavnod":36,"../namereg":44,"../property":45,"../syncing":48,"../transfer":49,"./watches":43}],39:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -5550,9 +5550,9 @@ module.exports = Eth;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** @file AVN.js
+/** @file avn.js
  * @authors:
- *   Marek Kotewicz <marek@AVNdev.com>
+ *   Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -5570,7 +5570,7 @@ var Net = function (web3) {
     });
 };
 
-/// @returns an array of objects describing web3.AVN api properties
+/// @returns an array of objects describing web3.avn api properties
 var properties = function () {
     return [
         new Property({
@@ -5605,15 +5605,15 @@ module.exports = Net;
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * @file AVN.js
- * @author Marek Kotewicz <marek@AVNdev.com>
- * @author Fabian Vogelsteller <fabian@AVNdev.com>
+ * @file avn.js
+ * @author Marek Kotewicz <marek@avndev.com>
+ * @author Fabian Vogelsteller <fabian@avndev.com>
  * @date 2015
  */
 
 "use strict";
 
-var MAVNod = require('../mAVNod');
+var Mavnod = require('../mavnod');
 var Property = require('../property');
 var formatters = require('../formatters');
 
@@ -5622,9 +5622,9 @@ function Personal(web3) {
 
     var self = this;
 
-    mAVNods().forEach(function(mAVNod) {
-        mAVNod.attachToObject(self);
-        mAVNod.setRequestManager(self._requestManager);
+    mavnods().forEach(function(mavnod) {
+        mavnod.attachToObject(self);
+        mavnod.setRequestManager(self._requestManager);
     });
 
     properties().forEach(function(p) {
@@ -5633,48 +5633,48 @@ function Personal(web3) {
     });
 }
 
-var mAVNods = function () {
-    var newAccount = new MAVNod({
+var mavnods = function () {
+    var newAccount = new Mavnod({
         name: 'newAccount',
         call: 'personal_newAccount',
         params: 1,
         inputFormatter: [null]
     });
 
-    var importRawKey = new MAVNod({
+    var importRawKey = new Mavnod({
         name: 'importRawKey',
 		call: 'personal_importRawKey',
 		params: 2
     });
 
-    var sign = new MAVNod({
+    var sign = new Mavnod({
         name: 'sign',
 		call: 'personal_sign',
 		params: 3,
 		inputFormatter: [null, formatters.inputAddressFormatter, null]
     });
 
-    var ecRecover = new MAVNod({
+    var ecRecover = new Mavnod({
         name: 'ecRecover',
 		call: 'personal_ecRecover',
 		params: 2
     });
 
-    var unlockAccount = new MAVNod({
+    var unlockAccount = new Mavnod({
         name: 'unlockAccount',
         call: 'personal_unlockAccount',
         params: 3,
         inputFormatter: [formatters.inputAddressFormatter, null, null]
     });
 
-    var sendTransaction = new MAVNod({
+    var sendTransaction = new Mavnod({
         name: 'sendTransaction',
         call: 'personal_sendTransaction',
         params: 2,
         inputFormatter: [formatters.inputTransactionFormatter, null]
     });
 
-    var lockAccount = new MAVNod({
+    var lockAccount = new Mavnod({
         name: 'lockAccount',
         call: 'personal_lockAccount',
         params: 1,
@@ -5704,7 +5704,7 @@ var properties = function () {
 
 module.exports = Personal;
 
-},{"../formatters":30,"../mAVNod":36,"../property":45}],41:[function(require,module,exports){
+},{"../formatters":30,"../mavnod":36,"../property":45}],41:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -5723,12 +5723,12 @@ module.exports = Personal;
 */
 /** @file shh.js
  * @authors:
- *   Fabian Vogelsteller <fabian@AVNereum.org>
- *   Marek Kotewicz <marek@AVNcore.io>
+ *   Fabian Vogelsteller <fabian@avalanria.org>
+ *   Marek Kotewicz <marek@avncore.io>
  * @date 2017
  */
 
-var MAVNod = require('../mAVNod');
+var Mavnod = require('../mavnod');
 var Filter = require('../filter');
 var watches = require('./watches');
 
@@ -5737,9 +5737,9 @@ var Shh = function (web3) {
 
     var self = this;
 
-    mAVNods().forEach(function(mAVNod) {
-        mAVNod.attachToObject(self);
-        mAVNod.setRequestManager(self._requestManager);
+    mavnods().forEach(function(mavnod) {
+        mavnod.attachToObject(self);
+        mavnod.setRequestManager(self._requestManager);
     });
 };
 
@@ -5747,90 +5747,90 @@ Shh.prototype.newMessageFilter = function (options, callback, filterCreationErro
     return new Filter(options, 'shh', this._requestManager, watches.shh(), null, callback, filterCreationErrorCallback);
 };
 
-var mAVNods = function () {
+var mavnods = function () {
 
     return [
-        new MAVNod({
+        new Mavnod({
             name: 'version',
             call: 'shh_version',
             params: 0
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'info',
             call: 'shh_info',
             params: 0
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'setMaxMessageSize',
             call: 'shh_setMaxMessageSize',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'setMinPoW',
             call: 'shh_setMinPoW',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'markTrustedPeer',
             call: 'shh_markTrustedPeer',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'newKeyPair',
             call: 'shh_newKeyPair',
             params: 0
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'addPrivateKey',
             call: 'shh_addPrivateKey',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'deleteKeyPair',
             call: 'shh_deleteKeyPair',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'hasKeyPair',
             call: 'shh_hasKeyPair',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'getPublicKey',
             call: 'shh_getPublicKey',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'getPrivateKey',
             call: 'shh_getPrivateKey',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'newSymKey',
             call: 'shh_newSymKey',
             params: 0
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'addSymKey',
             call: 'shh_addSymKey',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'generateSymKeyFromPassword',
             call: 'shh_generateSymKeyFromPassword',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'hasSymKey',
             call: 'shh_hasSymKey',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'getSymKey',
             call: 'shh_getSymKey',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'deleteSymKey',
             call: 'shh_deleteSymKey',
             params: 1
@@ -5838,7 +5838,7 @@ var mAVNods = function () {
 
         // subscribe and unsubscribe missing
 
-        new MAVNod({
+        new Mavnod({
             name: 'post',
             call: 'shh_post',
             params: 1,
@@ -5850,7 +5850,7 @@ var mAVNods = function () {
 module.exports = Shh;
 
 
-},{"../filter":29,"../mAVNod":36,"./watches":43}],42:[function(require,module,exports){
+},{"../filter":29,"../mavnod":36,"./watches":43}],42:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -5872,12 +5872,12 @@ module.exports = Shh;
  * @author Alex Beregszaszi <alex@rtfs.hu>
  * @date 2016
  *
- * Reference: https://github.com/AVNereum/go-AVNereum/blob/swarm/internal/web3ext/web3ext.go#L33
+ * Reference: https://github.com/avalanria/go-avalanria/blob/swarm/internal/web3ext/web3ext.go#L33
  */
 
 "use strict";
 
-var MAVNod = require('../mAVNod');
+var Mavnod = require('../mavnod');
 var Property = require('../property');
 
 function Swarm(web3) {
@@ -5885,9 +5885,9 @@ function Swarm(web3) {
 
     var self = this;
 
-    mAVNods().forEach(function(mAVNod) {
-        mAVNod.attachToObject(self);
-        mAVNod.setRequestManager(self._requestManager);
+    mavnods().forEach(function(mavnod) {
+        mavnod.attachToObject(self);
+        mavnod.setRequestManager(self._requestManager);
     });
 
     properties().forEach(function(p) {
@@ -5896,71 +5896,71 @@ function Swarm(web3) {
     });
 }
 
-var mAVNods = function () {
-    var blockNetworkRead = new MAVNod({
+var mavnods = function () {
+    var blockNetworkRead = new Mavnod({
         name: 'blockNetworkRead',
         call: 'bzz_blockNetworkRead',
         params: 1,
         inputFormatter: [null]
     });
 
-    var syncEnabled = new MAVNod({
+    var syncEnabled = new Mavnod({
         name: 'syncEnabled',
         call: 'bzz_syncEnabled',
         params: 1,
         inputFormatter: [null]
     });
 
-    var swapEnabled = new MAVNod({
+    var swapEnabled = new Mavnod({
         name: 'swapEnabled',
         call: 'bzz_swapEnabled',
         params: 1,
         inputFormatter: [null]
     });
 
-    var download = new MAVNod({
+    var download = new Mavnod({
         name: 'download',
         call: 'bzz_download',
         params: 2,
         inputFormatter: [null, null]
     });
 
-    var upload = new MAVNod({
+    var upload = new Mavnod({
         name: 'upload',
         call: 'bzz_upload',
         params: 2,
         inputFormatter: [null, null]
     });
 
-    var retrieve = new MAVNod({
+    var retrieve = new Mavnod({
         name: 'retrieve',
         call: 'bzz_retrieve',
         params: 1,
         inputFormatter: [null]
     });
 
-    var store = new MAVNod({
+    var store = new Mavnod({
         name: 'store',
         call: 'bzz_store',
         params: 2,
         inputFormatter: [null, null]
     });
 
-    var get = new MAVNod({
+    var get = new Mavnod({
         name: 'get',
         call: 'bzz_get',
         params: 1,
         inputFormatter: [null]
     });
 
-    var put = new MAVNod({
+    var put = new Mavnod({
         name: 'put',
         call: 'bzz_put',
         params: 2,
         inputFormatter: [null, null]
     });
 
-    var modify = new MAVNod({
+    var modify = new Mavnod({
         name: 'modify',
         call: 'bzz_modify',
         params: 4,
@@ -5997,7 +5997,7 @@ var properties = function () {
 
 module.exports = Swarm;
 
-},{"../mAVNod":36,"../property":45}],43:[function(require,module,exports){
+},{"../mavnod":36,"../property":45}],43:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -6016,14 +6016,14 @@ module.exports = Swarm;
 */
 /** @file watches.js
  * @authors:
- *   Marek Kotewicz <marek@AVNdev.com>
+ *   Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
-var MAVNod = require('../mAVNod');
+var Mavnod = require('../mavnod');
 
-/// @returns an array of objects describing web3.AVN.filter api mAVNods
-var AVN = function () {
+/// @returns an array of objects describing web3.avn.filter api mavnods
+var avn = function () {
     var newFilterCall = function (args) {
         var type = args[0];
 
@@ -6031,37 +6031,37 @@ var AVN = function () {
             case 'latest':
                 args.shift();
                 this.params = 0;
-                return 'AVN_newBlockFilter';
+                return 'avn_newBlockFilter';
             case 'pending':
                 args.shift();
                 this.params = 0;
-                return 'AVN_newPendingTransactionFilter';
+                return 'avn_newPendingTransactionFilter';
             default:
-                return 'AVN_newFilter';
+                return 'avn_newFilter';
         }
     };
 
-    var newFilter = new MAVNod({
+    var newFilter = new Mavnod({
         name: 'newFilter',
         call: newFilterCall,
         params: 1
     });
 
-    var uninstallFilter = new MAVNod({
+    var uninstallFilter = new Mavnod({
         name: 'uninstallFilter',
-        call: 'AVN_uninstallFilter',
+        call: 'avn_uninstallFilter',
         params: 1
     });
 
-    var getLogs = new MAVNod({
+    var getLogs = new Mavnod({
         name: 'getLogs',
-        call: 'AVN_getFilterLogs',
+        call: 'avn_getFilterLogs',
         params: 1
     });
 
-    var poll = new MAVNod({
+    var poll = new Mavnod({
         name: 'poll',
-        call: 'AVN_getFilterChanges',
+        call: 'avn_getFilterChanges',
         params: 1
     });
 
@@ -6073,26 +6073,26 @@ var AVN = function () {
     ];
 };
 
-/// @returns an array of objects describing web3.shh.watch api mAVNods
+/// @returns an array of objects describing web3.shh.watch api mavnods
 var shh = function () {
 
     return [
-        new MAVNod({
+        new Mavnod({
             name: 'newFilter',
             call: 'shh_newMessageFilter',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'uninstallFilter',
             call: 'shh_deleteMessageFilter',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'getLogs',
             call: 'shh_getFilterMessages',
             params: 1
         }),
-        new MAVNod({
+        new Mavnod({
             name: 'poll',
             call: 'shh_getFilterMessages',
             params: 1
@@ -6101,12 +6101,12 @@ var shh = function () {
 };
 
 module.exports = {
-    AVN: AVN,
+    avn: avn,
     shh: shh
 };
 
 
-},{"../mAVNod":36}],44:[function(require,module,exports){
+},{"../mavnod":36}],44:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -6125,7 +6125,7 @@ module.exports = {
 */
 /** 
  * @file namereg.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -6167,7 +6167,7 @@ module.exports = {
 /**
  * @file property.js
  * @author Fabian Vogelsteller <fabian@frozeman.de>
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -6187,9 +6187,9 @@ Property.prototype.setRequestManager = function (rm) {
 };
 
 /**
- * Should be called to format input args of mAVNod
+ * Should be called to format input args of mavnod
  *
- * @mAVNod formatInput
+ * @mavnod formatInput
  * @param {Array}
  * @return {Array}
  */
@@ -6198,9 +6198,9 @@ Property.prototype.formatInput = function (arg) {
 };
 
 /**
- * Should be called to format output(result) of mAVNod
+ * Should be called to format output(result) of mavnod
  *
- * @mAVNod formatOutput
+ * @mavnod formatOutput
  * @param {Object}
  * @return {Object}
  */
@@ -6211,7 +6211,7 @@ Property.prototype.formatOutput = function (result) {
 /**
  * Should be used to extract callback from array of arguments. Modifies input param
  *
- * @mAVNod extractCallback
+ * @mavnod extractCallback
  * @param {Array} arguments
  * @return {Function|Null} callback, if exists
  */
@@ -6223,9 +6223,9 @@ Property.prototype.extractCallback = function (args) {
 
 
 /**
- * Should attach function to mAVNod
+ * Should attach function to mavnod
  *
- * @mAVNod attachToObject
+ * @mavnod attachToObject
  * @param {Object}
  * @param {Function}
  */
@@ -6255,7 +6255,7 @@ Property.prototype.buildGet = function () {
     var property = this;
     return function get() {
         return property.formatOutput(property.requestManager.send({
-            mAVNod: property.getter
+            mavnod: property.getter
         }));
     };
 };
@@ -6264,7 +6264,7 @@ Property.prototype.buildAsyncGet = function () {
     var property = this;
     var get = function (callback) {
         property.requestManager.sendAsync({
-            mAVNod: property.getter
+            mavnod: property.getter
         }, function (err, result) {
             callback(err, property.formatOutput(result));
         });
@@ -6276,13 +6276,13 @@ Property.prototype.buildAsyncGet = function () {
 /**
  * Should be called to create pure JSONRPC request which can be used in batch request
  *
- * @mAVNod request
+ * @mavnod request
  * @param {...} params
  * @return {Object} jsonrpc request
  */
 Property.prototype.request = function () {
     var payload = {
-        mAVNod: this.getter,
+        mavnod: this.getter,
         params: [],
         callback: this.extractCallback(Array.prototype.slice.call(arguments))
     };
@@ -6312,11 +6312,11 @@ module.exports = Property;
 */
 /** 
  * @file requestmanager.js
- * @author Jeffrey Wilcke <jeff@AVNdev.com>
- * @author Marek Kotewicz <marek@AVNdev.com>
- * @author Marian Oancea <marian@AVNdev.com>
- * @author Fabian Vogelsteller <fabian@AVNdev.com>
- * @author Gav Wood <g@AVNdev.com>
+ * @author Jeffrey Wilcke <jeff@avndev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
+ * @author Marian Oancea <marian@avndev.com>
+ * @author Fabian Vogelsteller <fabian@avndev.com>
+ * @author Gav Wood <g@avndev.com>
  * @date 2014
  */
 
@@ -6327,7 +6327,7 @@ var errors = require('./errors');
 
 /**
  * It's responsible for passing messages to providers
- * It's also responsible for polling the AVNereum node for incoming messages
+ * It's also responsible for polling the avalanria node for incoming messages
  * Default poll timeout is 1 second
  * Singleton
  */
@@ -6340,7 +6340,7 @@ var RequestManager = function (provider) {
 /**
  * Should be used to synchronously send request
  *
- * @mAVNod send
+ * @mavnod send
  * @param {Object} data
  * @return {Object}
  */
@@ -6350,7 +6350,7 @@ RequestManager.prototype.send = function (data) {
         return null;
     }
 
-    var payload = Jsonrpc.toPayload(data.mAVNod, data.params);
+    var payload = Jsonrpc.toPayload(data.mavnod, data.params);
     var result = this.provider.send(payload);
 
     if (!Jsonrpc.isValidResponse(result)) {
@@ -6363,7 +6363,7 @@ RequestManager.prototype.send = function (data) {
 /**
  * Should be used to asynchronously send request
  *
- * @mAVNod sendAsync
+ * @mavnod sendAsync
  * @param {Object} data
  * @param {Function} callback
  */
@@ -6372,7 +6372,7 @@ RequestManager.prototype.sendAsync = function (data, callback) {
         return callback(errors.InvalidProvider());
     }
 
-    var payload = Jsonrpc.toPayload(data.mAVNod, data.params);
+    var payload = Jsonrpc.toPayload(data.mavnod, data.params);
     this.provider.sendAsync(payload, function (err, result) {
         if (err) {
             return callback(err);
@@ -6389,7 +6389,7 @@ RequestManager.prototype.sendAsync = function (data, callback) {
 /**
  * Should be called to asynchronously send batch request
  *
- * @mAVNod sendBatch
+ * @mavnod sendBatch
  * @param {Array} batch data
  * @param {Function} callback
  */
@@ -6416,7 +6416,7 @@ RequestManager.prototype.sendBatch = function (data, callback) {
 /**
  * Should be used to set provider of request manager
  *
- * @mAVNod setProvider
+ * @mavnod setProvider
  * @param {Object}
  */
 RequestManager.prototype.setProvider = function (p) {
@@ -6426,7 +6426,7 @@ RequestManager.prototype.setProvider = function (p) {
 /**
  * Should be used to start polling
  *
- * @mAVNod startPolling
+ * @mavnod startPolling
  * @param {Object} data
  * @param {Number} pollId
  * @param {Function} callback
@@ -6447,7 +6447,7 @@ RequestManager.prototype.startPolling = function (data, pollId, callback, uninst
 /**
  * Should be used to stop polling for filter with given id
  *
- * @mAVNod stopPolling
+ * @mavnod stopPolling
  * @param {Number} pollId
  */
 RequestManager.prototype.stopPolling = function (pollId) {
@@ -6463,7 +6463,7 @@ RequestManager.prototype.stopPolling = function (pollId) {
 /**
  * Should be called to reset the polling mechanism of the request manager
  *
- * @mAVNod reset
+ * @mavnod reset
  */
 RequestManager.prototype.reset = function (keepIsSyncing) {
     /*jshint maxcomplexity:5 */
@@ -6487,7 +6487,7 @@ RequestManager.prototype.reset = function (keepIsSyncing) {
 /**
  * Should be called to poll for changes on filter with given id
  *
- * @mAVNod poll
+ * @mavnod poll
  */
 RequestManager.prototype.poll = function () {
     /*jshint maxcomplexity: 6 */
@@ -6590,7 +6590,7 @@ module.exports = Settings;
 */
 /** @file syncing.js
  * @authors:
- *   Fabian Vogelsteller <fabian@AVNdev.com>
+ *   Fabian Vogelsteller <fabian@avndev.com>
  * @date 2015
  */
 
@@ -6600,9 +6600,9 @@ var utils = require('../utils/utils');
 var count = 1;
 
 /**
-Adds the callback and sets up the mAVNods, to iterate over the results.
+Adds the callback and sets up the mavnods, to iterate over the results.
 
-@mAVNod pollSyncing
+@mavnod pollSyncing
 @param {Object} self
 */
 var pollSyncing = function(self) {
@@ -6635,7 +6635,7 @@ var pollSyncing = function(self) {
     };
 
     self.requestManager.startPolling({
-        mAVNod: 'AVN_syncing',
+        mavnod: 'avn_syncing',
         params: [],
     }, self.pollId, onMessage, self.stopWatching.bind(self));
 
@@ -6685,7 +6685,7 @@ module.exports = IsSyncing;
 */
 /** 
  * @file transfer.js
- * @author Marek Kotewicz <marek@AVNdev.com>
+ * @author Marek Kotewicz <marek@avndev.com>
  * @date 2015
  */
 
@@ -6695,29 +6695,29 @@ var exchangeAbi = require('../contracts/SmartExchange.json');
 /**
  * Should be used to make Iban transfer
  *
- * @mAVNod transfer
+ * @mavnod transfer
  * @param {String} from
  * @param {String} to iban
  * @param {Value} value to be tranfered
  * @param {Function} callback, callback
  */
-var transfer = function (AVN, from, to, value, callback) {
+var transfer = function (avn, from, to, value, callback) {
     var iban = new Iban(to); 
     if (!iban.isValid()) {
         throw new Error('invalid iban address');
     }
 
     if (iban.isDirect()) {
-        return transferToAddress(AVN, from, iban.address(), value, callback);
+        return transferToAddress(avn, from, iban.address(), value, callback);
     }
     
     if (!callback) {
-        var address = AVN.icapNamereg().addr(iban.institution());
-        return deposit(AVN, from, address, value, iban.client());
+        var address = avn.icapNamereg().addr(iban.institution());
+        return deposit(avn, from, address, value, iban.client());
     }
 
-    AVN.icapNamereg().addr(iban.institution(), function (err, address) {
-        return deposit(AVN, from, address, value, iban.client(), callback);
+    avn.icapNamereg().addr(iban.institution(), function (err, address) {
+        return deposit(avn, from, address, value, iban.client(), callback);
     });
     
 };
@@ -6725,14 +6725,14 @@ var transfer = function (AVN, from, to, value, callback) {
 /**
  * Should be used to transfer funds to certain address
  *
- * @mAVNod transferToAddress
+ * @mavnod transferToAddress
  * @param {String} from
  * @param {String} to
  * @param {Value} value to be tranfered
  * @param {Function} callback, callback
  */
-var transferToAddress = function (AVN, from, to, value, callback) {
-    return AVN.sendTransaction({
+var transferToAddress = function (avn, from, to, value, callback) {
+    return avn.sendTransaction({
         address: to,
         from: from,
         value: value
@@ -6740,18 +6740,18 @@ var transferToAddress = function (AVN, from, to, value, callback) {
 };
 
 /**
- * Should be used to deposit funds to generic Exchange contract (must implement deposit(bytes32) mAVNod!)
+ * Should be used to deposit funds to generic Exchange contract (must implement deposit(bytes32) mavnod!)
  *
- * @mAVNod deposit
+ * @mavnod deposit
  * @param {String} from
  * @param {String} to
  * @param {Value} value to be transferred
  * @param {String} client unique identifier
  * @param {Function} callback, callback
  */
-var deposit = function (AVN, from, to, value, client, callback) {
+var deposit = function (avn, from, to, value, client, callback) {
     var abi = exchangeAbi;
-    return AVN.contract(abi).at(to).deposit(client, {
+    return avn.contract(abi).at(to).deposit(client, {
         from: from,
         value: value
     }, callback);
@@ -7941,7 +7941,7 @@ module.exports = transfer;
 	             *     var MyType = CryptoJS.lib.Base.extend({
 	             *         field: 'value',
 	             *
-	             *         mAVNod: function () {
+	             *         mavnod: function () {
 	             *         }
 	             *     });
 	             */
@@ -7971,7 +7971,7 @@ module.exports = transfer;
 	            },
 
 	            /**
-	             * Extends this object and runs the init mAVNod.
+	             * Extends this object and runs the init mavnod.
 	             * Arguments to create() will be passed to init().
 	             *
 	             * @return {Object} The new object.
@@ -7991,7 +7991,7 @@ module.exports = transfer;
 
 	            /**
 	             * Initializes a newly created object.
-	             * Override this mAVNod to add some logic when your objects are created.
+	             * Override this mavnod to add some logic when your objects are created.
 	             *
 	             * @example
 	             *
@@ -8416,9 +8416,9 @@ module.exports = transfer;
 	        /**
 	         * Processes available data blocks.
 	         *
-	         * This mAVNod invokes _doProcessBlock(offset), which must be implemented by a concrete subtype.
+	         * This mavnod invokes _doProcessBlock(offset), which must be implemented by a concrete subtype.
 	         *
-	         * @param {boolean} doFlush WhAVNer all blocks and partial blocks should be processed.
+	         * @param {boolean} doFlush Whavner all blocks and partial blocks should be processed.
 	         *
 	         * @return {WordArray} The processed data.
 	         *
@@ -10090,7 +10090,7 @@ module.exports = transfer;
 }(this, function (CryptoJS) {
 
 	/**
-	 * ISO/IEC 9797-1 Padding MAVNod 2.
+	 * ISO/IEC 9797-1 Padding Mavnod 2.
 	 */
 	CryptoJS.pad.Iso97971 = {
 	    pad: function (data, blockSize) {

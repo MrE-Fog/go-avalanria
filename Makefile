@@ -2,20 +2,20 @@
 # with Go source code. If you know what GOPATH is then you probably
 # don't need to bother with make.
 
-.PHONY: gAVN android ios gAVN-cross evm all test clean
-.PHONY: gAVN-linux gAVN-linux-386 gAVN-linux-amd64 gAVN-linux-mips64 gAVN-linux-mips64le
-.PHONY: gAVN-linux-arm gAVN-linux-arm-5 gAVN-linux-arm-6 gAVN-linux-arm-7 gAVN-linux-arm64
-.PHONY: gAVN-darwin gAVN-darwin-386 gAVN-darwin-amd64
-.PHONY: gAVN-windows gAVN-windows-386 gAVN-windows-amd64
+.PHONY: gavn android ios gavn-cross evm all test clean
+.PHONY: gavn-linux gavn-linux-386 gavn-linux-amd64 gavn-linux-mips64 gavn-linux-mips64le
+.PHONY: gavn-linux-arm gavn-linux-arm-5 gavn-linux-arm-6 gavn-linux-arm-7 gavn-linux-arm64
+.PHONY: gavn-darwin gavn-darwin-386 gavn-darwin-amd64
+.PHONY: gavn-windows gavn-windows-386 gavn-windows-amd64
 
 GOBIN = ./build/bin
 GO ?= latest
 GORUN = env GO111MODULE=on go run
 
-gAVN:
-	$(GORUN) build/ci.go install ./cmd/gAVN
+gavn:
+	$(GORUN) build/ci.go install ./cmd/gavn
 	@echo "Done building."
-	@echo "Run \"$(GOBIN)/gAVN\" to launch gAVN."
+	@echo "Run \"$(GOBIN)/gavn\" to launch gavn."
 
 all:
 	$(GORUN) build/ci.go install
@@ -23,14 +23,14 @@ all:
 android:
 	$(GORUN) build/ci.go aar --local
 	@echo "Done building."
-	@echo "Import \"$(GOBIN)/gAVN.aar\" to use the library."
-	@echo "Import \"$(GOBIN)/gAVN-sources.jar\" to add javadocs"
+	@echo "Import \"$(GOBIN)/gavn.aar\" to use the library."
+	@echo "Import \"$(GOBIN)/gavn-sources.jar\" to add javadocs"
 	@echo "For more info see https://stackoverflow.com/questions/20994336/android-studio-how-to-attach-javadoc"
 
 ios:
 	$(GORUN) build/ci.go xcode --local
 	@echo "Done building."
-	@echo "Import \"$(GOBIN)/GAVN.framework\" to use the library."
+	@echo "Import \"$(GOBIN)/Gavn.framework\" to use the library."
 
 test: all
 	$(GORUN) build/ci.go test
@@ -56,92 +56,92 @@ devtools:
 
 # Cross Compilation Targets (xgo)
 
-gAVN-cross: gAVN-linux gAVN-darwin gAVN-windows gAVN-android gAVN-ios
+gavn-cross: gavn-linux gavn-darwin gavn-windows gavn-android gavn-ios
 	@echo "Full cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-*
+	@ls -ld $(GOBIN)/gavn-*
 
-gAVN-linux: gAVN-linux-386 gAVN-linux-amd64 gAVN-linux-arm gAVN-linux-mips64 gAVN-linux-mips64le
+gavn-linux: gavn-linux-386 gavn-linux-amd64 gavn-linux-arm gavn-linux-mips64 gavn-linux-mips64le
 	@echo "Linux cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-*
+	@ls -ld $(GOBIN)/gavn-linux-*
 
-gAVN-linux-386:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/386 -v ./cmd/gAVN
+gavn-linux-386:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/386 -v ./cmd/gavn
 	@echo "Linux 386 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep 386
+	@ls -ld $(GOBIN)/gavn-linux-* | grep 386
 
-gAVN-linux-amd64:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/amd64 -v ./cmd/gAVN
+gavn-linux-amd64:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/amd64 -v ./cmd/gavn
 	@echo "Linux amd64 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep amd64
+	@ls -ld $(GOBIN)/gavn-linux-* | grep amd64
 
-gAVN-linux-arm: gAVN-linux-arm-5 gAVN-linux-arm-6 gAVN-linux-arm-7 gAVN-linux-arm64
+gavn-linux-arm: gavn-linux-arm-5 gavn-linux-arm-6 gavn-linux-arm-7 gavn-linux-arm64
 	@echo "Linux ARM cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep arm
+	@ls -ld $(GOBIN)/gavn-linux-* | grep arm
 
-gAVN-linux-arm-5:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm-5 -v ./cmd/gAVN
+gavn-linux-arm-5:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm-5 -v ./cmd/gavn
 	@echo "Linux ARMv5 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep arm-5
+	@ls -ld $(GOBIN)/gavn-linux-* | grep arm-5
 
-gAVN-linux-arm-6:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm-6 -v ./cmd/gAVN
+gavn-linux-arm-6:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm-6 -v ./cmd/gavn
 	@echo "Linux ARMv6 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep arm-6
+	@ls -ld $(GOBIN)/gavn-linux-* | grep arm-6
 
-gAVN-linux-arm-7:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm-7 -v ./cmd/gAVN
+gavn-linux-arm-7:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm-7 -v ./cmd/gavn
 	@echo "Linux ARMv7 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep arm-7
+	@ls -ld $(GOBIN)/gavn-linux-* | grep arm-7
 
-gAVN-linux-arm64:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm64 -v ./cmd/gAVN
+gavn-linux-arm64:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/arm64 -v ./cmd/gavn
 	@echo "Linux ARM64 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep arm64
+	@ls -ld $(GOBIN)/gavn-linux-* | grep arm64
 
-gAVN-linux-mips:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mips --ldflags '-extldflags "-static"' -v ./cmd/gAVN
+gavn-linux-mips:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mips --ldflags '-extldflags "-static"' -v ./cmd/gavn
 	@echo "Linux MIPS cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep mips
+	@ls -ld $(GOBIN)/gavn-linux-* | grep mips
 
-gAVN-linux-mipsle:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mipsle --ldflags '-extldflags "-static"' -v ./cmd/gAVN
+gavn-linux-mipsle:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mipsle --ldflags '-extldflags "-static"' -v ./cmd/gavn
 	@echo "Linux MIPSle cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep mipsle
+	@ls -ld $(GOBIN)/gavn-linux-* | grep mipsle
 
-gAVN-linux-mips64:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mips64 --ldflags '-extldflags "-static"' -v ./cmd/gAVN
+gavn-linux-mips64:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mips64 --ldflags '-extldflags "-static"' -v ./cmd/gavn
 	@echo "Linux MIPS64 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep mips64
+	@ls -ld $(GOBIN)/gavn-linux-* | grep mips64
 
-gAVN-linux-mips64le:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mips64le --ldflags '-extldflags "-static"' -v ./cmd/gAVN
+gavn-linux-mips64le:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=linux/mips64le --ldflags '-extldflags "-static"' -v ./cmd/gavn
 	@echo "Linux MIPS64le cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-linux-* | grep mips64le
+	@ls -ld $(GOBIN)/gavn-linux-* | grep mips64le
 
-gAVN-darwin: gAVN-darwin-386 gAVN-darwin-amd64
+gavn-darwin: gavn-darwin-386 gavn-darwin-amd64
 	@echo "Darwin cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-darwin-*
+	@ls -ld $(GOBIN)/gavn-darwin-*
 
-gAVN-darwin-386:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=darwin/386 -v ./cmd/gAVN
+gavn-darwin-386:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=darwin/386 -v ./cmd/gavn
 	@echo "Darwin 386 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-darwin-* | grep 386
+	@ls -ld $(GOBIN)/gavn-darwin-* | grep 386
 
-gAVN-darwin-amd64:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=darwin/amd64 -v ./cmd/gAVN
+gavn-darwin-amd64:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=darwin/amd64 -v ./cmd/gavn
 	@echo "Darwin amd64 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-darwin-* | grep amd64
+	@ls -ld $(GOBIN)/gavn-darwin-* | grep amd64
 
-gAVN-windows: gAVN-windows-386 gAVN-windows-amd64
+gavn-windows: gavn-windows-386 gavn-windows-amd64
 	@echo "Windows cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-windows-*
+	@ls -ld $(GOBIN)/gavn-windows-*
 
-gAVN-windows-386:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=windows/386 -v ./cmd/gAVN
+gavn-windows-386:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=windows/386 -v ./cmd/gavn
 	@echo "Windows 386 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-windows-* | grep 386
+	@ls -ld $(GOBIN)/gavn-windows-* | grep 386
 
-gAVN-windows-amd64:
-	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=windows/amd64 -v ./cmd/gAVN
+gavn-windows-amd64:
+	$(GORUN) build/ci.go xgo -- --go=$(GO) --targets=windows/amd64 -v ./cmd/gavn
 	@echo "Windows amd64 cross compilation done:"
-	@ls -ld $(GOBIN)/gAVN-windows-* | grep amd64
+	@ls -ld $(GOBIN)/gavn-windows-* | grep amd64

@@ -1,18 +1,18 @@
-// Copyright 2020 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2020 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package snap
 
@@ -27,19 +27,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/math"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/state/snapshot"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/light"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/msgrate"
-	"github.com/AVNereum/go-AVNereum/rlp"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/math"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/state/snapshot"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/light"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/msgrate"
+	"github.com/avalanria/go-avalanria/rlp"
+	"github.com/avalanria/go-avalanria/trie"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -128,7 +128,7 @@ type accountResponse struct {
 	hashes   []common.Hash    // Account hashes in the returned range
 	accounts []*state.Account // Expanded accounts in the returned range
 
-	cont bool // WhAVNer the account range has a continuation
+	cont bool // Whavner the account range has a continuation
 }
 
 // bytecodeRequest tracks a pending bytecode request to ensure responses are to
@@ -206,7 +206,7 @@ type storageResponse struct {
 	hashes [][]common.Hash // Storage slot hashes in the returned range
 	slots  [][][]byte      // Storage slot values in the returned range
 
-	cont bool // WhAVNer the last storage range has a continuation
+	cont bool // Whavner the last storage range has a continuation
 }
 
 // trienodeHealRequest tracks a pending state trie request to ensure responses
@@ -288,17 +288,17 @@ type accountTask struct {
 	res  *accountResponse // Validate response filling this task
 	pend int              // Number of pending subtasks for this round
 
-	needCode  []bool // Flags whAVNer the filling accounts need code retrieval
-	needState []bool // Flags whAVNer the filling accounts need storage retrieval
-	needHeal  []bool // Flags whAVNer the filling accounts's state was chunked and need healing
+	needCode  []bool // Flags whavner the filling accounts need code retrieval
+	needState []bool // Flags whavner the filling accounts need storage retrieval
+	needHeal  []bool // Flags whavner the filling accounts's state was chunked and need healing
 
 	codeTasks  map[common.Hash]struct{}    // Code hashes that need retrieval
 	stateTasks map[common.Hash]common.Hash // Account hashes->roots that need full state retrieval
 
-	genBatch AVNdb.Batch     // Batch used by the node generator
+	genBatch avndb.Batch     // Batch used by the node generator
 	genTrie  *trie.StackTrie // Node generator from storage slots
 
-	done bool // Flag whAVNer the task can be removed
+	done bool // Flag whavner the task can be removed
 }
 
 // storageTask represents the sync task for a chunk of the storage snapshot.
@@ -310,10 +310,10 @@ type storageTask struct {
 	root common.Hash     // Storage root hash for this instance
 	req  *storageRequest // Pending request to fill this task
 
-	genBatch AVNdb.Batch     // Batch used by the node generator
+	genBatch avndb.Batch     // Batch used by the node generator
 	genTrie  *trie.StackTrie // Node generator from storage slots
 
-	done bool // Flag whAVNer the task can be removed
+	done bool // Flag whavner the task can be removed
 }
 
 // healTask represents the sync task for healing the snap-synced chunk boundaries.
@@ -349,7 +349,7 @@ type syncProgress struct {
 	BytecodeHealNops   uint64             // Number of bytecodes not requested
 }
 
-// SyncPeer abstracts out the mAVNods required for a peer to be synced against
+// SyncPeer abstracts out the mavnods required for a peer to be synced against
 // with the goal of allowing the construction of mock peers without the full
 // blown networking.
 type SyncPeer interface {
@@ -388,7 +388,7 @@ type SyncPeer interface {
 //   - The peer delivers a stale response after a previous timeout
 //   - The peer delivers a refusal to serve the requested state
 type Syncer struct {
-	db AVNdb.KeyValueStore // Database to store the trie nodes into (and dedup)
+	db avndb.KeyValueStore // Database to store the trie nodes into (and dedup)
 
 	root    common.Hash    // Current state trie root being synced
 	tasks   []*accountTask // Current account task set being synced
@@ -434,7 +434,7 @@ type Syncer struct {
 	bytecodeHealDups   uint64             // Number of bytecodes already processed
 	bytecodeHealNops   uint64             // Number of bytecodes not requested
 
-	stateWriter        AVNdb.Batch        // Shared batch writer used for persisting raw states
+	stateWriter        avndb.Batch        // Shared batch writer used for persisting raw states
 	accountHealed      uint64             // Number of accounts downloaded during the healing stage
 	accountHealedBytes common.StorageSize // Number of raw account bytes persisted to disk during the healing stage
 	storageHealed      uint64             // Number of storage slots downloaded during the healing stage
@@ -449,7 +449,7 @@ type Syncer struct {
 
 // NewSyncer creates a new snapshot syncer to download the Avalanria state over the
 // snap protocol.
-func NewSyncer(db AVNdb.KeyValueStore) *Syncer {
+func NewSyncer(db avndb.KeyValueStore) *Syncer {
 	return &Syncer{
 		db: db,
 
@@ -577,7 +577,7 @@ func (s *Syncer) Sync(root common.Hash, cancel chan struct{}) error {
 	}()
 	defer s.report(true)
 
-	// WhAVNer sync completed or not, disregard any future packets
+	// Whavner sync completed or not, disregard any future packets
 	defer func() {
 		log.Debug("Terminating snapshot sync cycle", "root", root)
 		s.lock.Lock()
@@ -598,7 +598,7 @@ func (s *Syncer) Sync(root common.Hash, cancel chan struct{}) error {
 	defer peerDropSub.Unsubscribe()
 
 	// Create a set of unique channels for this sync cycle. We need these to be
-	// ephemeral so a data race doesn't accidentally deliver somAVNing stale on
+	// ephemeral so a data race doesn't accidentally deliver somavning stale on
 	// a persistent channel across syncs (yup, this happened)
 	var (
 		accountReqFails      = make(chan *accountRequest)
@@ -629,10 +629,10 @@ func (s *Syncer) Sync(root common.Hash, cancel chan struct{}) error {
 			s.assignTrienodeHealTasks(trienodeHealResps, trienodeHealReqFails, cancel)
 			s.assignBytecodeHealTasks(bytecodeHealResps, bytecodeHealReqFails, cancel)
 		}
-		// Wait for somAVNing to happen
+		// Wait for somavning to happen
 		select {
 		case <-s.update:
-			// SomAVNing happened (new peer, delivery, timeout), recheck tasks
+			// Somavning happened (new peer, delivery, timeout), recheck tasks
 		case <-peerJoin:
 			// A new peer joined, try to schedule it new tasks
 		case id := <-peerDrop:
@@ -662,7 +662,7 @@ func (s *Syncer) Sync(root common.Hash, cancel chan struct{}) error {
 		case res := <-bytecodeHealResps:
 			s.processBytecodeHealResponse(res)
 		}
-		// Report stats if somAVNing meaningful happened
+		// Report stats if somavning meaningful happened
 		s.report(false)
 	}
 }
@@ -681,7 +681,7 @@ func (s *Syncer) loadSyncStatus() {
 			}
 			s.tasks = progress.Tasks
 			for _, task := range s.tasks {
-				task.genBatch = AVNdb.HookedBatch{
+				task.genBatch = avndb.HookedBatch{
 					Batch: s.db.NewBatch(),
 					OnPut: func(key []byte, value []byte) {
 						s.accountBytes += common.StorageSize(len(key) + len(value))
@@ -691,7 +691,7 @@ func (s *Syncer) loadSyncStatus() {
 
 				for _, subtasks := range task.SubTasks {
 					for _, subtask := range subtasks {
-						subtask.genBatch = AVNdb.HookedBatch{
+						subtask.genBatch = avndb.HookedBatch{
 							Batch: s.db.NewBatch(),
 							OnPut: func(key []byte, value []byte) {
 								s.storageBytes += common.StorageSize(len(key) + len(value))
@@ -740,7 +740,7 @@ func (s *Syncer) loadSyncStatus() {
 			// Make sure we don't overflow if the step is not a proper divisor
 			last = common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 		}
-		batch := AVNdb.HookedBatch{
+		batch := avndb.HookedBatch{
 			Batch: s.db.NewBatch(),
 			OnPut: func(key []byte, value []byte) {
 				s.accountBytes += common.StorageSize(len(key) + len(value))
@@ -1236,7 +1236,7 @@ func (s *Syncer) assignTrienodeHealTasks(success chan *trienodeHealResponse, fai
 	for len(s.healer.trieTasks) > 0 || s.healer.scheduler.Pending() > 0 {
 		// If there are not enough trie tasks queued to fully assign, fill the
 		// queue from the state sync scheduler. The trie synced schedules these
-		// togAVNer with bytecodes, so we need to queue them combined.
+		// togavner with bytecodes, so we need to queue them combined.
 		var (
 			have = len(s.healer.trieTasks) + len(s.healer.codeTasks)
 			want = maxTrieRequestCount + maxCodeRequestCount
@@ -1360,7 +1360,7 @@ func (s *Syncer) assignBytecodeHealTasks(success chan *bytecodeHealResponse, fai
 	for len(s.healer.codeTasks) > 0 || s.healer.scheduler.Pending() > 0 {
 		// If there are not enough trie tasks queued to fully assign, fill the
 		// queue from the state sync scheduler. The trie synced schedules these
-		// togAVNer with trie nodes, so we need to queue them combined.
+		// togavner with trie nodes, so we need to queue them combined.
 		var (
 			have = len(s.healer.trieTasks) + len(s.healer.codeTasks)
 			want = maxTrieRequestCount + maxCodeRequestCount
@@ -1852,7 +1852,7 @@ func (s *Syncer) processStorageResponse(res *storageResponse) {
 	if res.subTask != nil {
 		res.subTask.req = nil
 	}
-	batch := AVNdb.HookedBatch{
+	batch := avndb.HookedBatch{
 		Batch: s.db.NewBatch(),
 		OnPut: func(key []byte, value []byte) {
 			s.storageBytes += common.StorageSize(len(key) + len(value))
@@ -1921,7 +1921,7 @@ func (s *Syncer) processStorageResponse(res *storageResponse) {
 					r := newHashRange(lastKey, chunks)
 
 					// Our first task is the one that was just filled by this response.
-					batch := AVNdb.HookedBatch{
+					batch := avndb.HookedBatch{
 						Batch: s.db.NewBatch(),
 						OnPut: func(key []byte, value []byte) {
 							s.storageBytes += common.StorageSize(len(key) + len(value))
@@ -1935,7 +1935,7 @@ func (s *Syncer) processStorageResponse(res *storageResponse) {
 						genTrie:  trie.NewStackTrie(batch),
 					})
 					for r.Next() {
-						batch := AVNdb.HookedBatch{
+						batch := avndb.HookedBatch{
 							Batch: s.db.NewBatch(),
 							OnPut: func(key []byte, value []byte) {
 								s.storageBytes += common.StorageSize(len(key) + len(value))
@@ -2024,7 +2024,7 @@ func (s *Syncer) processStorageResponse(res *storageResponse) {
 				}
 			}
 		}
-		if res.subTask.genBatch.ValueSize() > AVNdb.IdealBatchSize || res.subTask.done {
+		if res.subTask.genBatch.ValueSize() > avndb.IdealBatchSize || res.subTask.done {
 			if err := res.subTask.genBatch.Write(); err != nil {
 				log.Error("Failed to persist stack slots", "err", err)
 			}
@@ -2137,7 +2137,7 @@ func (s *Syncer) forwardAccountTask(task *accountTask) {
 	// snapshot generation.
 	oldAccountBytes := s.accountBytes
 
-	batch := AVNdb.HookedBatch{
+	batch := avndb.HookedBatch{
 		Batch: s.db.NewBatch(),
 		OnPut: func(key []byte, value []byte) {
 			s.accountBytes += common.StorageSize(len(key) + len(value))
@@ -2185,7 +2185,7 @@ func (s *Syncer) forwardAccountTask(task *accountTask) {
 			log.Error("Failed to commit stack account", "err", err)
 		}
 	}
-	if task.genBatch.ValueSize() > AVNdb.IdealBatchSize || task.done {
+	if task.genBatch.ValueSize() > avndb.IdealBatchSize || task.done {
 		if err := task.genBatch.Write(); err != nil {
 			log.Error("Failed to persist stack account", "err", err)
 		}
@@ -2194,7 +2194,7 @@ func (s *Syncer) forwardAccountTask(task *accountTask) {
 	log.Debug("Persisted range of accounts", "accounts", len(res.accounts), "bytes", s.accountBytes-oldAccountBytes)
 }
 
-// OnAccounts is a callback mAVNod to invoke when a range of accounts are
+// OnAccounts is a callback mavnod to invoke when a range of accounts are
 // received from a remote peer.
 func (s *Syncer) OnAccounts(peer SyncPeer, id uint64, hashes []common.Hash, accounts [][]byte, proof [][]byte) error {
 	size := common.StorageSize(len(hashes) * common.HashLength)
@@ -2207,7 +2207,7 @@ func (s *Syncer) OnAccounts(peer SyncPeer, id uint64, hashes []common.Hash, acco
 	logger := peer.Log().New("reqid", id)
 	logger.Trace("Delivering range of accounts", "hashes", len(hashes), "accounts", len(accounts), "proofs", len(proof), "bytes", size)
 
-	// WhAVNer or not the response is valid, we can mark the peer as idle and
+	// Whavner or not the response is valid, we can mark the peer as idle and
 	// notify the scheduler to assign a new task. If the response is invalid,
 	// we'll drop the peer in a bit.
 	s.lock.Lock()
@@ -2296,7 +2296,7 @@ func (s *Syncer) OnAccounts(peer SyncPeer, id uint64, hashes []common.Hash, acco
 	return nil
 }
 
-// OnByteCodes is a callback mAVNod to invoke when a batch of contract
+// OnByteCodes is a callback mavnod to invoke when a batch of contract
 // bytes codes are received from a remote peer.
 func (s *Syncer) OnByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) error {
 	s.lock.RLock()
@@ -2309,7 +2309,7 @@ func (s *Syncer) OnByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) error
 	return s.onHealByteCodes(peer, id, bytecodes)
 }
 
-// onByteCodes is a callback mAVNod to invoke when a batch of contract
+// onByteCodes is a callback mavnod to invoke when a batch of contract
 // bytes codes are received from a remote peer in the syncing phase.
 func (s *Syncer) onByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) error {
 	var size common.StorageSize
@@ -2319,7 +2319,7 @@ func (s *Syncer) onByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) error
 	logger := peer.Log().New("reqid", id)
 	logger.Trace("Delivering set of bytecodes", "bytecodes", len(bytecodes), "bytes", size)
 
-	// WhAVNer or not the response is valid, we can mark the peer as idle and
+	// Whavner or not the response is valid, we can mark the peer as idle and
 	// notify the scheduler to assign a new task. If the response is invalid,
 	// we'll drop the peer in a bit.
 	s.lock.Lock()
@@ -2403,7 +2403,7 @@ func (s *Syncer) onByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) error
 	return nil
 }
 
-// OnStorage is a callback mAVNod to invoke when ranges of storage slots
+// OnStorage is a callback mavnod to invoke when ranges of storage slots
 // are received from a remote peer.
 func (s *Syncer) OnStorage(peer SyncPeer, id uint64, hashes [][]common.Hash, slots [][][]byte, proof [][]byte) error {
 	// Gather some trace stats to aid in debugging issues
@@ -2428,7 +2428,7 @@ func (s *Syncer) OnStorage(peer SyncPeer, id uint64, hashes [][]common.Hash, slo
 	logger := peer.Log().New("reqid", id)
 	logger.Trace("Delivering ranges of storage slots", "accounts", len(hashes), "hashes", hashCount, "slots", slotCount, "proofs", len(proof), "size", size)
 
-	// WhAVNer or not the response is valid, we can mark the peer as idle and
+	// Whavner or not the response is valid, we can mark the peer as idle and
 	// notify the scheduler to assign a new task. If the response is invalid,
 	// we'll drop the peer in a bit.
 	s.lock.Lock()
@@ -2545,7 +2545,7 @@ func (s *Syncer) OnStorage(peer SyncPeer, id uint64, hashes [][]common.Hash, slo
 	return nil
 }
 
-// OnTrieNodes is a callback mAVNod to invoke when a batch of trie nodes
+// OnTrieNodes is a callback mavnod to invoke when a batch of trie nodes
 // are received from a remote peer.
 func (s *Syncer) OnTrieNodes(peer SyncPeer, id uint64, trienodes [][]byte) error {
 	var size common.StorageSize
@@ -2555,7 +2555,7 @@ func (s *Syncer) OnTrieNodes(peer SyncPeer, id uint64, trienodes [][]byte) error
 	logger := peer.Log().New("reqid", id)
 	logger.Trace("Delivering set of healing trienodes", "trienodes", len(trienodes), "bytes", size)
 
-	// WhAVNer or not the response is valid, we can mark the peer as idle and
+	// Whavner or not the response is valid, we can mark the peer as idle and
 	// notify the scheduler to assign a new task. If the response is invalid,
 	// we'll drop the peer in a bit.
 	s.lock.Lock()
@@ -2640,7 +2640,7 @@ func (s *Syncer) OnTrieNodes(peer SyncPeer, id uint64, trienodes [][]byte) error
 	return nil
 }
 
-// onHealByteCodes is a callback mAVNod to invoke when a batch of contract
+// onHealByteCodes is a callback mavnod to invoke when a batch of contract
 // bytes codes are received from a remote peer in the healing phase.
 func (s *Syncer) onHealByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) error {
 	var size common.StorageSize
@@ -2650,7 +2650,7 @@ func (s *Syncer) onHealByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) e
 	logger := peer.Log().New("reqid", id)
 	logger.Trace("Delivering set of healing bytecodes", "bytecodes", len(bytecodes), "bytes", size)
 
-	// WhAVNer or not the response is valid, we can mark the peer as idle and
+	// Whavner or not the response is valid, we can mark the peer as idle and
 	// notify the scheduler to assign a new task. If the response is invalid,
 	// we'll drop the peer in a bit.
 	s.lock.Lock()
@@ -2734,7 +2734,7 @@ func (s *Syncer) onHealByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) e
 	return nil
 }
 
-// onHealState is a callback mAVNod to invoke when a flat state(account
+// onHealState is a callback mavnod to invoke when a flat state(account
 // or storage slot) is downloded during the healing stage. The flat states
 // can be persisted blindly and can be fixed later in the generation stage.
 // Note it's not concurrent safe, please handle the concurrent issue outside.
@@ -2754,7 +2754,7 @@ func (s *Syncer) onHealState(paths [][]byte, value []byte) error {
 		s.storageHealed += 1
 		s.storageHealedBytes += common.StorageSize(1 + 2*common.HashLength + len(value))
 	}
-	if s.stateWriter.ValueSize() > AVNdb.IdealBatchSize {
+	if s.stateWriter.ValueSize() > avndb.IdealBatchSize {
 		s.stateWriter.Write() // It's fine to ignore the error here
 		s.stateWriter.Reset()
 	}
@@ -2832,7 +2832,7 @@ func (s *Syncer) reportHealProgress(force bool) {
 }
 
 // estimateRemainingSlots tries to determine roughly how many slots are left in
-// a contract storage, based on the number of keys and the last hash. This mAVNod
+// a contract storage, based on the number of keys and the last hash. This mavnod
 // assumes that the hashes are lexicographically ordered and evenly distributed.
 func estimateRemainingSlots(hashes int, last common.Hash) (uint64, error) {
 	if last == (common.Hash{}) {

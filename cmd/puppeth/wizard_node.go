@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/accounts/keystore"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/accounts/keystore"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // deployNode creates a new node configuration based on some user input.
@@ -33,8 +33,8 @@ func (w *wizard) deployNode(boot bool) {
 		log.Error("No genesis block configured")
 		return
 	}
-	if w.conf.AVNstats == "" {
-		log.Error("No AVNstats server configured")
+	if w.conf.avnstats == "" {
+		log.Error("No avnstats server configured")
 		return
 	}
 	// Select the server to interact with
@@ -69,12 +69,12 @@ func (w *wizard) deployNode(boot bool) {
 	}
 	if w.conf.Genesis.Config.Ethash != nil && !boot {
 		fmt.Println()
-		if infos.AVNashdir == "" {
-			fmt.Printf("Where should the AVNash mining DAGs be stored on the remote machine?\n")
-			infos.AVNashdir = w.readString()
+		if infos.avnashdir == "" {
+			fmt.Printf("Where should the avnash mining DAGs be stored on the remote machine?\n")
+			infos.avnashdir = w.readString()
 		} else {
-			fmt.Printf("Where should the AVNash mining DAGs be stored on the remote machine? (default = %s)\n", infos.AVNashdir)
-			infos.AVNashdir = w.readDefaultString(infos.AVNashdir)
+			fmt.Printf("Where should the avnash mining DAGs be stored on the remote machine? (default = %s)\n", infos.avnashdir)
+			infos.avnashdir = w.readDefaultString(infos.avnashdir)
 		}
 	}
 	// Figure out which port to listen on
@@ -94,29 +94,29 @@ func (w *wizard) deployNode(boot bool) {
 
 	// Set a proper name to report on the stats page
 	fmt.Println()
-	if infos.AVNstats == "" {
+	if infos.avnstats == "" {
 		fmt.Printf("What should the node be called on the stats page?\n")
-		infos.AVNstats = w.readString() + ":" + w.conf.AVNstats
+		infos.avnstats = w.readString() + ":" + w.conf.avnstats
 	} else {
-		fmt.Printf("What should the node be called on the stats page? (default = %s)\n", infos.AVNstats)
-		infos.AVNstats = w.readDefaultString(infos.AVNstats) + ":" + w.conf.AVNstats
+		fmt.Printf("What should the node be called on the stats page? (default = %s)\n", infos.avnstats)
+		infos.avnstats = w.readDefaultString(infos.avnstats) + ":" + w.conf.avnstats
 	}
 	// If the node is a miner/signer, load up needed credentials
 	if !boot {
 		if w.conf.Genesis.Config.Ethash != nil {
-			// Ethash based miners only need an AVNerbase to mine against
+			// Ethash based miners only need an avnerbase to mine against
 			fmt.Println()
-			if infos.AVNerbase == "" {
+			if infos.avnerbase == "" {
 				fmt.Printf("What address should the miner use?\n")
 				for {
 					if address := w.readAddress(); address != nil {
-						infos.AVNerbase = address.Hex()
+						infos.avnerbase = address.Hex()
 						break
 					}
 				}
 			} else {
-				fmt.Printf("What address should the miner use? (default = %s)\n", infos.AVNerbase)
-				infos.AVNerbase = w.readDefaultAddress(common.HexToAddress(infos.AVNerbase)).Hex()
+				fmt.Printf("What address should the miner use? (default = %s)\n", infos.avnerbase)
+				infos.avnerbase = w.readDefaultAddress(common.HexToAddress(infos.avnerbase)).Hex()
 			}
 		} else if w.conf.Genesis.Config.Clique != nil {
 			// If a previous signer was already set, offer to reuse it

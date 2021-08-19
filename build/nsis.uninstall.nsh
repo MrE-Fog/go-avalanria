@@ -17,12 +17,12 @@ Section "Uninstall"
   rmDir "$SMPROGRAMS\${APPNAME}"
 
   # Firewall - remove rules if exists
-  SimpleFC::AdvRemoveRule "GAVN incoming peers (TCP:30303)"
-  SimpleFC::AdvRemoveRule "GAVN outgoing peers (TCP:30303)"
-  SimpleFC::AdvRemoveRule "GAVN UDP discovery (UDP:30303)"
+  SimpleFC::AdvRemoveRule "Gavn incoming peers (TCP:30303)"
+  SimpleFC::AdvRemoveRule "Gavn outgoing peers (TCP:30303)"
+  SimpleFC::AdvRemoveRule "Gavn UDP discovery (UDP:30303)"
 
-  # Remove IPC endpoint (https://github.com/AVNereum/EIPs/issues/147)
-  ${un.EnvVarUpdate} $0 "AVNEREUM_SOCKET" "R" "HKLM" "\\.\pipe\gAVN.ipc"
+  # Remove IPC endpoint (https://github.com/avalanria/EIPs/issues/147)
+  ${un.EnvVarUpdate} $0 "AVNEREUM_SOCKET" "R" "HKLM" "\\.\pipe\gavn.ipc"
 
   # Remove install directory from PATH
   Push "$INSTDIR"

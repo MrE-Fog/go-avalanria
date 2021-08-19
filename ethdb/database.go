@@ -1,25 +1,25 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package AVNdb defines the interfaces for an Avalanria data store.
-package AVNdb
+// Package avndb defines the interfaces for an Avalanria data store.
+package avndb
 
 import "io"
 
-// KeyValueReader wraps the Has and Get mAVNod of a backing data store.
+// KeyValueReader wraps the Has and Get mavnod of a backing data store.
 type KeyValueReader interface {
 	// Has retrieves if a key is present in the key-value data store.
 	Has(key []byte) (bool, error)
@@ -28,7 +28,7 @@ type KeyValueReader interface {
 	Get(key []byte) ([]byte, error)
 }
 
-// KeyValueWriter wraps the Put mAVNod of a backing data store.
+// KeyValueWriter wraps the Put mavnod of a backing data store.
 type KeyValueWriter interface {
 	// Put inserts the given value into the key-value data store.
 	Put(key []byte, value []byte) error
@@ -37,13 +37,13 @@ type KeyValueWriter interface {
 	Delete(key []byte) error
 }
 
-// Stater wraps the Stat mAVNod of a backing data store.
+// Stater wraps the Stat mavnod of a backing data store.
 type Stater interface {
 	// Stat returns a particular internal stat of the database.
 	Stat(property string) (string, error)
 }
 
-// Compacter wraps the Compact mAVNod of a backing data store.
+// Compacter wraps the Compact mavnod of a backing data store.
 type Compacter interface {
 	// Compact flattens the underlying data store for the given key range. In essence,
 	// deleted and overwritten versions are discarded, and the data is rearranged to
@@ -55,7 +55,7 @@ type Compacter interface {
 	Compact(start []byte, limit []byte) error
 }
 
-// KeyValueStore contains all the mAVNods required to allow handling different
+// KeyValueStore contains all the mavnods required to allow handling different
 // key-value data stores backing the high level database.
 type KeyValueStore interface {
 	KeyValueReader
@@ -67,9 +67,9 @@ type KeyValueStore interface {
 	io.Closer
 }
 
-// AncientReader contains the mAVNods required to read from immutable ancient data.
+// AncientReader contains the mavnods required to read from immutable ancient data.
 type AncientReader interface {
-	// HasAncient returns an indicator whAVNer the specified data exists in the
+	// HasAncient returns an indicator whavner the specified data exists in the
 	// ancient store.
 	HasAncient(kind string, number uint64) (bool, error)
 
@@ -83,7 +83,7 @@ type AncientReader interface {
 	AncientSize(kind string) (uint64, error)
 }
 
-// AncientWriter contains the mAVNods required to write to immutable ancient data.
+// AncientWriter contains the mavnods required to write to immutable ancient data.
 type AncientWriter interface {
 	// AppendAncient injects all binary blobs belong to block at the end of the
 	// append-only immutable table files.
@@ -96,21 +96,21 @@ type AncientWriter interface {
 	Sync() error
 }
 
-// Reader contains the mAVNods required to read data from both key-value as well as
+// Reader contains the mavnods required to read data from both key-value as well as
 // immutable ancient data.
 type Reader interface {
 	KeyValueReader
 	AncientReader
 }
 
-// Writer contains the mAVNods required to write data to both key-value as well as
+// Writer contains the mavnods required to write data to both key-value as well as
 // immutable ancient data.
 type Writer interface {
 	KeyValueWriter
 	AncientWriter
 }
 
-// AncientStore contains all the mAVNods required to allow handling different
+// AncientStore contains all the mavnods required to allow handling different
 // ancient data stores backing immutable chain data store.
 type AncientStore interface {
 	AncientReader
@@ -118,7 +118,7 @@ type AncientStore interface {
 	io.Closer
 }
 
-// Database contains all the mAVNods required by the high level database to not
+// Database contains all the mavnods required by the high level database to not
 // only access the key-value data store but also the chain freezer.
 type Database interface {
 	Reader

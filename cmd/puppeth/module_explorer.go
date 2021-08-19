@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -25,18 +25,18 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // explorerDockerfile is the Dockerfile required to run a block explorer.
 var explorerDockerfile = `
-FROM puppAVN/blockscout:latest
+FROM puppavn/blockscout:latest
 
 ADD genesis.json /genesis.json
 RUN \
-  echo 'gAVN --cache 512 init /genesis.json' > explorer.sh && \
-  echo $'gAVN --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.EthPort}} --bootnodes {{.Bootnodes}} --AVNstats \'{{.Ethstats}}\' --cache=512 --http --http.api "net,web3,AVN,shh,debug" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" --exitwhensynced' >> explorer.sh && \
-  echo $'exec gAVN --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.EthPort}} --bootnodes {{.Bootnodes}} --AVNstats \'{{.Ethstats}}\' --cache=512 --http --http.api "net,web3,AVN,shh,debug" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" &' >> explorer.sh && \
+  echo 'gavn --cache 512 init /genesis.json' > explorer.sh && \
+  echo $'gavn --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.EthPort}} --bootnodes {{.Bootnodes}} --avnstats \'{{.Ethstats}}\' --cache=512 --http --http.api "net,web3,avn,shh,debug" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" --exitwhensynced' >> explorer.sh && \
+  echo $'exec gavn --networkid {{.NetworkID}} --syncmode "full" --gcmode "archive" --port {{.EthPort}} --bootnodes {{.Bootnodes}} --avnstats \'{{.Ethstats}}\' --cache=512 --http --http.api "net,web3,avn,shh,debug" --http.corsdomain "*" --http.vhosts "*" --ws --ws.origins "*" &' >> explorer.sh && \
   echo '/usr/local/bin/docker-entrypoint.sh postgres &' >> explorer.sh && \
   echo 'sleep 5' >> explorer.sh && \
   echo 'mix do ecto.drop --force, ecto.create, ecto.migrate' >> explorer.sh && \
@@ -65,7 +65,7 @@ services:
             - VIRTUAL_HOST={{.VHost}}
             - VIRTUAL_PORT=4000{{end}}
         volumes:
-            - {{.Datadir}}:/opt/app/.AVNereum
+            - {{.Datadir}}:/opt/app/.avalanria
             - {{.DBDir}}:/var/lib/postgresql/data
         logging:
           driver: "json-file"
@@ -87,7 +87,7 @@ func deployExplorer(client *sshClient, network string, bootnodes []string, confi
 	template.Must(template.New("").Parse(explorerDockerfile)).Execute(dockerfile, map[string]interface{}{
 		"NetworkID": config.node.network,
 		"Bootnodes": strings.Join(bootnodes, ","),
-		"Ethstats":  config.node.AVNstats,
+		"Ethstats":  config.node.avnstats,
 		"EthPort":   config.node.port,
 	})
 	files[filepath.Join(workdir, "Dockerfile")] = dockerfile.Bytes()
@@ -100,11 +100,11 @@ func deployExplorer(client *sshClient, network string, bootnodes []string, confi
 	template.Must(template.New("").Parse(explorerComposefile)).Execute(composefile, map[string]interface{}{
 		"Network":     network,
 		"VHost":       config.host,
-		"Ethstats":    config.node.AVNstats,
+		"Ethstats":    config.node.avnstats,
 		"Datadir":     config.node.datadir,
 		"DBDir":       config.dbdir,
 		"EthPort":     config.node.port,
-		"EthName":     config.node.AVNstats[:strings.Index(config.node.AVNstats, ":")],
+		"EthName":     config.node.avnstats[:strings.Index(config.node.avnstats, ":")],
 		"WebPort":     config.port,
 		"Transformer": transformer,
 	})
@@ -140,13 +140,13 @@ func (info *explorerInfos) Report() map[string]string {
 		"Website address ":        info.host,
 		"Website listener port ":  strconv.Itoa(info.port),
 		"Avalanria listener port ": strconv.Itoa(info.node.port),
-		"Ethstats username":       info.node.AVNstats,
+		"Ethstats username":       info.node.avnstats,
 	}
 	return report
 }
 
 // checkExplorer does a health-check against a block explorer server to verify
-// whAVNer it's running, and if yes, whAVNer it's responsive.
+// whavner it's running, and if yes, whavner it's responsive.
 func checkExplorer(client *sshClient, network string) (*explorerInfos, error) {
 	// Inspect a possible explorer container on the host
 	infos, err := inspectContainer(client, fmt.Sprintf("%s_explorer_1", network))
@@ -182,9 +182,9 @@ func checkExplorer(client *sshClient, network string) (*explorerInfos, error) {
 	// Assemble and return the useful infos
 	stats := &explorerInfos{
 		node: &nodeInfos{
-			datadir:  infos.volumes["/opt/app/.AVNereum"],
+			datadir:  infos.volumes["/opt/app/.avalanria"],
 			port:     infos.portmap[infos.envvars["AVN_PORT"]+"/tcp"],
-			AVNstats: infos.envvars["AVN_NAME"],
+			avnstats: infos.envvars["AVN_NAME"],
 		},
 		dbdir: infos.volumes["/var/lib/postgresql/data"],
 		host:  host,

@@ -1,20 +1,20 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"fmt"
@@ -24,24 +24,24 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus/AVNash"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/forkid"
-	"github.com/AVNereum/go-AVNereum/core/rawdb"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/core/vm"
-	"github.com/AVNereum/go-AVNereum/AVN/downloader"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus/avnash"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/forkid"
+	"github.com/avalanria/go-avalanria/core/rawdb"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/core/vm"
+	"github.com/avalanria/go-avalanria/avn/downloader"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 // testEthHandler is a mock event handler to listen for inbound network requests
-// on the `AVN` protocol and convert them into a more easily testable form.
+// on the `avn` protocol and convert them into a more easily testable form.
 type testEthHandler struct {
 	blockBroadcasts event.Feed
 	txAnnounces     event.Feed
@@ -50,44 +50,44 @@ type testEthHandler struct {
 
 func (h *testEthHandler) Chain() *core.BlockChain              { panic("no backing chain") }
 func (h *testEthHandler) StateBloom() *trie.SyncBloom          { panic("no backing state bloom") }
-func (h *testEthHandler) TxPool() AVN.TxPool                   { panic("no backing tx pool") }
+func (h *testEthHandler) TxPool() avn.TxPool                   { panic("no backing tx pool") }
 func (h *testEthHandler) AcceptTxs() bool                      { return true }
-func (h *testEthHandler) RunPeer(*AVN.Peer, AVN.Handler) error { panic("not used in tests") }
+func (h *testEthHandler) RunPeer(*avn.Peer, avn.Handler) error { panic("not used in tests") }
 func (h *testEthHandler) PeerInfo(enode.ID) interface{}        { panic("not used in tests") }
 
-func (h *testEthHandler) Handle(peer *AVN.Peer, packet AVN.Packet) error {
+func (h *testEthHandler) Handle(peer *avn.Peer, packet avn.Packet) error {
 	switch packet := packet.(type) {
-	case *AVN.NewBlockPacket:
+	case *avn.NewBlockPacket:
 		h.blockBroadcasts.Send(packet.Block)
 		return nil
 
-	case *AVN.NewPooledTransactionHashesPacket:
+	case *avn.NewPooledTransactionHashesPacket:
 		h.txAnnounces.Send(([]common.Hash)(*packet))
 		return nil
 
-	case *AVN.TransactionsPacket:
+	case *avn.TransactionsPacket:
 		h.txBroadcasts.Send(([]*types.Transaction)(*packet))
 		return nil
 
-	case *AVN.PooledTransactionsPacket:
+	case *avn.PooledTransactionsPacket:
 		h.txBroadcasts.Send(([]*types.Transaction)(*packet))
 		return nil
 
 	default:
-		panic(fmt.Sprintf("unexpected AVN packet type in tests: %T", packet))
+		panic(fmt.Sprintf("unexpected avn packet type in tests: %T", packet))
 	}
 }
 
 // Tests that peers are correctly accepted (or rejected) based on the advertised
 // fork IDs in the protocol handshake.
-func TestForkIDSplit65(t *testing.T) { testForkIDSplit(t, AVN.AVN65) }
-func TestForkIDSplit66(t *testing.T) { testForkIDSplit(t, AVN.AVN66) }
+func TestForkIDSplit65(t *testing.T) { testForkIDSplit(t, avn.AVN65) }
+func TestForkIDSplit66(t *testing.T) { testForkIDSplit(t, avn.AVN66) }
 
 func testForkIDSplit(t *testing.T, protocol uint) {
 	t.Parallel()
 
 	var (
-		engine = AVNash.NewFaker()
+		engine = avnash.NewFaker()
 
 		configNoFork  = &params.ChainConfig{HomesteadBlock: big.NewInt(1)}
 		configProFork = &params.ChainConfig{
@@ -112,7 +112,7 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 		blocksNoFork, _  = core.GenerateChain(configNoFork, genesisNoFork, engine, dbNoFork, 2, nil)
 		blocksProFork, _ = core.GenerateChain(configProFork, genesisProFork, engine, dbProFork, 2, nil)
 
-		AVNNoFork, _ = newHandler(&handlerConfig{
+		avnNoFork, _ = newHandler(&handlerConfig{
 			Database:   dbNoFork,
 			Chain:      chainNoFork,
 			TxPool:     newTestTxPool(),
@@ -120,7 +120,7 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 			Sync:       downloader.FullSync,
 			BloomCache: 1,
 		})
-		AVNProFork, _ = newHandler(&handlerConfig{
+		avnProFork, _ = newHandler(&handlerConfig{
 			Database:   dbProFork,
 			Chain:      chainProFork,
 			TxPool:     newTestTxPool(),
@@ -129,32 +129,32 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 			BloomCache: 1,
 		})
 	)
-	AVNNoFork.Start(1000)
-	AVNProFork.Start(1000)
+	avnNoFork.Start(1000)
+	avnProFork.Start(1000)
 
 	// Clean up everything after ourselves
 	defer chainNoFork.Stop()
 	defer chainProFork.Stop()
 
-	defer AVNNoFork.Stop()
-	defer AVNProFork.Stop()
+	defer avnNoFork.Stop()
+	defer avnProFork.Stop()
 
 	// Both nodes should allow the other to connect (same genesis, next fork is the same)
 	p2pNoFork, p2pProFork := p2p.MsgPipe()
 	defer p2pNoFork.Close()
 	defer p2pProFork.Close()
 
-	peerNoFork := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pNoFork), p2pNoFork, nil)
-	peerProFork := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pProFork), p2pProFork, nil)
+	peerNoFork := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pNoFork), p2pNoFork, nil)
+	peerProFork := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pProFork), p2pProFork, nil)
 	defer peerNoFork.Close()
 	defer peerProFork.Close()
 
 	errc := make(chan error, 2)
 	go func(errc chan error) {
-		errc <- AVNNoFork.runEthPeer(peerProFork, func(peer *AVN.Peer) error { return nil })
+		errc <- avnNoFork.runEthPeer(peerProFork, func(peer *avn.Peer) error { return nil })
 	}(errc)
 	go func(errc chan error) {
-		errc <- AVNProFork.runEthPeer(peerNoFork, func(peer *AVN.Peer) error { return nil })
+		errc <- avnProFork.runEthPeer(peerNoFork, func(peer *avn.Peer) error { return nil })
 	}(errc)
 
 	for i := 0; i < 2; i++ {
@@ -175,17 +175,17 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 	defer p2pNoFork.Close()
 	defer p2pProFork.Close()
 
-	peerNoFork = AVN.NewPeer(protocol, p2p.NewPeer(enode.ID{1}, "", nil), p2pNoFork, nil)
-	peerProFork = AVN.NewPeer(protocol, p2p.NewPeer(enode.ID{2}, "", nil), p2pProFork, nil)
+	peerNoFork = avn.NewPeer(protocol, p2p.NewPeer(enode.ID{1}, "", nil), p2pNoFork, nil)
+	peerProFork = avn.NewPeer(protocol, p2p.NewPeer(enode.ID{2}, "", nil), p2pProFork, nil)
 	defer peerNoFork.Close()
 	defer peerProFork.Close()
 
 	errc = make(chan error, 2)
 	go func(errc chan error) {
-		errc <- AVNNoFork.runEthPeer(peerProFork, func(peer *AVN.Peer) error { return nil })
+		errc <- avnNoFork.runEthPeer(peerProFork, func(peer *avn.Peer) error { return nil })
 	}(errc)
 	go func(errc chan error) {
-		errc <- AVNProFork.runEthPeer(peerNoFork, func(peer *AVN.Peer) error { return nil })
+		errc <- avnProFork.runEthPeer(peerNoFork, func(peer *avn.Peer) error { return nil })
 	}(errc)
 
 	for i := 0; i < 2; i++ {
@@ -206,17 +206,17 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 	defer p2pNoFork.Close()
 	defer p2pProFork.Close()
 
-	peerNoFork = AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pNoFork), p2pNoFork, nil)
-	peerProFork = AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pProFork), p2pProFork, nil)
+	peerNoFork = avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pNoFork), p2pNoFork, nil)
+	peerProFork = avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pProFork), p2pProFork, nil)
 	defer peerNoFork.Close()
 	defer peerProFork.Close()
 
 	errc = make(chan error, 2)
 	go func(errc chan error) {
-		errc <- AVNNoFork.runEthPeer(peerProFork, func(peer *AVN.Peer) error { return nil })
+		errc <- avnNoFork.runEthPeer(peerProFork, func(peer *avn.Peer) error { return nil })
 	}(errc)
 	go func(errc chan error) {
-		errc <- AVNProFork.runEthPeer(peerNoFork, func(peer *AVN.Peer) error { return nil })
+		errc <- avnProFork.runEthPeer(peerNoFork, func(peer *avn.Peer) error { return nil })
 	}(errc)
 
 	var successes int
@@ -236,8 +236,8 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 }
 
 // Tests that received transactions are added to the local pool.
-func TestRecvTransactions65(t *testing.T) { testRecvTransactions(t, AVN.AVN65) }
-func TestRecvTransactions66(t *testing.T) { testRecvTransactions(t, AVN.AVN66) }
+func TestRecvTransactions65(t *testing.T) { testRecvTransactions(t, avn.AVN65) }
+func TestRecvTransactions66(t *testing.T) { testRecvTransactions(t, avn.AVN66) }
 
 func testRecvTransactions(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -257,13 +257,13 @@ func testRecvTransactions(t *testing.T, protocol uint) {
 	defer p2pSrc.Close()
 	defer p2pSink.Close()
 
-	src := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pSrc), p2pSrc, handler.txpool)
-	sink := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pSink), p2pSink, handler.txpool)
+	src := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pSrc), p2pSrc, handler.txpool)
+	sink := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pSink), p2pSink, handler.txpool)
 	defer src.Close()
 	defer sink.Close()
 
-	go handler.handler.runEthPeer(sink, func(peer *AVN.Peer) error {
-		return AVN.Handle((*AVNHandler)(handler.handler), peer)
+	go handler.handler.runEthPeer(sink, func(peer *avn.Peer) error {
+		return avn.Handle((*avnHandler)(handler.handler), peer)
 	})
 	// Run the handshake locally to avoid spinning up a source handler
 	var (
@@ -294,8 +294,8 @@ func testRecvTransactions(t *testing.T, protocol uint) {
 }
 
 // This test checks that pending transactions are sent.
-func TestSendTransactions65(t *testing.T) { testSendTransactions(t, AVN.AVN65) }
-func TestSendTransactions66(t *testing.T) { testSendTransactions(t, AVN.AVN66) }
+func TestSendTransactions65(t *testing.T) { testSendTransactions(t, avn.AVN65) }
+func TestSendTransactions66(t *testing.T) { testSendTransactions(t, avn.AVN66) }
 
 func testSendTransactions(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -319,13 +319,13 @@ func testSendTransactions(t *testing.T, protocol uint) {
 	defer p2pSrc.Close()
 	defer p2pSink.Close()
 
-	src := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pSrc), p2pSrc, handler.txpool)
-	sink := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pSink), p2pSink, handler.txpool)
+	src := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pSrc), p2pSrc, handler.txpool)
+	sink := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pSink), p2pSink, handler.txpool)
 	defer src.Close()
 	defer sink.Close()
 
-	go handler.handler.runEthPeer(src, func(peer *AVN.Peer) error {
-		return AVN.Handle((*AVNHandler)(handler.handler), peer)
+	go handler.handler.runEthPeer(src, func(peer *avn.Peer) error {
+		return avn.Handle((*avnHandler)(handler.handler), peer)
 	})
 	// Run the handshake locally to avoid spinning up a source handler
 	var (
@@ -348,7 +348,7 @@ func testSendTransactions(t *testing.T, protocol uint) {
 	bcastSub := backend.txBroadcasts.Subscribe(bcasts)
 	defer bcastSub.Unsubscribe()
 
-	go AVN.Handle(backend, sink)
+	go avn.Handle(backend, sink)
 
 	// Make sure we get all the transactions on the correct channels
 	seen := make(map[common.Hash]struct{})
@@ -364,7 +364,7 @@ func testSendTransactions(t *testing.T, protocol uint) {
 					seen[hash] = struct{}{}
 				}
 			case <-bcasts:
-				t.Errorf("initial tx broadcast received on post AVN/65")
+				t.Errorf("initial tx broadcast received on post avn/65")
 			}
 
 		default:
@@ -380,8 +380,8 @@ func testSendTransactions(t *testing.T, protocol uint) {
 
 // Tests that transactions get propagated to all attached peers, either via direct
 // broadcasts or via announcements/retrievals.
-func TestTransactionPropagation65(t *testing.T) { testTransactionPropagation(t, AVN.AVN65) }
-func TestTransactionPropagation66(t *testing.T) { testTransactionPropagation(t, AVN.AVN66) }
+func TestTransactionPropagation65(t *testing.T) { testTransactionPropagation(t, avn.AVN65) }
+func TestTransactionPropagation66(t *testing.T) { testTransactionPropagation(t, avn.AVN66) }
 
 func testTransactionPropagation(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -407,16 +407,16 @@ func testTransactionPropagation(t *testing.T, protocol uint) {
 		defer sourcePipe.Close()
 		defer sinkPipe.Close()
 
-		sourcePeer := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{byte(i)}, "", nil, sourcePipe), sourcePipe, source.txpool)
-		sinkPeer := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{0}, "", nil, sinkPipe), sinkPipe, sink.txpool)
+		sourcePeer := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{byte(i)}, "", nil, sourcePipe), sourcePipe, source.txpool)
+		sinkPeer := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{0}, "", nil, sinkPipe), sinkPipe, sink.txpool)
 		defer sourcePeer.Close()
 		defer sinkPeer.Close()
 
-		go source.handler.runEthPeer(sourcePeer, func(peer *AVN.Peer) error {
-			return AVN.Handle((*AVNHandler)(source.handler), peer)
+		go source.handler.runEthPeer(sourcePeer, func(peer *avn.Peer) error {
+			return avn.Handle((*avnHandler)(source.handler), peer)
 		})
-		go sink.handler.runEthPeer(sinkPeer, func(peer *AVN.Peer) error {
-			return AVN.Handle((*AVNHandler)(sink.handler), peer)
+		go sink.handler.runEthPeer(sinkPeer, func(peer *avn.Peer) error {
+			return avn.Handle((*avnHandler)(sink.handler), peer)
 		})
 	}
 	// Subscribe to all the transaction pools
@@ -450,7 +450,7 @@ func testTransactionPropagation(t *testing.T, protocol uint) {
 	}
 }
 
-// Tests that post AVN protocol handshake, clients perform a mutual checkpoint
+// Tests that post avn protocol handshake, clients perform a mutual checkpoint
 // challenge to validate each other's chains. Hash mismatches, or missing ones
 // during a fast sync should lead to the peer getting dropped.
 func TestCheckpointChallenge(t *testing.T) {
@@ -521,16 +521,16 @@ func testCheckpointChallenge(t *testing.T, syncmode downloader.SyncMode, checkpo
 	defer p2pLocal.Close()
 	defer p2pRemote.Close()
 
-	local := AVN.NewPeer(AVN.AVN65, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pLocal), p2pLocal, handler.txpool)
-	remote := AVN.NewPeer(AVN.AVN65, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pRemote), p2pRemote, handler.txpool)
+	local := avn.NewPeer(avn.AVN65, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pLocal), p2pLocal, handler.txpool)
+	remote := avn.NewPeer(avn.AVN65, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pRemote), p2pRemote, handler.txpool)
 	defer local.Close()
 	defer remote.Close()
 
 	handlerDone := make(chan struct{})
 	go func() {
 		defer close(handlerDone)
-		handler.handler.runEthPeer(local, func(peer *AVN.Peer) error {
-			return AVN.Handle((*AVNHandler)(handler.handler), peer)
+		handler.handler.runEthPeer(local, func(peer *avn.Peer) error {
+			return avn.Handle((*avnHandler)(handler.handler), peer)
 		})
 	}()
 
@@ -619,18 +619,18 @@ func testBroadcastBlock(t *testing.T, peers, bcasts int) {
 		defer sourcePipe.Close()
 		defer sinkPipe.Close()
 
-		sourcePeer := AVN.NewPeer(AVN.AVN65, p2p.NewPeerPipe(enode.ID{byte(i)}, "", nil, sourcePipe), sourcePipe, nil)
-		sinkPeer := AVN.NewPeer(AVN.AVN65, p2p.NewPeerPipe(enode.ID{0}, "", nil, sinkPipe), sinkPipe, nil)
+		sourcePeer := avn.NewPeer(avn.AVN65, p2p.NewPeerPipe(enode.ID{byte(i)}, "", nil, sourcePipe), sourcePipe, nil)
+		sinkPeer := avn.NewPeer(avn.AVN65, p2p.NewPeerPipe(enode.ID{0}, "", nil, sinkPipe), sinkPipe, nil)
 		defer sourcePeer.Close()
 		defer sinkPeer.Close()
 
-		go source.handler.runEthPeer(sourcePeer, func(peer *AVN.Peer) error {
-			return AVN.Handle((*AVNHandler)(source.handler), peer)
+		go source.handler.runEthPeer(sourcePeer, func(peer *avn.Peer) error {
+			return avn.Handle((*avnHandler)(source.handler), peer)
 		})
 		if err := sinkPeer.Handshake(1, td, genesis.Hash(), genesis.Hash(), forkid.NewIDWithChain(source.chain), forkid.NewFilter(source.chain)); err != nil {
 			t.Fatalf("failed to run protocol handshake")
 		}
-		go AVN.Handle(sink, sinkPeer)
+		go avn.Handle(sink, sinkPeer)
 	}
 	// Subscribe to all the transaction pools
 	blockChs := make([]chan *types.Block, len(sinks))
@@ -671,8 +671,8 @@ func testBroadcastBlock(t *testing.T, peers, bcasts int) {
 
 // Tests that a propagated malformed block (uncles or transactions don't match
 // with the hashes in the header) gets discarded and not broadcast forward.
-func TestBroadcastMalformedBlock65(t *testing.T) { testBroadcastMalformedBlock(t, AVN.AVN65) }
-func TestBroadcastMalformedBlock66(t *testing.T) { testBroadcastMalformedBlock(t, AVN.AVN66) }
+func TestBroadcastMalformedBlock65(t *testing.T) { testBroadcastMalformedBlock(t, avn.AVN65) }
+func TestBroadcastMalformedBlock66(t *testing.T) { testBroadcastMalformedBlock(t, avn.AVN66) }
 
 func testBroadcastMalformedBlock(t *testing.T, protocol uint) {
 	t.Parallel()
@@ -687,13 +687,13 @@ func testBroadcastMalformedBlock(t *testing.T, protocol uint) {
 	defer p2pSrc.Close()
 	defer p2pSink.Close()
 
-	src := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pSrc), p2pSrc, source.txpool)
-	sink := AVN.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pSink), p2pSink, source.txpool)
+	src := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{1}, "", nil, p2pSrc), p2pSrc, source.txpool)
+	sink := avn.NewPeer(protocol, p2p.NewPeerPipe(enode.ID{2}, "", nil, p2pSink), p2pSink, source.txpool)
 	defer src.Close()
 	defer sink.Close()
 
-	go source.handler.runEthPeer(src, func(peer *AVN.Peer) error {
-		return AVN.Handle((*AVNHandler)(source.handler), peer)
+	go source.handler.runEthPeer(src, func(peer *avn.Peer) error {
+		return avn.Handle((*avnHandler)(source.handler), peer)
 	})
 	// Run the handshake locally to avoid spinning up a sink handler
 	var (
@@ -711,7 +711,7 @@ func testBroadcastMalformedBlock(t *testing.T, protocol uint) {
 	sub := backend.blockBroadcasts.Subscribe(blocks)
 	defer sub.Unsubscribe()
 
-	go AVN.Handle(backend, sink)
+	go avn.Handle(backend, sink)
 
 	// Create various combinations of malformed blocks
 	head := source.chain.CurrentBlock()

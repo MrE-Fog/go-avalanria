@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package rawdb
 
@@ -22,17 +22,17 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/rlp"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/avndb"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/rlp"
 )
 
 // ReadCanonicalHash retrieves the hash assigned to a canonical block number.
-func ReadCanonicalHash(db AVNdb.Reader, number uint64) common.Hash {
+func ReadCanonicalHash(db avndb.Reader, number uint64) common.Hash {
 	data, _ := db.Ancient(freezerHashTable, number)
 	if len(data) == 0 {
 		data, _ = db.Get(headerHashKey(number))
@@ -51,14 +51,14 @@ func ReadCanonicalHash(db AVNdb.Reader, number uint64) common.Hash {
 }
 
 // WriteCanonicalHash stores the hash assigned to a canonical block number.
-func WriteCanonicalHash(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func WriteCanonicalHash(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	if err := db.Put(headerHashKey(number), hash.Bytes()); err != nil {
 		log.Crit("Failed to store number to hash mapping", "err", err)
 	}
 }
 
 // DeleteCanonicalHash removes the number to hash canonical mapping.
-func DeleteCanonicalHash(db AVNdb.KeyValueWriter, number uint64) {
+func DeleteCanonicalHash(db avndb.KeyValueWriter, number uint64) {
 	if err := db.Delete(headerHashKey(number)); err != nil {
 		log.Crit("Failed to delete number to hash mapping", "err", err)
 	}
@@ -66,7 +66,7 @@ func DeleteCanonicalHash(db AVNdb.KeyValueWriter, number uint64) {
 
 // ReadAllHashes retrieves all the hashes assigned to blocks at a certain heights,
 // both canonical and reorged forks included.
-func ReadAllHashes(db AVNdb.Iteratee, number uint64) []common.Hash {
+func ReadAllHashes(db avndb.Iteratee, number uint64) []common.Hash {
 	prefix := headerKeyPrefix(number)
 
 	hashes := make([]common.Hash, 0, 1)
@@ -84,7 +84,7 @@ func ReadAllHashes(db AVNdb.Iteratee, number uint64) []common.Hash {
 // ReadAllCanonicalHashes retrieves all canonical number and hash mappings at the
 // certain chain range. If the accumulated entries reaches the given threshold,
 // abort the iteration and return the semi-finish result.
-func ReadAllCanonicalHashes(db AVNdb.Iteratee, from uint64, to uint64, limit int) ([]uint64, []common.Hash) {
+func ReadAllCanonicalHashes(db avndb.Iteratee, from uint64, to uint64, limit int) ([]uint64, []common.Hash) {
 	// Short circuit if the limit is 0.
 	if limit == 0 {
 		return nil, nil
@@ -115,7 +115,7 @@ func ReadAllCanonicalHashes(db AVNdb.Iteratee, from uint64, to uint64, limit int
 }
 
 // ReadHeaderNumber returns the header number assigned to a hash.
-func ReadHeaderNumber(db AVNdb.KeyValueReader, hash common.Hash) *uint64 {
+func ReadHeaderNumber(db avndb.KeyValueReader, hash common.Hash) *uint64 {
 	data, _ := db.Get(headerNumberKey(hash))
 	if len(data) != 8 {
 		return nil
@@ -125,7 +125,7 @@ func ReadHeaderNumber(db AVNdb.KeyValueReader, hash common.Hash) *uint64 {
 }
 
 // WriteHeaderNumber stores the hash->number mapping.
-func WriteHeaderNumber(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func WriteHeaderNumber(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	key := headerNumberKey(hash)
 	enc := encodeBlockNumber(number)
 	if err := db.Put(key, enc); err != nil {
@@ -134,14 +134,14 @@ func WriteHeaderNumber(db AVNdb.KeyValueWriter, hash common.Hash, number uint64)
 }
 
 // DeleteHeaderNumber removes hash->number mapping.
-func DeleteHeaderNumber(db AVNdb.KeyValueWriter, hash common.Hash) {
+func DeleteHeaderNumber(db avndb.KeyValueWriter, hash common.Hash) {
 	if err := db.Delete(headerNumberKey(hash)); err != nil {
 		log.Crit("Failed to delete hash to number mapping", "err", err)
 	}
 }
 
 // ReadHeadHeaderHash retrieves the hash of the current canonical head header.
-func ReadHeadHeaderHash(db AVNdb.KeyValueReader) common.Hash {
+func ReadHeadHeaderHash(db avndb.KeyValueReader) common.Hash {
 	data, _ := db.Get(headHeaderKey)
 	if len(data) == 0 {
 		return common.Hash{}
@@ -150,14 +150,14 @@ func ReadHeadHeaderHash(db AVNdb.KeyValueReader) common.Hash {
 }
 
 // WriteHeadHeaderHash stores the hash of the current canonical head header.
-func WriteHeadHeaderHash(db AVNdb.KeyValueWriter, hash common.Hash) {
+func WriteHeadHeaderHash(db avndb.KeyValueWriter, hash common.Hash) {
 	if err := db.Put(headHeaderKey, hash.Bytes()); err != nil {
 		log.Crit("Failed to store last header's hash", "err", err)
 	}
 }
 
 // ReadHeadBlockHash retrieves the hash of the current canonical head block.
-func ReadHeadBlockHash(db AVNdb.KeyValueReader) common.Hash {
+func ReadHeadBlockHash(db avndb.KeyValueReader) common.Hash {
 	data, _ := db.Get(headBlockKey)
 	if len(data) == 0 {
 		return common.Hash{}
@@ -166,14 +166,14 @@ func ReadHeadBlockHash(db AVNdb.KeyValueReader) common.Hash {
 }
 
 // WriteHeadBlockHash stores the head block's hash.
-func WriteHeadBlockHash(db AVNdb.KeyValueWriter, hash common.Hash) {
+func WriteHeadBlockHash(db avndb.KeyValueWriter, hash common.Hash) {
 	if err := db.Put(headBlockKey, hash.Bytes()); err != nil {
 		log.Crit("Failed to store last block's hash", "err", err)
 	}
 }
 
 // ReadHeadFastBlockHash retrieves the hash of the current fast-sync head block.
-func ReadHeadFastBlockHash(db AVNdb.KeyValueReader) common.Hash {
+func ReadHeadFastBlockHash(db avndb.KeyValueReader) common.Hash {
 	data, _ := db.Get(headFastBlockKey)
 	if len(data) == 0 {
 		return common.Hash{}
@@ -182,7 +182,7 @@ func ReadHeadFastBlockHash(db AVNdb.KeyValueReader) common.Hash {
 }
 
 // WriteHeadFastBlockHash stores the hash of the current fast-sync head block.
-func WriteHeadFastBlockHash(db AVNdb.KeyValueWriter, hash common.Hash) {
+func WriteHeadFastBlockHash(db avndb.KeyValueWriter, hash common.Hash) {
 	if err := db.Put(headFastBlockKey, hash.Bytes()); err != nil {
 		log.Crit("Failed to store last fast block's hash", "err", err)
 	}
@@ -190,7 +190,7 @@ func WriteHeadFastBlockHash(db AVNdb.KeyValueWriter, hash common.Hash) {
 
 // ReadLastPivotNumber retrieves the number of the last pivot block. If the node
 // full synced, the last pivot will always be nil.
-func ReadLastPivotNumber(db AVNdb.KeyValueReader) *uint64 {
+func ReadLastPivotNumber(db avndb.KeyValueReader) *uint64 {
 	data, _ := db.Get(lastPivotKey)
 	if len(data) == 0 {
 		return nil
@@ -204,7 +204,7 @@ func ReadLastPivotNumber(db AVNdb.KeyValueReader) *uint64 {
 }
 
 // WriteLastPivotNumber stores the number of the last pivot block.
-func WriteLastPivotNumber(db AVNdb.KeyValueWriter, pivot uint64) {
+func WriteLastPivotNumber(db avndb.KeyValueWriter, pivot uint64) {
 	enc, err := rlp.EncodeToBytes(pivot)
 	if err != nil {
 		log.Crit("Failed to encode pivot block number", "err", err)
@@ -216,7 +216,7 @@ func WriteLastPivotNumber(db AVNdb.KeyValueWriter, pivot uint64) {
 
 // ReadFastTrieProgress retrieves the number of tries nodes fast synced to allow
 // reporting correct numbers across restarts.
-func ReadFastTrieProgress(db AVNdb.KeyValueReader) uint64 {
+func ReadFastTrieProgress(db avndb.KeyValueReader) uint64 {
 	data, _ := db.Get(fastTrieProgressKey)
 	if len(data) == 0 {
 		return 0
@@ -226,7 +226,7 @@ func ReadFastTrieProgress(db AVNdb.KeyValueReader) uint64 {
 
 // WriteFastTrieProgress stores the fast sync trie process counter to support
 // retrieving it across restarts.
-func WriteFastTrieProgress(db AVNdb.KeyValueWriter, count uint64) {
+func WriteFastTrieProgress(db avndb.KeyValueWriter, count uint64) {
 	if err := db.Put(fastTrieProgressKey, new(big.Int).SetUint64(count).Bytes()); err != nil {
 		log.Crit("Failed to store fast sync trie progress", "err", err)
 	}
@@ -235,7 +235,7 @@ func WriteFastTrieProgress(db AVNdb.KeyValueWriter, count uint64) {
 // ReadTxIndexTail retrieves the number of oldest indexed block
 // whose transaction indices has been indexed. If the corresponding entry
 // is non-existent in database it means the indexing has been finished.
-func ReadTxIndexTail(db AVNdb.KeyValueReader) *uint64 {
+func ReadTxIndexTail(db avndb.KeyValueReader) *uint64 {
 	data, _ := db.Get(txIndexTailKey)
 	if len(data) != 8 {
 		return nil
@@ -246,14 +246,14 @@ func ReadTxIndexTail(db AVNdb.KeyValueReader) *uint64 {
 
 // WriteTxIndexTail stores the number of oldest indexed block
 // into database.
-func WriteTxIndexTail(db AVNdb.KeyValueWriter, number uint64) {
+func WriteTxIndexTail(db avndb.KeyValueWriter, number uint64) {
 	if err := db.Put(txIndexTailKey, encodeBlockNumber(number)); err != nil {
 		log.Crit("Failed to store the transaction index tail", "err", err)
 	}
 }
 
 // ReadFastTxLookupLimit retrieves the tx lookup limit used in fast sync.
-func ReadFastTxLookupLimit(db AVNdb.KeyValueReader) *uint64 {
+func ReadFastTxLookupLimit(db avndb.KeyValueReader) *uint64 {
 	data, _ := db.Get(fastTxLookupLimitKey)
 	if len(data) != 8 {
 		return nil
@@ -263,14 +263,14 @@ func ReadFastTxLookupLimit(db AVNdb.KeyValueReader) *uint64 {
 }
 
 // WriteFastTxLookupLimit stores the txlookup limit used in fast sync into database.
-func WriteFastTxLookupLimit(db AVNdb.KeyValueWriter, number uint64) {
+func WriteFastTxLookupLimit(db avndb.KeyValueWriter, number uint64) {
 	if err := db.Put(fastTxLookupLimitKey, encodeBlockNumber(number)); err != nil {
 		log.Crit("Failed to store transaction lookup limit for fast sync", "err", err)
 	}
 }
 
 // ReadHeaderRLP retrieves a block header in its raw RLP database encoding.
-func ReadHeaderRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawValue {
+func ReadHeaderRLP(db avndb.Reader, hash common.Hash, number uint64) rlp.RawValue {
 	// First try to look up the data in ancient database. Extra hash
 	// comparison is necessary since ancient database only maintains
 	// the canonical data.
@@ -295,7 +295,7 @@ func ReadHeaderRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawValu
 }
 
 // HasHeader verifies the existence of a block header corresponding to the hash.
-func HasHeader(db AVNdb.Reader, hash common.Hash, number uint64) bool {
+func HasHeader(db avndb.Reader, hash common.Hash, number uint64) bool {
 	if has, err := db.Ancient(freezerHashTable, number); err == nil && common.BytesToHash(has) == hash {
 		return true
 	}
@@ -306,7 +306,7 @@ func HasHeader(db AVNdb.Reader, hash common.Hash, number uint64) bool {
 }
 
 // ReadHeader retrieves the block header corresponding to the hash.
-func ReadHeader(db AVNdb.Reader, hash common.Hash, number uint64) *types.Header {
+func ReadHeader(db avndb.Reader, hash common.Hash, number uint64) *types.Header {
 	data := ReadHeaderRLP(db, hash, number)
 	if len(data) == 0 {
 		return nil
@@ -321,7 +321,7 @@ func ReadHeader(db AVNdb.Reader, hash common.Hash, number uint64) *types.Header 
 
 // WriteHeader stores a block header into the database and also stores the hash-
 // to-number mapping.
-func WriteHeader(db AVNdb.KeyValueWriter, header *types.Header) {
+func WriteHeader(db avndb.KeyValueWriter, header *types.Header) {
 	var (
 		hash   = header.Hash()
 		number = header.Number.Uint64()
@@ -341,7 +341,7 @@ func WriteHeader(db AVNdb.KeyValueWriter, header *types.Header) {
 }
 
 // DeleteHeader removes all block header data associated with a hash.
-func DeleteHeader(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func DeleteHeader(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	deleteHeaderWithoutNumber(db, hash, number)
 	if err := db.Delete(headerNumberKey(hash)); err != nil {
 		log.Crit("Failed to delete hash to number mapping", "err", err)
@@ -350,14 +350,14 @@ func DeleteHeader(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
 
 // deleteHeaderWithoutNumber removes only the block header but does not remove
 // the hash to number mapping.
-func deleteHeaderWithoutNumber(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func deleteHeaderWithoutNumber(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	if err := db.Delete(headerKey(number, hash)); err != nil {
 		log.Crit("Failed to delete header", "err", err)
 	}
 }
 
 // ReadBodyRLP retrieves the block body (transactions and uncles) in RLP encoding.
-func ReadBodyRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawValue {
+func ReadBodyRLP(db avndb.Reader, hash common.Hash, number uint64) rlp.RawValue {
 	// First try to look up the data in ancient database. Extra hash
 	// comparison is necessary since ancient database only maintains
 	// the canonical data.
@@ -389,7 +389,7 @@ func ReadBodyRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawValue 
 
 // ReadCanonicalBodyRLP retrieves the block body (transactions and uncles) for the canonical
 // block at number, in RLP encoding.
-func ReadCanonicalBodyRLP(db AVNdb.Reader, number uint64) rlp.RawValue {
+func ReadCanonicalBodyRLP(db avndb.Reader, number uint64) rlp.RawValue {
 	// If it's an ancient one, we don't need the canonical hash
 	data, _ := db.Ancient(freezerBodiesTable, number)
 	if len(data) == 0 {
@@ -407,14 +407,14 @@ func ReadCanonicalBodyRLP(db AVNdb.Reader, number uint64) rlp.RawValue {
 }
 
 // WriteBodyRLP stores an RLP encoded block body into the database.
-func WriteBodyRLP(db AVNdb.KeyValueWriter, hash common.Hash, number uint64, rlp rlp.RawValue) {
+func WriteBodyRLP(db avndb.KeyValueWriter, hash common.Hash, number uint64, rlp rlp.RawValue) {
 	if err := db.Put(blockBodyKey(number, hash), rlp); err != nil {
 		log.Crit("Failed to store block body", "err", err)
 	}
 }
 
 // HasBody verifies the existence of a block body corresponding to the hash.
-func HasBody(db AVNdb.Reader, hash common.Hash, number uint64) bool {
+func HasBody(db avndb.Reader, hash common.Hash, number uint64) bool {
 	if has, err := db.Ancient(freezerHashTable, number); err == nil && common.BytesToHash(has) == hash {
 		return true
 	}
@@ -425,7 +425,7 @@ func HasBody(db AVNdb.Reader, hash common.Hash, number uint64) bool {
 }
 
 // ReadBody retrieves the block body corresponding to the hash.
-func ReadBody(db AVNdb.Reader, hash common.Hash, number uint64) *types.Body {
+func ReadBody(db avndb.Reader, hash common.Hash, number uint64) *types.Body {
 	data := ReadBodyRLP(db, hash, number)
 	if len(data) == 0 {
 		return nil
@@ -439,7 +439,7 @@ func ReadBody(db AVNdb.Reader, hash common.Hash, number uint64) *types.Body {
 }
 
 // WriteBody stores a block body into the database.
-func WriteBody(db AVNdb.KeyValueWriter, hash common.Hash, number uint64, body *types.Body) {
+func WriteBody(db avndb.KeyValueWriter, hash common.Hash, number uint64, body *types.Body) {
 	data, err := rlp.EncodeToBytes(body)
 	if err != nil {
 		log.Crit("Failed to RLP encode body", "err", err)
@@ -448,14 +448,14 @@ func WriteBody(db AVNdb.KeyValueWriter, hash common.Hash, number uint64, body *t
 }
 
 // DeleteBody removes all block body data associated with a hash.
-func DeleteBody(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func DeleteBody(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	if err := db.Delete(blockBodyKey(number, hash)); err != nil {
 		log.Crit("Failed to delete block body", "err", err)
 	}
 }
 
 // ReadTdRLP retrieves a block's total difficulty corresponding to the hash in RLP encoding.
-func ReadTdRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawValue {
+func ReadTdRLP(db avndb.Reader, hash common.Hash, number uint64) rlp.RawValue {
 	// First try to look up the data in ancient database. Extra hash
 	// comparison is necessary since ancient database only maintains
 	// the canonical data.
@@ -486,7 +486,7 @@ func ReadTdRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawValue {
 }
 
 // ReadTd retrieves a block's total difficulty corresponding to the hash.
-func ReadTd(db AVNdb.Reader, hash common.Hash, number uint64) *big.Int {
+func ReadTd(db avndb.Reader, hash common.Hash, number uint64) *big.Int {
 	data := ReadTdRLP(db, hash, number)
 	if len(data) == 0 {
 		return nil
@@ -500,7 +500,7 @@ func ReadTd(db AVNdb.Reader, hash common.Hash, number uint64) *big.Int {
 }
 
 // WriteTd stores the total difficulty of a block into the database.
-func WriteTd(db AVNdb.KeyValueWriter, hash common.Hash, number uint64, td *big.Int) {
+func WriteTd(db avndb.KeyValueWriter, hash common.Hash, number uint64, td *big.Int) {
 	data, err := rlp.EncodeToBytes(td)
 	if err != nil {
 		log.Crit("Failed to RLP encode block total difficulty", "err", err)
@@ -511,7 +511,7 @@ func WriteTd(db AVNdb.KeyValueWriter, hash common.Hash, number uint64, td *big.I
 }
 
 // DeleteTd removes all block total difficulty data associated with a hash.
-func DeleteTd(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func DeleteTd(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	if err := db.Delete(headerTDKey(number, hash)); err != nil {
 		log.Crit("Failed to delete block total difficulty", "err", err)
 	}
@@ -519,7 +519,7 @@ func DeleteTd(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
 
 // HasReceipts verifies the existence of all the transaction receipts belonging
 // to a block.
-func HasReceipts(db AVNdb.Reader, hash common.Hash, number uint64) bool {
+func HasReceipts(db avndb.Reader, hash common.Hash, number uint64) bool {
 	if has, err := db.Ancient(freezerHashTable, number); err == nil && common.BytesToHash(has) == hash {
 		return true
 	}
@@ -530,7 +530,7 @@ func HasReceipts(db AVNdb.Reader, hash common.Hash, number uint64) bool {
 }
 
 // ReadReceiptsRLP retrieves all the transaction receipts belonging to a block in RLP encoding.
-func ReadReceiptsRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawValue {
+func ReadReceiptsRLP(db avndb.Reader, hash common.Hash, number uint64) rlp.RawValue {
 	// First try to look up the data in ancient database. Extra hash
 	// comparison is necessary since ancient database only maintains
 	// the canonical data.
@@ -563,7 +563,7 @@ func ReadReceiptsRLP(db AVNdb.Reader, hash common.Hash, number uint64) rlp.RawVa
 // ReadRawReceipts retrieves all the transaction receipts belonging to a block.
 // The receipt metadata fields are not guaranteed to be populated, so they
 // should not be used. Use ReadReceipts instead if the metadata is needed.
-func ReadRawReceipts(db AVNdb.Reader, hash common.Hash, number uint64) types.Receipts {
+func ReadRawReceipts(db avndb.Reader, hash common.Hash, number uint64) types.Receipts {
 	// Retrieve the flattened receipt slice
 	data := ReadReceiptsRLP(db, hash, number)
 	if len(data) == 0 {
@@ -589,7 +589,7 @@ func ReadRawReceipts(db AVNdb.Reader, hash common.Hash, number uint64) types.Rec
 // The current implementation populates these metadata fields by reading the receipts'
 // corresponding block body, so if the block body is not found it will return nil even
 // if the receipt itself is stored.
-func ReadReceipts(db AVNdb.Reader, hash common.Hash, number uint64, config *params.ChainConfig) types.Receipts {
+func ReadReceipts(db avndb.Reader, hash common.Hash, number uint64, config *params.ChainConfig) types.Receipts {
 	// We're deriving many fields from the block body, retrieve beside the receipt
 	receipts := ReadRawReceipts(db, hash, number)
 	if receipts == nil {
@@ -608,7 +608,7 @@ func ReadReceipts(db AVNdb.Reader, hash common.Hash, number uint64, config *para
 }
 
 // WriteReceipts stores all the transaction receipts belonging to a block.
-func WriteReceipts(db AVNdb.KeyValueWriter, hash common.Hash, number uint64, receipts types.Receipts) {
+func WriteReceipts(db avndb.KeyValueWriter, hash common.Hash, number uint64, receipts types.Receipts) {
 	// Convert the receipts into their storage form and serialize them
 	storageReceipts := make([]*types.ReceiptForStorage, len(receipts))
 	for i, receipt := range receipts {
@@ -625,7 +625,7 @@ func WriteReceipts(db AVNdb.KeyValueWriter, hash common.Hash, number uint64, rec
 }
 
 // DeleteReceipts removes all receipt data associated with a block hash.
-func DeleteReceipts(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func DeleteReceipts(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	if err := db.Delete(blockReceiptsKey(number, hash)); err != nil {
 		log.Crit("Failed to delete block receipts", "err", err)
 	}
@@ -637,7 +637,7 @@ func DeleteReceipts(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
 //
 // Note, due to concurrent download of header and block body the header and thus
 // canonical hash can be stored in the database but the body data not (yet).
-func ReadBlock(db AVNdb.Reader, hash common.Hash, number uint64) *types.Block {
+func ReadBlock(db avndb.Reader, hash common.Hash, number uint64) *types.Block {
 	header := ReadHeader(db, hash, number)
 	if header == nil {
 		return nil
@@ -650,13 +650,13 @@ func ReadBlock(db AVNdb.Reader, hash common.Hash, number uint64) *types.Block {
 }
 
 // WriteBlock serializes a block into the database, header and body separately.
-func WriteBlock(db AVNdb.KeyValueWriter, block *types.Block) {
+func WriteBlock(db avndb.KeyValueWriter, block *types.Block) {
 	WriteBody(db, block.Hash(), block.NumberU64(), block.Body())
 	WriteHeader(db, block.Header())
 }
 
 // WriteAncientBlock writes entire block data into ancient store and returns the total written size.
-func WriteAncientBlock(db AVNdb.AncientWriter, block *types.Block, receipts types.Receipts, td *big.Int) int {
+func WriteAncientBlock(db avndb.AncientWriter, block *types.Block, receipts types.Receipts, td *big.Int) int {
 	// Encode all block components to RLP format.
 	headerBlob, err := rlp.EncodeToBytes(block.Header())
 	if err != nil {
@@ -687,7 +687,7 @@ func WriteAncientBlock(db AVNdb.AncientWriter, block *types.Block, receipts type
 }
 
 // DeleteBlock removes all block data associated with a hash.
-func DeleteBlock(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func DeleteBlock(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	DeleteReceipts(db, hash, number)
 	DeleteHeader(db, hash, number)
 	DeleteBody(db, hash, number)
@@ -696,7 +696,7 @@ func DeleteBlock(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
 
 // DeleteBlockWithoutNumber removes all block data associated with a hash, except
 // the hash to number mapping.
-func DeleteBlockWithoutNumber(db AVNdb.KeyValueWriter, hash common.Hash, number uint64) {
+func DeleteBlockWithoutNumber(db avndb.KeyValueWriter, hash common.Hash, number uint64) {
 	DeleteReceipts(db, hash, number)
 	deleteHeaderWithoutNumber(db, hash, number)
 	DeleteBody(db, hash, number)
@@ -721,7 +721,7 @@ func (s badBlockList) Less(i, j int) bool {
 func (s badBlockList) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
 // ReadBadBlock retrieves the bad block with the corresponding block hash.
-func ReadBadBlock(db AVNdb.Reader, hash common.Hash) *types.Block {
+func ReadBadBlock(db avndb.Reader, hash common.Hash) *types.Block {
 	blob, err := db.Get(badBlockKey)
 	if err != nil {
 		return nil
@@ -740,7 +740,7 @@ func ReadBadBlock(db AVNdb.Reader, hash common.Hash) *types.Block {
 
 // ReadAllBadBlocks retrieves all the bad blocks in the database.
 // All returned blocks are sorted in reverse order by number.
-func ReadAllBadBlocks(db AVNdb.Reader) []*types.Block {
+func ReadAllBadBlocks(db avndb.Reader) []*types.Block {
 	blob, err := db.Get(badBlockKey)
 	if err != nil {
 		return nil
@@ -758,7 +758,7 @@ func ReadAllBadBlocks(db AVNdb.Reader) []*types.Block {
 
 // WriteBadBlock serializes the bad block into the database. If the cumulated
 // bad blocks exceeds the limitation, the oldest will be dropped.
-func WriteBadBlock(db AVNdb.KeyValueStore, block *types.Block) {
+func WriteBadBlock(db avndb.KeyValueStore, block *types.Block) {
 	blob, err := db.Get(badBlockKey)
 	if err != nil {
 		log.Warn("Failed to load old bad blocks", "error", err)
@@ -793,14 +793,14 @@ func WriteBadBlock(db AVNdb.KeyValueStore, block *types.Block) {
 }
 
 // DeleteBadBlocks deletes all the bad blocks from the database
-func DeleteBadBlocks(db AVNdb.KeyValueWriter) {
+func DeleteBadBlocks(db avndb.KeyValueWriter) {
 	if err := db.Delete(badBlockKey); err != nil {
 		log.Crit("Failed to delete bad blocks", "err", err)
 	}
 }
 
 // FindCommonAncestor returns the last common ancestor of two block headers
-func FindCommonAncestor(db AVNdb.Reader, a, b *types.Header) *types.Header {
+func FindCommonAncestor(db avndb.Reader, a, b *types.Header) *types.Header {
 	for bn := b.Number.Uint64(); a.Number.Uint64() > bn; {
 		a = ReadHeader(db, a.ParentHash, a.Number.Uint64()-1)
 		if a == nil {
@@ -827,7 +827,7 @@ func FindCommonAncestor(db AVNdb.Reader, a, b *types.Header) *types.Header {
 }
 
 // ReadHeadHeader returns the current canonical head header.
-func ReadHeadHeader(db AVNdb.Reader) *types.Header {
+func ReadHeadHeader(db avndb.Reader) *types.Header {
 	headHeaderHash := ReadHeadHeaderHash(db)
 	if headHeaderHash == (common.Hash{}) {
 		return nil
@@ -840,7 +840,7 @@ func ReadHeadHeader(db AVNdb.Reader) *types.Header {
 }
 
 // ReadHeadBlock returns the current canonical head block.
-func ReadHeadBlock(db AVNdb.Reader) *types.Block {
+func ReadHeadBlock(db avndb.Reader) *types.Block {
 	headBlockHash := ReadHeadBlockHash(db)
 	if headBlockHash == (common.Hash{}) {
 		return nil

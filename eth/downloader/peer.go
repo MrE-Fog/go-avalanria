@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Contains the active peer-set of the downloader, maintaining both failures
 // as well as reputation metrics to prioritize the block retrievals.
@@ -27,11 +27,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/msgrate"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/msgrate"
 )
 
 const (
@@ -68,14 +68,14 @@ type peerConnection struct {
 	lock    sync.RWMutex
 }
 
-// LightPeer encapsulates the mAVNods required to synchronise with a remote light peer.
+// LightPeer encapsulates the mavnods required to synchronise with a remote light peer.
 type LightPeer interface {
 	Head() (common.Hash, *big.Int)
 	RequestHeadersByHash(common.Hash, int, int, bool) error
 	RequestHeadersByNumber(uint64, int, int, bool) error
 }
 
-// Peer encapsulates the mAVNods required to synchronise with a remote full peer.
+// Peer encapsulates the mavnods required to synchronise with a remote full peer.
 type Peer interface {
 	LightPeer
 	RequestBodies([]common.Hash) error
@@ -83,7 +83,7 @@ type Peer interface {
 	RequestNodeData([]common.Hash) error
 }
 
-// lightPeerWrapper wraps a LightPeer struct, stubbing out the Peer-only mAVNods.
+// lightPeerWrapper wraps a LightPeer struct, stubbing out the Peer-only mavnods.
 type lightPeerWrapper struct {
 	peer LightPeer
 }
@@ -200,7 +200,7 @@ func (p *peerConnection) FetchNodeData(hashes []common.Hash) error {
 // requests. Its estimated header retrieval throughput is updated with that measured
 // just now.
 func (p *peerConnection) SetHeadersIdle(delivered int, deliveryTime time.Time) {
-	p.rates.Update(AVN.BlockHeadersMsg, deliveryTime.Sub(p.headerStarted), delivered)
+	p.rates.Update(avn.BlockHeadersMsg, deliveryTime.Sub(p.headerStarted), delivered)
 	atomic.StoreInt32(&p.headerIdle, 0)
 }
 
@@ -208,7 +208,7 @@ func (p *peerConnection) SetHeadersIdle(delivered int, deliveryTime time.Time) {
 // requests. Its estimated body retrieval throughput is updated with that measured
 // just now.
 func (p *peerConnection) SetBodiesIdle(delivered int, deliveryTime time.Time) {
-	p.rates.Update(AVN.BlockBodiesMsg, deliveryTime.Sub(p.blockStarted), delivered)
+	p.rates.Update(avn.BlockBodiesMsg, deliveryTime.Sub(p.blockStarted), delivered)
 	atomic.StoreInt32(&p.blockIdle, 0)
 }
 
@@ -216,7 +216,7 @@ func (p *peerConnection) SetBodiesIdle(delivered int, deliveryTime time.Time) {
 // retrieval requests. Its estimated receipt retrieval throughput is updated
 // with that measured just now.
 func (p *peerConnection) SetReceiptsIdle(delivered int, deliveryTime time.Time) {
-	p.rates.Update(AVN.ReceiptsMsg, deliveryTime.Sub(p.receiptStarted), delivered)
+	p.rates.Update(avn.ReceiptsMsg, deliveryTime.Sub(p.receiptStarted), delivered)
 	atomic.StoreInt32(&p.receiptIdle, 0)
 }
 
@@ -224,14 +224,14 @@ func (p *peerConnection) SetReceiptsIdle(delivered int, deliveryTime time.Time) 
 // data retrieval requests. Its estimated state retrieval throughput is updated
 // with that measured just now.
 func (p *peerConnection) SetNodeDataIdle(delivered int, deliveryTime time.Time) {
-	p.rates.Update(AVN.NodeDataMsg, deliveryTime.Sub(p.stateStarted), delivered)
+	p.rates.Update(avn.NodeDataMsg, deliveryTime.Sub(p.stateStarted), delivered)
 	atomic.StoreInt32(&p.stateIdle, 0)
 }
 
 // HeaderCapacity retrieves the peers header download allowance based on its
 // previously discovered throughput.
 func (p *peerConnection) HeaderCapacity(targetRTT time.Duration) int {
-	cap := p.rates.Capacity(AVN.BlockHeadersMsg, targetRTT)
+	cap := p.rates.Capacity(avn.BlockHeadersMsg, targetRTT)
 	if cap > MaxHeaderFetch {
 		cap = MaxHeaderFetch
 	}
@@ -241,7 +241,7 @@ func (p *peerConnection) HeaderCapacity(targetRTT time.Duration) int {
 // BlockCapacity retrieves the peers block download allowance based on its
 // previously discovered throughput.
 func (p *peerConnection) BlockCapacity(targetRTT time.Duration) int {
-	cap := p.rates.Capacity(AVN.BlockBodiesMsg, targetRTT)
+	cap := p.rates.Capacity(avn.BlockBodiesMsg, targetRTT)
 	if cap > MaxBlockFetch {
 		cap = MaxBlockFetch
 	}
@@ -251,7 +251,7 @@ func (p *peerConnection) BlockCapacity(targetRTT time.Duration) int {
 // ReceiptCapacity retrieves the peers receipt download allowance based on its
 // previously discovered throughput.
 func (p *peerConnection) ReceiptCapacity(targetRTT time.Duration) int {
-	cap := p.rates.Capacity(AVN.ReceiptsMsg, targetRTT)
+	cap := p.rates.Capacity(avn.ReceiptsMsg, targetRTT)
 	if cap > MaxReceiptFetch {
 		cap = MaxReceiptFetch
 	}
@@ -261,7 +261,7 @@ func (p *peerConnection) ReceiptCapacity(targetRTT time.Duration) int {
 // NodeDataCapacity retrieves the peers state download allowance based on its
 // previously discovered throughput.
 func (p *peerConnection) NodeDataCapacity(targetRTT time.Duration) int {
-	cap := p.rates.Capacity(AVN.NodeDataMsg, targetRTT)
+	cap := p.rates.Capacity(avn.NodeDataMsg, targetRTT)
 	if cap > MaxStateFetch {
 		cap = MaxStateFetch
 	}
@@ -284,8 +284,8 @@ func (p *peerConnection) MarkLacking(hash common.Hash) {
 	p.lacking[hash] = struct{}{}
 }
 
-// Lacks retrieves whAVNer the hash of a blockchain item is on the peers lacking
-// list (i.e. whAVNer we know that the peer does not have it).
+// Lacks retrieves whavner the hash of a blockchain item is on the peers lacking
+// list (i.e. whavner we know that the peer does not have it).
 func (p *peerConnection) Lacks(hash common.Hash) bool {
 	p.lock.RLock()
 	defer p.lock.RUnlock()
@@ -310,7 +310,7 @@ type peerSet struct {
 func newPeerSet() *peerSet {
 	return &peerSet{
 		peers: make(map[string]*peerConnection),
-		rates: msgrate.NewTrackers(log.New("proto", "AVN")),
+		rates: msgrate.NewTrackers(log.New("proto", "avn")),
 	}
 }
 
@@ -338,7 +338,7 @@ func (ps *peerSet) Reset() {
 // Register injects a new peer into the working set, or returns an error if the
 // peer is already known.
 //
-// The mAVNod also sets the starting throughput values of the new peer to the
+// The mavnod also sets the starting throughput values of the new peer to the
 // average of all existing peers, to give it a realistic chance of being used
 // for data retrievals.
 func (ps *peerSet) Register(p *peerConnection) error {
@@ -411,9 +411,9 @@ func (ps *peerSet) HeaderIdlePeers() ([]*peerConnection, int) {
 		return atomic.LoadInt32(&p.headerIdle) == 0
 	}
 	throughput := func(p *peerConnection) int {
-		return p.rates.Capacity(AVN.BlockHeadersMsg, time.Second)
+		return p.rates.Capacity(avn.BlockHeadersMsg, time.Second)
 	}
-	return ps.idlePeers(AVN.AVN65, AVN.AVN66, idle, throughput)
+	return ps.idlePeers(avn.AVN65, avn.AVN66, idle, throughput)
 }
 
 // BodyIdlePeers retrieves a flat list of all the currently body-idle peers within
@@ -423,9 +423,9 @@ func (ps *peerSet) BodyIdlePeers() ([]*peerConnection, int) {
 		return atomic.LoadInt32(&p.blockIdle) == 0
 	}
 	throughput := func(p *peerConnection) int {
-		return p.rates.Capacity(AVN.BlockBodiesMsg, time.Second)
+		return p.rates.Capacity(avn.BlockBodiesMsg, time.Second)
 	}
-	return ps.idlePeers(AVN.AVN65, AVN.AVN66, idle, throughput)
+	return ps.idlePeers(avn.AVN65, avn.AVN66, idle, throughput)
 }
 
 // ReceiptIdlePeers retrieves a flat list of all the currently receipt-idle peers
@@ -435,9 +435,9 @@ func (ps *peerSet) ReceiptIdlePeers() ([]*peerConnection, int) {
 		return atomic.LoadInt32(&p.receiptIdle) == 0
 	}
 	throughput := func(p *peerConnection) int {
-		return p.rates.Capacity(AVN.ReceiptsMsg, time.Second)
+		return p.rates.Capacity(avn.ReceiptsMsg, time.Second)
 	}
-	return ps.idlePeers(AVN.AVN65, AVN.AVN66, idle, throughput)
+	return ps.idlePeers(avn.AVN65, avn.AVN66, idle, throughput)
 }
 
 // NodeDataIdlePeers retrieves a flat list of all the currently node-data-idle
@@ -447,9 +447,9 @@ func (ps *peerSet) NodeDataIdlePeers() ([]*peerConnection, int) {
 		return atomic.LoadInt32(&p.stateIdle) == 0
 	}
 	throughput := func(p *peerConnection) int {
-		return p.rates.Capacity(AVN.NodeDataMsg, time.Second)
+		return p.rates.Capacity(avn.NodeDataMsg, time.Second)
 	}
-	return ps.idlePeers(AVN.AVN65, AVN.AVN66, idle, throughput)
+	return ps.idlePeers(avn.AVN65, avn.AVN66, idle, throughput)
 }
 
 // idlePeers retrieves a flat list of all currently idle peers satisfying the

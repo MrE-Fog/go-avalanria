@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -26,13 +26,13 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/log"
 )
 
 // nodeDockerfile is the Dockerfile required to run an Avalanria node.
 var nodeDockerfile = `
-FROM AVNereum/client-go:latest
+FROM avalanria/client-go:latest
 
 ADD genesis.json /genesis.json
 {{if .Unlock}}
@@ -40,11 +40,11 @@ ADD genesis.json /genesis.json
 	ADD signer.pass /signer.pass
 {{end}}
 RUN \
-  echo 'gAVN --cache 512 init /genesis.json' > gAVN.sh && \{{if .Unlock}}
-	echo 'mkdir -p /root/.AVNereum/keystore/ && cp /signer.json /root/.AVNereum/keystore/' >> gAVN.sh && \{{end}}
-	echo $'exec gAVN --networkid {{.NetworkID}} --cache 512 --port {{.Port}} --nat extip:{{.IP}} --maxpeers {{.Peers}} {{.LightFlag}} --AVNstats \'{{.Ethstats}}\' {{if .Bootnodes}}--bootnodes {{.Bootnodes}}{{end}} {{if .Etherbase}}--miner.AVNerbase {{.Etherbase}} --mine --miner.threads 1{{end}} {{if .Unlock}}--unlock 0 --password /signer.pass --mine{{end}} --miner.gastarget {{.GasTarget}} --miner.gaslimit {{.GasLimit}} --miner.gasprice {{.GasPrice}}' >> gAVN.sh
+  echo 'gavn --cache 512 init /genesis.json' > gavn.sh && \{{if .Unlock}}
+	echo 'mkdir -p /root/.avalanria/keystore/ && cp /signer.json /root/.avalanria/keystore/' >> gavn.sh && \{{end}}
+	echo $'exec gavn --networkid {{.NetworkID}} --cache 512 --port {{.Port}} --nat extip:{{.IP}} --maxpeers {{.Peers}} {{.LightFlag}} --avnstats \'{{.Ethstats}}\' {{if .Bootnodes}}--bootnodes {{.Bootnodes}}{{end}} {{if .Etherbase}}--miner.avnerbase {{.Etherbase}} --mine --miner.threads 1{{end}} {{if .Unlock}}--unlock 0 --password /signer.pass --mine{{end}} --miner.gastarget {{.GasTarget}} --miner.gaslimit {{.GasLimit}} --miner.gasprice {{.GasPrice}}' >> gavn.sh
 
-ENTRYPOINT ["/bin/sh", "gAVN.sh"]
+ENTRYPOINT ["/bin/sh", "gavn.sh"]
 `
 
 // nodeComposefile is the docker-compose.yml file required to deploy and maintain
@@ -60,8 +60,8 @@ services:
       - "{{.Port}}:{{.Port}}"
       - "{{.Port}}:{{.Port}}/udp"
     volumes:
-      - {{.Datadir}}:/root/.AVNereum{{if .Ethashdir}}
-      - {{.Ethashdir}}:/root/.AVNash{{end}}
+      - {{.Datadir}}:/root/.avalanria{{if .Ethashdir}}
+      - {{.Ethashdir}}:/root/.avnash{{end}}
     environment:
       - PORT={{.Port}}/tcp
       - TOTAL_PEERS={{.TotalPeers}}
@@ -84,7 +84,7 @@ services:
 // already exists there, it will be overwritten!
 func deployNode(client *sshClient, network string, bootnodes []string, config *nodeInfos, nocache bool) ([]byte, error) {
 	kind := "sealnode"
-	if config.keyJSON == "" && config.AVNerbase == "" {
+	if config.keyJSON == "" && config.avnerbase == "" {
 		kind = "bootnode"
 		bootnodes = make([]string, 0)
 	}
@@ -104,8 +104,8 @@ func deployNode(client *sshClient, network string, bootnodes []string, config *n
 		"Peers":     config.peersTotal,
 		"LightFlag": lightFlag,
 		"Bootnodes": strings.Join(bootnodes, ","),
-		"Ethstats":  config.AVNstats,
-		"Etherbase": config.AVNerbase,
+		"Ethstats":  config.avnstats,
+		"Etherbase": config.avnerbase,
 		"GasTarget": uint64(1000000 * config.gasTarget),
 		"GasLimit":  uint64(1000000 * config.gasLimit),
 		"GasPrice":  uint64(1000000000 * config.gasPrice),
@@ -117,14 +117,14 @@ func deployNode(client *sshClient, network string, bootnodes []string, config *n
 	template.Must(template.New("").Parse(nodeComposefile)).Execute(composefile, map[string]interface{}{
 		"Type":       kind,
 		"Datadir":    config.datadir,
-		"Ethashdir":  config.AVNashdir,
+		"Ethashdir":  config.avnashdir,
 		"Network":    network,
 		"Port":       config.port,
 		"TotalPeers": config.peersTotal,
 		"Light":      config.peersLight > 0,
 		"LightPeers": config.peersLight,
-		"Ethstats":   config.AVNstats[:strings.Index(config.AVNstats, ":")],
-		"Etherbase":  config.AVNerbase,
+		"Ethstats":   config.avnstats[:strings.Index(config.avnstats, ":")],
+		"Etherbase":  config.avnerbase,
 		"GasTarget":  config.gasTarget,
 		"GasLimit":   config.gasLimit,
 		"GasPrice":   config.gasPrice,
@@ -155,13 +155,13 @@ type nodeInfos struct {
 	genesis    []byte
 	network    int64
 	datadir    string
-	AVNashdir  string
-	AVNstats   string
+	avnashdir  string
+	avnstats   string
 	port       int
 	enode      string
 	peersTotal int
 	peersLight int
-	AVNerbase  string
+	avnerbase  string
 	keyJSON    string
 	keyPass    string
 	gasTarget  float64
@@ -177,7 +177,7 @@ func (info *nodeInfos) Report() map[string]string {
 		"Listener port":            strconv.Itoa(info.port),
 		"Peer count (all total)":   strconv.Itoa(info.peersTotal),
 		"Peer count (light nodes)": strconv.Itoa(info.peersLight),
-		"Ethstats username":        info.AVNstats,
+		"Ethstats username":        info.avnstats,
 	}
 	if info.gasTarget > 0 {
 		// Miner or signer node
@@ -185,10 +185,10 @@ func (info *nodeInfos) Report() map[string]string {
 		report["Gas floor (baseline target)"] = fmt.Sprintf("%0.3f MGas", info.gasTarget)
 		report["Gas ceil  (target maximum)"] = fmt.Sprintf("%0.3f MGas", info.gasLimit)
 
-		if info.AVNerbase != "" {
+		if info.avnerbase != "" {
 			// Ethash proof-of-work miner
-			report["Ethash directory"] = info.AVNashdir
-			report["Miner account"] = info.AVNerbase
+			report["Ethash directory"] = info.avnashdir
+			report["Miner account"] = info.avnerbase
 		}
 		if info.keyJSON != "" {
 			// Clique proof-of-authority signer
@@ -206,7 +206,7 @@ func (info *nodeInfos) Report() map[string]string {
 }
 
 // checkNode does a health-check against a boot or seal node server to verify
-// whAVNer it's running, and if yes, whAVNer it's responsive.
+// whavner it's running, and if yes, whavner it's responsive.
 func checkNode(client *sshClient, network string, boot bool) (*nodeInfos, error) {
 	kind := "bootnode"
 	if !boot {
@@ -229,7 +229,7 @@ func checkNode(client *sshClient, network string, boot bool) (*nodeInfos, error)
 
 	// Container available, retrieve its node ID and its genesis json
 	var out []byte
-	if out, err = client.Run(fmt.Sprintf("docker exec %s_%s_1 gAVN --exec admin.nodeInfo.enode --cache=16 attach", network, kind)); err != nil {
+	if out, err = client.Run(fmt.Sprintf("docker exec %s_%s_1 gavn --exec admin.nodeInfo.enode --cache=16 attach", network, kind)); err != nil {
 		return nil, ErrServiceUnreachable
 	}
 	enode := bytes.Trim(bytes.TrimSpace(out), "\"")
@@ -254,13 +254,13 @@ func checkNode(client *sshClient, network string, boot bool) (*nodeInfos, error)
 	// Assemble and return the useful infos
 	stats := &nodeInfos{
 		genesis:    genesis,
-		datadir:    infos.volumes["/root/.AVNereum"],
-		AVNashdir:  infos.volumes["/root/.AVNash"],
+		datadir:    infos.volumes["/root/.avalanria"],
+		avnashdir:  infos.volumes["/root/.avnash"],
 		port:       port,
 		peersTotal: totalPeers,
 		peersLight: lightPeers,
-		AVNstats:   infos.envvars["STATS_NAME"],
-		AVNerbase:  infos.envvars["MINER_NAME"],
+		avnstats:   infos.envvars["STATS_NAME"],
+		avnerbase:  infos.envvars["MINER_NAME"],
 		keyJSON:    keyJSON,
 		keyPass:    keyPass,
 		gasTarget:  gasTarget,

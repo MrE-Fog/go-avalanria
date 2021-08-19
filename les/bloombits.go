@@ -1,26 +1,26 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
 import (
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common/bitutil"
-	"github.com/AVNereum/go-AVNereum/light"
+	"github.com/avalanria/go-avalanria/common/bitutil"
+	"github.com/avalanria/go-avalanria/light"
 )
 
 const (
@@ -43,19 +43,19 @@ const (
 
 // startBloomHandlers starts a batch of goroutines to accept bloom bit database
 // retrievals from possibly a range of filters and serving the data to satisfy.
-func (AVN *LightAvalanria) startBloomHandlers(sectionSize uint64) {
+func (avn *LightAvalanria) startBloomHandlers(sectionSize uint64) {
 	for i := 0; i < bloomServiceThreads; i++ {
 		go func() {
-			defer AVN.wg.Done()
+			defer avn.wg.Done()
 			for {
 				select {
-				case <-AVN.closeCh:
+				case <-avn.closeCh:
 					return
 
-				case request := <-AVN.bloomRequests:
+				case request := <-avn.bloomRequests:
 					task := <-request
 					task.Bitsets = make([][]byte, len(task.Sections))
-					compVectors, err := light.GetBloomBits(task.Context, AVN.odr, task.Bit, task.Sections)
+					compVectors, err := light.GetBloomBits(task.Context, avn.odr, task.Bit, task.Sections)
 					if err == nil {
 						for i := range task.Sections {
 							if blob, err := bitutil.DecompressBytes(compVectors[i], int(sectionSize/8)); err == nil {

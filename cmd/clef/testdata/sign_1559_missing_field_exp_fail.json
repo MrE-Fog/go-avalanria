@@ -1,6 +1,6 @@
 {
   "jsonrpc": "2.0",
-  "mAVNod": "account_signTransaction",
+  "mavnod": "account_signTransaction",
   "params": [
     {
       "from": "0x8A8eAFb1cf62BfBeb1741769DAE1a9dd47996192",

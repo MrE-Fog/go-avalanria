@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package state
 
@@ -20,8 +20,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/AVNdb"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/avndb"
 )
 
 // Tests that the node iterator indeed walks over the entire database contents.
@@ -55,7 +55,7 @@ func TestNodeIteratorCoverage(t *testing.T) {
 			t.Errorf("state entry not reported %x", hash)
 		}
 	}
-	it := db.TrieDB().DiskDB().(AVNdb.Database).NewIterator(nil, nil)
+	it := db.TrieDB().DiskDB().(avndb.Database).NewIterator(nil, nil)
 	for it.Next() {
 		key := it.Key()
 		if bytes.HasPrefix(key, []byte("secure-key-")) {

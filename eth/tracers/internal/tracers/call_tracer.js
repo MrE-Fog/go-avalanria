@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // callTracer is a full blown transaction tracer that extracts and reports all
 // the internal calls made by a transaction, along with any useful information.
@@ -20,7 +20,7 @@
 	// callstack is the current recursive call stack of the EVM execution.
 	callstack: [{}],
 
-	// descended tracks whAVNer we've just descended from an outer transaction into
+	// descended tracks whavner we've just descended from an outer transaction into
 	// an inner call.
 	descended: false,
 
@@ -71,7 +71,7 @@
 			});
 			return
 		}
-		// If a new mAVNod invocation is being done, add to the call stack
+		// If a new mavnod invocation is being done, add to the call stack
 		if (syscall && (op == 'CALL' || op == 'CALLCODE' || op == 'DELEGATECALL' || op == 'STATICCALL')) {
 			// Skip any pre-compile invocations, those are just fancy opcodes
 			var to = toAddress(log.stack.peek(1).toString(16));

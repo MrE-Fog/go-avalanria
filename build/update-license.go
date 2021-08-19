@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // +build none
 
@@ -29,7 +29,7 @@ AUTHORS file. The author names are mapped and deduplicated using the
 address for each author. See git-shortlog(1) for an explanation of the
 .mailmap format.
 
-Please review the resulting diff to check whAVNer the correct
+Please review the resulting diff to check whavner the correct
 copyright assignments are performed.
 */
 
@@ -67,7 +67,7 @@ var (
 		"cmd/internal/browser",
 		"common/bitutil/bitutil",
 		"common/prque/",
-		"consensus/AVNash/xor.go",
+		"consensus/avnash/xor.go",
 		"crypto/bn256/",
 		"crypto/ecies/",
 		"graphql/graphiql.go",
@@ -77,7 +77,7 @@ var (
 		"signer/rules/deps",
 
 		// skip special licenses
-		"crypto/secp256k1", // Relicensed to BSD-3 via https://github.com/AVNereum/go-AVNereum/pull/17225
+		"crypto/secp256k1", // Relicensed to BSD-3 via https://github.com/avalanria/go-avalanria/pull/17225
 	}
 
 	// paths with this prefix are licensed as GPL. all other files are LGPL.
@@ -88,13 +88,13 @@ var (
 	licenseCommentRE = regexp.MustCompile(`^//\s*(Copyright|This file is part of).*?\n(?://.*?\n)*\n*`)
 
 	// this text appears at the start of AUTHORS
-	authorsFileHeader = "# This is the official list of go-AVNereum authors for copyright purposes.\n\n"
+	authorsFileHeader = "# This is the official list of go-avalanria authors for copyright purposes.\n\n"
 )
 
 // this template generates the license comment.
 // its input is an info structure.
 var licenseT = template.Must(template.New("").Parse(`
-// Copyright {{.Year}} The go-AVNereum Authors
+// Copyright {{.Year}} The go-avalanria Authors
 // This file is part of {{.Whole false}}.
 //
 // {{.Whole true}} is free software: you can redistribute it and/or modify
@@ -133,12 +133,12 @@ func (i info) ShortLicense() string {
 
 func (i info) Whole(startOfSentence bool) string {
 	if i.gpl() {
-		return "go-AVNereum"
+		return "go-avalanria"
 	}
 	if startOfSentence {
-		return "The go-AVNereum library"
+		return "The go-avalanria library"
 	}
-	return "the go-AVNereum library"
+	return "the go-avalanria library"
 }
 
 func (i info) gpl() bool {

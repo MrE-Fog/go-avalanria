@@ -20,12 +20,12 @@ packages. To set this up yourself, you need to create a Launchpad user and add a
 and SSH key to it. Then encode both keys as base64 and configure 'secret' environment
 variables `PPA_SIGNING_KEY` and `PPA_SSH_KEY` on Travis.
 
-We want to build go-AVNereum with the most recent version of Go, irrespective of the Go
+We want to build go-avalanria with the most recent version of Go, irrespective of the Go
 version that is available in the main Ubuntu repository. In order to make this possible,
 we bundle the entire Go sources into our own source archive and start the built job by
-compiling Go and then using that to build go-AVNereum. On Trusty we have a special case
+compiling Go and then using that to build go-avalanria. On Trusty we have a special case
 requiring the `~gophers/ubuntu/archive` PPA since Trusty can't even build Go itself. PPA
-deps are set at https://launchpad.net/%7EAVNereum/+archive/ubuntu/AVNereum/+edit-dependencies
+deps are set at https://launchpad.net/%7Eavalanria/+archive/ubuntu/avalanria/+edit-dependencies
 
 ## Building Packages Locally (for testing)
 
@@ -41,10 +41,10 @@ Create the source packages:
 
 Then go into the source package directory for your running distribution and build the package:
 
-    $ cd dist/AVNereum-unstable-1.9.6+bionic
+    $ cd dist/avalanria-unstable-1.9.6+bionic
     $ dpkg-buildpackage
 
 Built packages are placed in the dist/ directory.
 
     $ cd ..
-    $ dpkg-deb -c gAVN-unstable_1.9.6+bionic_amd64.deb
+    $ dpkg-deb -c gavn-unstable_1.9.6+bionic_amd64.deb

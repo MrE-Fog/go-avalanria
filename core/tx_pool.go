@@ -1,18 +1,18 @@
-// Copyright 2014 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2014 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -24,15 +24,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/common/prque"
-	"github.com/AVNereum/go-AVNereum/consensus/misc"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/metrics"
-	"github.com/AVNereum/go-AVNereum/params"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/common/prque"
+	"github.com/avalanria/go-avalanria/consensus/misc"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/metrics"
+	"github.com/avalanria/go-avalanria/params"
 )
 
 const (
@@ -48,7 +48,7 @@ const (
 	// txMaxSize is the maximum size a single transaction can have. This field has
 	// non-trivial consequences: larger transactions are significantly harder and
 	// more expensive to propagate; larger transactions also take more resources
-	// to validate whAVNer they fit into the pool or not.
+	// to validate whavner they fit into the pool or not.
 	txMaxSize = 4 * txSlotSize // 128KB
 )
 
@@ -143,7 +143,7 @@ type blockChain interface {
 // TxPoolConfig are the configuration parameters of the transaction pool.
 type TxPoolConfig struct {
 	Locals    []common.Address // Addresses that should be treated by default as local
-	NoLocals  bool             // WhAVNer local transaction handling should be disabled
+	NoLocals  bool             // Whavner local transaction handling should be disabled
 	Journal   string           // Journal of local transactions to survive node restarts
 	Rejournal time.Duration    // Time interval to regenerate the local transaction journal
 
@@ -231,9 +231,9 @@ type TxPool struct {
 	signer      types.Signer
 	mu          sync.RWMutex
 
-	istanbul bool // Fork indicator whAVNer we are in the istanbul stage.
-	eip2718  bool // Fork indicator whAVNer we are using EIP-2718 type transactions.
-	eip1559  bool // Fork indicator whAVNer we are using EIP-1559 type transactions.
+	istanbul bool // Fork indicator whavner we are in the istanbul stage.
+	eip2718  bool // Fork indicator whavner we are using EIP-2718 type transactions.
+	eip1559  bool // Fork indicator whavner we are using EIP-1559 type transactions.
 
 	currentState  *state.StateDB // Current state in the blockchain head
 	pendingNonces *txNoncer      // Pending state tracking virtual nonces
@@ -566,7 +566,7 @@ func (pool *TxPool) local() map[common.Address]types.Transactions {
 	return txs
 }
 
-// validateTx checks whAVNer a transaction is valid according to the consensus
+// validateTx checks whavner a transaction is valid according to the consensus
 // rules and adheres to some heuristic limits of the local node (price and size).
 func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	// Accept only legacy transactions until EIP-2718/2930 activates.
@@ -728,7 +728,7 @@ func (pool *TxPool) add(tx *types.Transaction, local bool) (replaced bool, err e
 
 // enqueueTx inserts a new transaction into the non-executable transaction queue.
 //
-// Note, this mAVNod assumes the pool lock is held!
+// Note, this mavnod assumes the pool lock is held!
 func (pool *TxPool) enqueueTx(hash common.Hash, tx *types.Transaction, local bool, addAll bool) (bool, error) {
 	// Try to insert the transaction into the future queue
 	from, _ := types.Sender(pool.signer, tx) // already validated
@@ -779,9 +779,9 @@ func (pool *TxPool) journalTx(from common.Address, tx *types.Transaction) {
 }
 
 // promoteTx adds a transaction to the pending (processable) list of transactions
-// and returns whAVNer it was inserted or an older was better.
+// and returns whavner it was inserted or an older was better.
 //
-// Note, this mAVNod assumes the pool lock is held!
+// Note, this mavnod assumes the pool lock is held!
 func (pool *TxPool) promoteTx(addr common.Address, hash common.Hash, tx *types.Transaction) bool {
 	// Try to insert the transaction into the pending queue
 	if pool.pending[addr] == nil {
@@ -817,7 +817,7 @@ func (pool *TxPool) promoteTx(addr common.Address, hash common.Hash, tx *types.T
 // AddLocals enqueues a batch of transactions into the pool if they are valid, marking the
 // senders as a local ones, ensuring they go around the local pricing constraints.
 //
-// This mAVNod is used to add transactions from the RPC API and performs synchronous pool
+// This mavnod is used to add transactions from the RPC API and performs synchronous pool
 // reorganization and event propagation.
 func (pool *TxPool) AddLocals(txs []*types.Transaction) []error {
 	return pool.addTxs(txs, !pool.config.NoLocals, true)
@@ -833,18 +833,18 @@ func (pool *TxPool) AddLocal(tx *types.Transaction) error {
 // AddRemotes enqueues a batch of transactions into the pool if they are valid. If the
 // senders are not among the locally tracked ones, full pricing constraints will apply.
 //
-// This mAVNod is used to add transactions from the p2p network and does not wait for pool
+// This mavnod is used to add transactions from the p2p network and does not wait for pool
 // reorganization and internal event propagation.
 func (pool *TxPool) AddRemotes(txs []*types.Transaction) []error {
 	return pool.addTxs(txs, false, false)
 }
 
-// This is like AddRemotes, but waits for pool reorganization. Tests use this mAVNod.
+// This is like AddRemotes, but waits for pool reorganization. Tests use this mavnod.
 func (pool *TxPool) AddRemotesSync(txs []*types.Transaction) []error {
 	return pool.addTxs(txs, false, true)
 }
 
-// This is like AddRemotes with a single transaction, but waits for pool reorganization. Tests use this mAVNod.
+// This is like AddRemotes with a single transaction, but waits for pool reorganization. Tests use this mavnod.
 func (pool *TxPool) addRemoteSync(tx *types.Transaction) error {
 	errs := pool.AddRemotesSync([]*types.Transaction{tx})
 	return errs[0]
@@ -954,7 +954,7 @@ func (pool *TxPool) Get(hash common.Hash) *types.Transaction {
 	return pool.all.Get(hash)
 }
 
-// Has returns an indicator whAVNer txpool has a transaction cached with the
+// Has returns an indicator whavner txpool has a transaction cached with the
 // given hash.
 func (pool *TxPool) Has(hash common.Hash) bool {
 	return pool.all.Get(hash) != nil
@@ -1041,7 +1041,7 @@ func (pool *TxPool) queueTxEvent(tx *types.Transaction) {
 }
 
 // scheduleReorgLoop schedules runs of reset and promoteExecutables. Code above should not
-// call those mAVNods directly, but request them being run using requestReset and
+// call those mavnods directly, but request them being run using requestReset and
 // requestPromoteExecutables instead.
 func (pool *TxPool) scheduleReorgLoop() {
 	defer pool.wg.Done()
@@ -1575,7 +1575,7 @@ func (as *accountSet) empty() bool {
 }
 
 // containsTx checks if the sender of a given tx is within the set. If the sender
-// cannot be derived, this mAVNod returns false.
+// cannot be derived, this mavnod returns false.
 func (as *accountSet) containsTx(tx *types.Transaction) bool {
 	if addr, err := types.Sender(as.signer, tx); err == nil {
 		return as.contains(addr)
@@ -1645,7 +1645,7 @@ func newTxLookup() *txLookup {
 }
 
 // Range calls f on each key and value present in the map. The callback passed
-// should return the indicator whAVNer the iteration needs to be continued.
+// should return the indicator whavner the iteration needs to be continued.
 // Callers need to specify which set (or both) to be iterated.
 func (t *txLookup) Range(f func(hash common.Hash, tx *types.Transaction, local bool) bool, local bool, remote bool) {
 	t.lock.RLock()

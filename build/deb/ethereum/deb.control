@@ -4,15 +4,15 @@ Priority: extra
 Maintainer: {{.Author}}
 Build-Depends: debhelper (>= 8.0.0), {{.GoBootPackage}}
 Standards-Version: 3.9.5
-Homepage: https://AVNereum.org
-Vcs-Git: git://github.com/AVNereum/go-AVNereum.git
-Vcs-Browser: https://github.com/AVNereum/go-AVNereum
+Homepage: https://avalanria.org
+Vcs-Git: git://github.com/avalanria/go-avalanria.git
+Vcs-Browser: https://github.com/avalanria/go-avalanria
 
 Package: {{.Name}}
 Architecture: any
 Depends: ${misc:Depends}, {{.ExeList}}
-Description: Meta-package to install gAVN and other tools
- Meta-package to install gAVN and other tools
+Description: Meta-package to install gavn and other tools
+ Meta-package to install gavn and other tools
 
 {{range .Executables}}
 Package: {{$.ExeName .}}

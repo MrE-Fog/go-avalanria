@@ -1,18 +1,18 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of go-AVNereum.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of go-avalanria.
 //
-// go-AVNereum is free software: you can redistribute it and/or modify
+// go-avalanria is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-AVNereum is distributed in the hope that it will be useful,
+// go-avalanria is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-AVNereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-avalanria. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
@@ -25,13 +25,13 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/AVNereum/go-AVNereum/accounts/abi"
-	"github.com/AVNereum/go-AVNereum/accounts/abi/bind"
-	"github.com/AVNereum/go-AVNereum/cmd/utils"
-	"github.com/AVNereum/go-AVNereum/common/compiler"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/internal/flags"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria/accounts/abi"
+	"github.com/avalanria/go-avalanria/accounts/abi/bind"
+	"github.com/avalanria/go-avalanria/cmd/utils"
+	"github.com/avalanria/go-avalanria/common/compiler"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/internal/flags"
+	"github.com/avalanria/go-avalanria/log"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -49,7 +49,7 @@ var (
 	}
 	binFlag = cli.StringFlag{
 		Name:  "bin",
-		Usage: "Path to the Avalanria contract bytecode (generate deploy mAVNod)",
+		Usage: "Path to the Avalanria contract bytecode (generate deploy mavnod)",
 	}
 	typeFlag = cli.StringFlag{
 		Name:  "type",
@@ -101,7 +101,7 @@ var (
 )
 
 func init() {
-	app = flags.NewApp(gitCommit, gitDate, "AVNereum checkpoint helper tool")
+	app = flags.NewApp(gitCommit, gitDate, "avalanria checkpoint helper tool")
 	app.Flags = []cli.Flag{
 		abiFlag,
 		binFlag,

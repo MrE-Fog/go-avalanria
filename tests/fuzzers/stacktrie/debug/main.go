@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/AVNereum/go-AVNereum/tests/fuzzers/stacktrie"
+	"github.com/avalanria/go-avalanria/tests/fuzzers/stacktrie"
 )
 
 func main() {

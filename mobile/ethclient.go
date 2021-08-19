@@ -1,38 +1,38 @@
-// Copyright 2016 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2016 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 // Contains a wrapper for the Avalanria client.
 
-package gAVN
+package gavn
 
 import (
 	"math/big"
 
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVNclient"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avnclient"
 )
 
 // AvalanriaClient provides access to the Avalanria APIs.
 type AvalanriaClient struct {
-	client *AVNclient.Client
+	client *avnclient.Client
 }
 
 // NewAvalanriaClient connects a client to the given URL.
 func NewAvalanriaClient(rawurl string) (client *AvalanriaClient, _ error) {
-	rawClient, err := AVNclient.Dial(rawurl)
+	rawClient, err := avnclient.Dial(rawurl)
 	return &AvalanriaClient{rawClient}, err
 }
 
@@ -309,7 +309,7 @@ func (ec *AvalanriaClient) EstimateGas(ctx *Context, msg *CallMsg) (gas int64, _
 
 // SendTransaction injects a signed transaction into the pending pool for execution.
 //
-// If the transaction was a contract creation use the TransactionReceipt mAVNod to get the
+// If the transaction was a contract creation use the TransactionReceipt mavnod to get the
 // contract address after the transaction has been mined.
 func (ec *AvalanriaClient) SendTransaction(ctx *Context, tx *Transaction) error {
 	return ec.client.SendTransaction(ctx.context, tx.tx)

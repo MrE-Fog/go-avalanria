@@ -1,20 +1,20 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
-package AVN
+package avn
 
 import (
 	"errors"
@@ -23,90 +23,90 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/AVN/protocols/AVN"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/avn/protocols/avn"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
-// AVNHandler implements the AVN.Backend interface to handle the various network
+// avnHandler implements the avn.Backend interface to handle the various network
 // packets that are sent as replies or broadcasts.
-type AVNHandler handler
+type avnHandler handler
 
-func (h *AVNHandler) Chain() *core.BlockChain     { return h.chain }
-func (h *AVNHandler) StateBloom() *trie.SyncBloom { return h.stateBloom }
-func (h *AVNHandler) TxPool() AVN.TxPool          { return h.txpool }
+func (h *avnHandler) Chain() *core.BlockChain     { return h.chain }
+func (h *avnHandler) StateBloom() *trie.SyncBloom { return h.stateBloom }
+func (h *avnHandler) TxPool() avn.TxPool          { return h.txpool }
 
-// RunPeer is invoked when a peer joins on the `AVN` protocol.
-func (h *AVNHandler) RunPeer(peer *AVN.Peer, hand AVN.Handler) error {
+// RunPeer is invoked when a peer joins on the `avn` protocol.
+func (h *avnHandler) RunPeer(peer *avn.Peer, hand avn.Handler) error {
 	return (*handler)(h).runEthPeer(peer, hand)
 }
 
-// PeerInfo retrieves all known `AVN` information about a peer.
-func (h *AVNHandler) PeerInfo(id enode.ID) interface{} {
+// PeerInfo retrieves all known `avn` information about a peer.
+func (h *avnHandler) PeerInfo(id enode.ID) interface{} {
 	if p := h.peers.peer(id.String()); p != nil {
 		return p.info()
 	}
 	return nil
 }
 
-// AcceptTxs retrieves whAVNer transaction processing is enabled on the node
+// AcceptTxs retrieves whavner transaction processing is enabled on the node
 // or if inbound transactions should simply be dropped.
-func (h *AVNHandler) AcceptTxs() bool {
+func (h *avnHandler) AcceptTxs() bool {
 	return atomic.LoadUint32(&h.acceptTxs) == 1
 }
 
 // Handle is invoked from a peer's message handler when it receives a new remote
 // message that the handler couldn't consume and serve itself.
-func (h *AVNHandler) Handle(peer *AVN.Peer, packet AVN.Packet) error {
+func (h *avnHandler) Handle(peer *avn.Peer, packet avn.Packet) error {
 	// Consume any broadcasts and announces, forwarding the rest to the downloader
 	switch packet := packet.(type) {
-	case *AVN.BlockHeadersPacket:
+	case *avn.BlockHeadersPacket:
 		return h.handleHeaders(peer, *packet)
 
-	case *AVN.BlockBodiesPacket:
+	case *avn.BlockBodiesPacket:
 		txset, uncleset := packet.Unpack()
 		return h.handleBodies(peer, txset, uncleset)
 
-	case *AVN.NodeDataPacket:
+	case *avn.NodeDataPacket:
 		if err := h.downloader.DeliverNodeData(peer.ID(), *packet); err != nil {
 			log.Debug("Failed to deliver node state data", "err", err)
 		}
 		return nil
 
-	case *AVN.ReceiptsPacket:
+	case *avn.ReceiptsPacket:
 		if err := h.downloader.DeliverReceipts(peer.ID(), *packet); err != nil {
 			log.Debug("Failed to deliver receipts", "err", err)
 		}
 		return nil
 
-	case *AVN.NewBlockHashesPacket:
+	case *avn.NewBlockHashesPacket:
 		hashes, numbers := packet.Unpack()
 		return h.handleBlockAnnounces(peer, hashes, numbers)
 
-	case *AVN.NewBlockPacket:
+	case *avn.NewBlockPacket:
 		return h.handleBlockBroadcast(peer, packet.Block, packet.TD)
 
-	case *AVN.NewPooledTransactionHashesPacket:
+	case *avn.NewPooledTransactionHashesPacket:
 		return h.txFetcher.Notify(peer.ID(), *packet)
 
-	case *AVN.TransactionsPacket:
+	case *avn.TransactionsPacket:
 		return h.txFetcher.Enqueue(peer.ID(), *packet, false)
 
-	case *AVN.PooledTransactionsPacket:
+	case *avn.PooledTransactionsPacket:
 		return h.txFetcher.Enqueue(peer.ID(), *packet, true)
 
 	default:
-		return fmt.Errorf("unexpected AVN packet type: %T", packet)
+		return fmt.Errorf("unexpected avn packet type: %T", packet)
 	}
 }
 
 // handleHeaders is invoked from a peer's message handler when it transmits a batch
 // of headers for the local node to process.
-func (h *AVNHandler) handleHeaders(peer *AVN.Peer, headers []*types.Header) error {
+func (h *avnHandler) handleHeaders(peer *avn.Peer, headers []*types.Header) error {
 	p := h.peers.peer(peer.ID())
 	if p == nil {
 		return errors.New("unregistered during callback")
@@ -162,7 +162,7 @@ func (h *AVNHandler) handleHeaders(peer *AVN.Peer, headers []*types.Header) erro
 
 // handleBodies is invoked from a peer's message handler when it transmits a batch
 // of block bodies for the local node to process.
-func (h *AVNHandler) handleBodies(peer *AVN.Peer, txs [][]*types.Transaction, uncles [][]*types.Header) error {
+func (h *avnHandler) handleBodies(peer *avn.Peer, txs [][]*types.Transaction, uncles [][]*types.Header) error {
 	// Filter out any explicitly requested bodies, deliver the rest to the downloader
 	filter := len(txs) > 0 || len(uncles) > 0
 	if filter {
@@ -179,7 +179,7 @@ func (h *AVNHandler) handleBodies(peer *AVN.Peer, txs [][]*types.Transaction, un
 
 // handleBlockAnnounces is invoked from a peer's message handler when it transmits a
 // batch of block announcements for the local node to process.
-func (h *AVNHandler) handleBlockAnnounces(peer *AVN.Peer, hashes []common.Hash, numbers []uint64) error {
+func (h *avnHandler) handleBlockAnnounces(peer *avn.Peer, hashes []common.Hash, numbers []uint64) error {
 	// Schedule all the unknown hashes for retrieval
 	var (
 		unknownHashes  = make([]common.Hash, 0, len(hashes))
@@ -199,7 +199,7 @@ func (h *AVNHandler) handleBlockAnnounces(peer *AVN.Peer, hashes []common.Hash, 
 
 // handleBlockBroadcast is invoked from a peer's message handler when it transmits a
 // block broadcast for the local node to process.
-func (h *AVNHandler) handleBlockBroadcast(peer *AVN.Peer, block *types.Block, td *big.Int) error {
+func (h *avnHandler) handleBlockBroadcast(peer *avn.Peer, block *types.Block, td *big.Int) error {
 	// Schedule the block for import
 	h.blockFetcher.Enqueue(peer.ID(), block)
 

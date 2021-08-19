@@ -1,18 +1,18 @@
-// Copyright 2017 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2017 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package simulations
 
@@ -27,11 +27,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/p2p"
-	"github.com/AVNereum/go-AVNereum/p2p/enode"
-	"github.com/AVNereum/go-AVNereum/p2p/simulations/adapters"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/p2p"
+	"github.com/avalanria/go-avalanria/p2p/enode"
+	"github.com/avalanria/go-avalanria/p2p/simulations/adapters"
 )
 
 var DialBanTimeout = 200 * time.Millisecond
@@ -46,7 +46,7 @@ type NetworkConfig struct {
 // simulated nodes and the connections which exist between them.
 //
 // The Network has a single NodeAdapter which is responsible for actually
-// starting nodes and connecting them togAVNer.
+// starting nodes and connecting them togavner.
 //
 // The Network emits events when nodes are started and stopped, when they are
 // connected and disconnected, and also when messages are sent between nodes.
@@ -302,8 +302,8 @@ func (net *Network) Stop(id enode.ID) error {
 	return nil
 }
 
-// Connect connects two nodes togAVNer by calling the "admin_addPeer" RPC
-// mAVNod on the "one" node so that it connects to the "other" node
+// Connect connects two nodes togavner by calling the "admin_addPeer" RPC
+// mavnod on the "one" node so that it connects to the "other" node
 func (net *Network) Connect(oneID, otherID enode.ID) error {
 	net.lock.Lock()
 	defer net.lock.Unlock()
@@ -325,7 +325,7 @@ func (net *Network) connect(oneID, otherID enode.ID) error {
 }
 
 // Disconnect disconnects two nodes by calling the "admin_removePeer" RPC
-// mAVNod on the "one" node so that it disconnects from the "other" node
+// mavnod on the "one" node so that it disconnects from the "other" node
 func (net *Network) Disconnect(oneID, otherID enode.ID) error {
 	conn := net.GetConn(oneID, otherID)
 	if conn == nil {
@@ -568,7 +568,7 @@ func (net *Network) getDownNodeIDs() (ids []enode.ID) {
 	return ids
 }
 
-// GetRandomNode returns a random node on the network, regardless of whAVNer it is running or not
+// GetRandomNode returns a random node on the network, regardless of whavner it is running or not
 func (net *Network) GetRandomNode(excludeIDs ...enode.ID) *Node {
 	net.lock.RLock()
 	defer net.lock.RUnlock()
@@ -654,7 +654,7 @@ func (net *Network) getConn(oneID, otherID enode.ID) *Conn {
 // the order of nodes does not matter, i.e., Conn(i,j) == Conn(j, i)
 // it checks if the connection is already up, and if the nodes are running
 // NOTE:
-// it also checks whAVNer there has been recent attempt to connect the peers
+// it also checks whavner there has been recent attempt to connect the peers
 // this is cheating as the simulation is used as an oracle and know about
 // remote peers attempt to connect to a node which will then not initiate the connection
 func (net *Network) InitConn(oneID, otherID enode.ID) (*Conn, error) {
@@ -695,7 +695,7 @@ func (net *Network) Shutdown() {
 		if err := node.Stop(); err != nil {
 			log.Warn("Can't stop node", "id", node.ID(), "err", err)
 		}
-		// If the node has the close mAVNod, call it.
+		// If the node has the close mavnod, call it.
 		if closer, ok := node.Node.(io.Closer); ok {
 			if err := closer.Close(); err != nil {
 				log.Warn("Can't close node", "id", node.ID(), "err", err)
@@ -728,7 +728,7 @@ type Node struct {
 	// Config if the config used to created the node
 	Config *adapters.NodeConfig `json:"config"`
 
-	// up tracks whAVNer or not the node is running
+	// up tracks whavner or not the node is running
 	up   bool
 	upMu *sync.RWMutex
 }
@@ -742,7 +742,7 @@ func (n *Node) copy() *Node {
 	return newNode(n.Node, &configCpy, n.Up())
 }
 
-// Up returns whAVNer the node is currently up (online)
+// Up returns whavner the node is currently up (online)
 func (n *Node) Up() bool {
 	n.upMu.RLock()
 	defer n.upMu.RUnlock()
@@ -795,7 +795,7 @@ func (n *Node) MarshalJSON() ([]byte, error) {
 // status. IMPORTANT: The implementation is incomplete; we lose p2p.NodeInfo.
 func (n *Node) UnmarshalJSON(raw []byte) error {
 	// TODO: How should we turn back NodeInfo into n.Node?
-	// Ticket: https://github.com/AVNersphere/go-AVNereum/issues/1177
+	// Ticket: https://github.com/avnersphere/go-avalanria/issues/1177
 	var node struct {
 		Config *adapters.NodeConfig `json:"config,omitempty"`
 		Up     bool                 `json:"up"`
@@ -815,7 +815,7 @@ type Conn struct {
 	// Other is the node which the connection was made to
 	Other enode.ID `json:"other"`
 
-	// Up tracks whAVNer or not the connection is active
+	// Up tracks whavner or not the connection is active
 	Up bool `json:"up"`
 	// Registers when the connection was grabbed to dial
 	initiated time.Time
@@ -824,7 +824,7 @@ type Conn struct {
 	other *Node
 }
 
-// nodesUp returns whAVNer both nodes are currently up
+// nodesUp returns whavner both nodes are currently up
 func (c *Conn) nodesUp() error {
 	if !c.one.Up() {
 		return fmt.Errorf("one %v is not up", c.One)

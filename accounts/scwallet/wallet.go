@@ -1,18 +1,18 @@
-// Copyright 2018 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2018 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package scwallet
 
@@ -33,12 +33,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AVNereum/go-AVNereum"
-	"github.com/AVNereum/go-AVNereum/accounts"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/crypto"
-	"github.com/AVNereum/go-AVNereum/log"
+	"github.com/avalanria/go-avalanria"
+	"github.com/avalanria/go-avalanria/accounts"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/crypto"
+	"github.com/avalanria/go-avalanria/log"
 	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/status-im/keycard-go/derivationpath"
 )
@@ -121,7 +121,7 @@ type Wallet struct {
 
 	deriveNextPaths []accounts.DerivationPath // Next derivation paths for account auto-discovery (multiple bases supported)
 	deriveNextAddrs []common.Address          // Next derived account addresses for auto-discovery (multiple bases supported)
-	deriveChain     AVNereum.ChainStateReader // Blockchain state reader to discover used account with
+	deriveChain     avalanria.ChainStateReader // Blockchain state reader to discover used account with
 	deriveReq       chan chan struct{}        // Channel to request a self-derivation on
 	deriveQuit      chan chan error           // Channel to terminate the self-deriver with
 }
@@ -329,7 +329,7 @@ func (w *Wallet) Status() (string, error) {
 // wallets and/or to access derivation seeds.
 //
 // The passphrase parameter may or may not be used by the implementation of a
-// particular wallet instance. The reason there is no passwordless open mAVNod
+// particular wallet instance. The reason there is no passwordless open mavnod
 // is to strive towards a uniform wallet handling, oblivious to the different
 // backend providers.
 //
@@ -362,12 +362,12 @@ func (w *Wallet) Open(passphrase string) error {
 				return err
 			}
 			// Pairing succeeded, fall through to PIN checks. This will of course fail,
-			// but we can't return ErrPINNeeded directly here because we don't know whAVNer
+			// but we can't return ErrPINNeeded directly here because we don't know whavner
 			// a PIN check or a PIN reset is needed.
 			passphrase = ""
 		}
 	}
-	// The smart card was successfully paired, retrieve its status to check whAVNer
+	// The smart card was successfully paired, retrieve its status to check whavner
 	// PIN verification or unblocking is needed.
 	status, err := w.session.walletStatus()
 	if err != nil {
@@ -593,7 +593,7 @@ func (w *Wallet) makeAccount(address common.Address, path accounts.DerivationPat
 	}
 }
 
-// Contains returns whAVNer an account is part of this particular wallet or not.
+// Contains returns whavner an account is part of this particular wallet or not.
 func (w *Wallet) Contains(account accounts.Account) bool {
 	if pairing := w.Hub.pairing(w); pairing != nil {
 		_, ok := pairing.Accounts[account.Address]
@@ -642,12 +642,12 @@ func (w *Wallet) Derive(path accounts.DerivationPath, pin bool) (accounts.Accoun
 // from non zero components.
 //
 // Some hardware wallets switched derivation paths through their evolution, so
-// this mAVNod supports providing multiple bases to discover old user accounts
+// this mavnod supports providing multiple bases to discover old user accounts
 // too. Only the last base will be used to derive the next empty account.
 //
 // You can disable automatic account discovery by calling SelfDerive with a nil
 // chain state reader.
-func (w *Wallet) SelfDerive(bases []accounts.DerivationPath, chain AVNereum.ChainStateReader) {
+func (w *Wallet) SelfDerive(bases []accounts.DerivationPath, chain avalanria.ChainStateReader) {
 	w.lock.Lock()
 	defer w.lock.Unlock()
 
@@ -792,7 +792,7 @@ func (w *Wallet) findAccountPath(account accounts.Account) (accounts.DerivationP
 type Session struct {
 	Wallet   *Wallet               // A handle to the wallet that opened the session
 	Channel  *SecureChannelSession // A secure channel for encrypted messages
-	verified bool                  // WhAVNer the pin has been verified in this session.
+	verified bool                  // Whavner the pin has been verified in this session.
 }
 
 // pair establishes a new pairing over this channel, using the provided secret.
@@ -861,7 +861,7 @@ func (s *Session) authenticate(pairing smartcardPairing) error {
 type walletStatus struct {
 	PinRetryCount int  // Number of remaining PIN retries
 	PukRetryCount int  // Number of remaining PUK retries
-	Initialized   bool // WhAVNer the card has been initialized with a private key
+	Initialized   bool // Whavner the card has been initialized with a private key
 }
 
 // walletStatus fetches the wallet's status from the card.

@@ -1,18 +1,18 @@
-// Copyright 2015 The go-AVNereum Authors
-// This file is part of the go-AVNereum library.
+// Copyright 2015 The go-avalanria Authors
+// This file is part of the go-avalanria library.
 //
-// The go-AVNereum library is free software: you can redistribute it and/or modify
+// The go-avalanria library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-AVNereum library is distributed in the hope that it will be useful,
+// The go-avalanria library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-AVNereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-avalanria library. If not, see <http://www.gnu.org/licenses/>.
 
 package miner
 
@@ -25,16 +25,16 @@ import (
 	"time"
 
 	mapset "github.com/deckarep/golang-set"
-	"github.com/AVNereum/go-AVNereum/common"
-	"github.com/AVNereum/go-AVNereum/consensus"
-	"github.com/AVNereum/go-AVNereum/consensus/misc"
-	"github.com/AVNereum/go-AVNereum/core"
-	"github.com/AVNereum/go-AVNereum/core/state"
-	"github.com/AVNereum/go-AVNereum/core/types"
-	"github.com/AVNereum/go-AVNereum/event"
-	"github.com/AVNereum/go-AVNereum/log"
-	"github.com/AVNereum/go-AVNereum/params"
-	"github.com/AVNereum/go-AVNereum/trie"
+	"github.com/avalanria/go-avalanria/common"
+	"github.com/avalanria/go-avalanria/consensus"
+	"github.com/avalanria/go-avalanria/consensus/misc"
+	"github.com/avalanria/go-avalanria/core"
+	"github.com/avalanria/go-avalanria/core/state"
+	"github.com/avalanria/go-avalanria/core/types"
+	"github.com/avalanria/go-avalanria/event"
+	"github.com/avalanria/go-avalanria/log"
+	"github.com/avalanria/go-avalanria/params"
+	"github.com/avalanria/go-avalanria/trie"
 )
 
 const (
@@ -126,7 +126,7 @@ type worker struct {
 	config      *Config
 	chainConfig *params.ChainConfig
 	engine      consensus.Engine
-	AVN         Backend
+	avn         Backend
 	chain       *core.BlockChain
 
 	// Feeds
@@ -168,10 +168,10 @@ type worker struct {
 	snapshotState    *state.StateDB
 
 	// atomic status counters
-	running int32 // The indicator whAVNer the consensus engine is running or not.
+	running int32 // The indicator whavner the consensus engine is running or not.
 	newTxs  int32 // New arrival transaction count since last sealing work submitting.
 
-	// noempty is the flag used to control whAVNer the feature of pre-seal empty
+	// noempty is the flag used to control whavner the feature of pre-seal empty
 	// block is enabled. The default value is false(pre-seal is enabled by default).
 	// But in some special scenario the consensus engine will seal blocks instantaneously,
 	// in this case this feature will add all empty blocks into canonical chain
@@ -179,27 +179,27 @@ type worker struct {
 	noempty uint32
 
 	// External functions
-	isLocalBlock func(block *types.Block) bool // Function used to determine whAVNer the specified block is mined by local miner.
+	isLocalBlock func(block *types.Block) bool // Function used to determine whavner the specified block is mined by local miner.
 
 	// Test hooks
-	newTaskHook  func(*task)                        // MAVNod to call upon receiving a new sealing task.
-	skipSealHook func(*task) bool                   // MAVNod to decide whAVNer skipping the sealing.
-	fullTaskHook func()                             // MAVNod to call before pushing the full sealing task.
-	resubmitHook func(time.Duration, time.Duration) // MAVNod to call upon updating resubmitting interval.
+	newTaskHook  func(*task)                        // Mavnod to call upon receiving a new sealing task.
+	skipSealHook func(*task) bool                   // Mavnod to decide whavner skipping the sealing.
+	fullTaskHook func()                             // Mavnod to call before pushing the full sealing task.
+	resubmitHook func(time.Duration, time.Duration) // Mavnod to call upon updating resubmitting interval.
 }
 
-func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus.Engine, AVN Backend, mux *event.TypeMux, isLocalBlock func(*types.Block) bool, init bool) *worker {
+func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus.Engine, avn Backend, mux *event.TypeMux, isLocalBlock func(*types.Block) bool, init bool) *worker {
 	worker := &worker{
 		config:             config,
 		chainConfig:        chainConfig,
 		engine:             engine,
-		AVN:                AVN,
+		avn:                avn,
 		mux:                mux,
-		chain:              AVN.BlockChain(),
+		chain:              avn.BlockChain(),
 		isLocalBlock:       isLocalBlock,
 		localUncles:        make(map[common.Hash]*types.Block),
 		remoteUncles:       make(map[common.Hash]*types.Block),
-		unconfirmed:        newUnconfirmedBlocks(AVN.BlockChain(), miningLogAtDepth),
+		unconfirmed:        newUnconfirmedBlocks(avn.BlockChain(), miningLogAtDepth),
 		pendingTasks:       make(map[common.Hash]*task),
 		txsCh:              make(chan core.NewTxsEvent, txChanSize),
 		chainHeadCh:        make(chan core.ChainHeadEvent, chainHeadChanSize),
@@ -213,10 +213,10 @@ func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus
 		resubmitAdjustCh:   make(chan *intervalAdjust, resubmitAdjustChanSize),
 	}
 	// Subscribe NewTxsEvent for tx pool
-	worker.txsSub = AVN.TxPool().SubscribeNewTxsEvent(worker.txsCh)
+	worker.txsSub = avn.TxPool().SubscribeNewTxsEvent(worker.txsCh)
 	// Subscribe events for blockchain
-	worker.chainHeadSub = AVN.BlockChain().SubscribeChainHeadEvent(worker.chainHeadCh)
-	worker.chainSideSub = AVN.BlockChain().SubscribeChainSideEvent(worker.chainSideCh)
+	worker.chainHeadSub = avn.BlockChain().SubscribeChainHeadEvent(worker.chainHeadCh)
+	worker.chainSideSub = avn.BlockChain().SubscribeChainSideEvent(worker.chainSideCh)
 
 	// Sanitize recommit interval if the user-specified one is too short.
 	recommit := worker.config.Recommit
@@ -237,7 +237,7 @@ func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus
 	return worker
 }
 
-// setEtherbase sets the AVNerbase used to initialize the block coinbase field.
+// setEtherbase sets the avnerbase used to initialize the block coinbase field.
 func (w *worker) setEtherbase(addr common.Address) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
@@ -310,7 +310,7 @@ func (w *worker) stop() {
 	atomic.StoreInt32(&w.running, 0)
 }
 
-// isRunning returns an indicator whAVNer worker is running or not.
+// isRunning returns an indicator whavner worker is running or not.
 func (w *worker) isRunning() bool {
 	return atomic.LoadInt32(&w.running) == 1
 }
@@ -812,7 +812,7 @@ func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coin
 		//
 		// We use the eip155 signer regardless of the current hf.
 		from, _ := types.Sender(w.current.signer, tx)
-		// Check whAVNer the tx is replay protected. If we're not in the EIP155 hf
+		// Check whavner the tx is replay protected. If we're not in the EIP155 hf
 		// phase, start ignoring the sender until we do.
 		if tx.Protected() && !w.chainConfig.IsEIP155(w.current.header.Number) {
 			log.Trace("Ignoring reply protected transaction", "hash", tx.Hash(), "eip155", w.chainConfig.EIP155Block)
@@ -912,7 +912,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	// Only set the coinbase if our consensus engine is running (avoid spurious block rewards)
 	if w.isRunning() {
 		if w.coinbase == (common.Address{}) {
-			log.Error("Refusing to mine without AVNerbase")
+			log.Error("Refusing to mine without avnerbase")
 			return
 		}
 		header.Coinbase = w.coinbase
@@ -921,12 +921,12 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		log.Error("Failed to prepare header for mining", "err", err)
 		return
 	}
-	// If we are care about TheDAO hard-fork check whAVNer to override the extra-data or not
+	// If we are care about TheDAO hard-fork check whavner to override the extra-data or not
 	if daoBlock := w.chainConfig.DAOForkBlock; daoBlock != nil {
-		// Check whAVNer the block is among the fork extra-override range
+		// Check whavner the block is among the fork extra-override range
 		limit := new(big.Int).Add(daoBlock, params.DAOForkExtraRange)
 		if header.Number.Cmp(daoBlock) >= 0 && header.Number.Cmp(limit) < 0 {
-			// Depending whAVNer we support or oppose the fork, override differently
+			// Depending whavner we support or oppose the fork, override differently
 			if w.chainConfig.DAOForkSupport {
 				header.Extra = common.CopyBytes(params.DAOForkBlockExtra)
 			} else if bytes.Equal(header.Extra, params.DAOForkBlockExtra) {
@@ -977,7 +977,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	}
 
 	// Fill the block with all available pending transactions.
-	pending, err := w.AVN.TxPool().Pending(true)
+	pending, err := w.avn.TxPool().Pending(true)
 	if err != nil {
 		log.Error("Failed to fetch pending transactions", "err", err)
 		return
@@ -991,7 +991,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	}
 	// Split the pending transactions into locals and remotes
 	localTxs, remoteTxs := make(map[common.Address]types.Transactions), pending
-	for _, account := range w.AVN.TxPool().Locals() {
+	for _, account := range w.avn.TxPool().Locals() {
 		if txs := remoteTxs[account]; len(txs) > 0 {
 			delete(remoteTxs, account)
 			localTxs[account] = txs
